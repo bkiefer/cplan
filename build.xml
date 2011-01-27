@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+
+<!-- In order to compile sources, it is necessary having installed an JDK
+(a simple JRE will not be sufficient -> no javac). -->
+
+<project name="utteranceplanner" basedir="." default="compile">
+
+  <!-- ================================================================= -->
+  <!-- PROPERTIES                                                        -->
+  <!-- ================================================================= -->
+
+  <property name="lib.dir"      value="lib"/>
+  <property name="jar.dir"      value="target"/>
+  <property name="jar.file"     value="cplan-gui.jar"/>
+
+  <property name="classes.dir"  value="target/classes"/>
+  <property name="source.dir"   value="src/main/java"/>
+
+  <property name="test-classes.dir" value="target/test-classes"/>
+  <property name="test-source.dir"  value="src/test/java"/>
+
+  <property name="reports.tests" value="target/test-reports"/>
+
+  <property name="version" value="1.0"/>
+  <property name="vname" value="cplan-gui-${version}"/>
+
+  <patternset id="sources">
+    <include name="**/*.java"/>
+  </patternset>
+
+  <path id="classpath.libs">
+    <fileset dir="${lib.dir}">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
+  <!-- ================================================================= -->
+  <!-- SUBMODULES                                                        -->
+  <!-- ================================================================= -->
+
+  <property name="cplan.dir"  value="../cplan"/>
+  <property name="cplan-ccg.dir"  value="../cplan-ccg"/>
+  <property name="dataviz.dir"  value="../dataviz"/>
+  <property name="j2emacs.dir"  value="../j2emacs"/>
+
+  <path id="classpath">
+    <path refid="classpath.libs"/>
+    <path path="${cplan.dir}/target/classes"/>
+    <path path="${cplan-ccg.dir}/target/classes"/>
+    <path path="${j2emacs.dir}/classes"/>
+    <path path="${dataviz.dir}/classes"/>
+  </path>
+
+  <target name="submodules" description="make submodules">
+    <ant dir="${cplan.dir}" target="${target}" inheritall="false"/>
+    <ant dir="${cplan-ccg.dir}" target="${target}" inheritall="false"/>
+    <ant dir="${dataviz.dir}" target="${target}" inheritall="false"/>
+    <ant dir="${j2emacs.dir}" target="${target}" inheritall="false"/>
+  </target>
+
+  <!-- ================================================================= -->
+  <!-- TARGETS                                                        -->
+  <!-- ================================================================= -->
+
+  <target name="compile" description="compile all">
+    <antcall target="submodules">
+      <param name="target" value="compile"/>
+    </antcall>
+    <mkdir dir="${classes.dir}"/>
+    <javac debug="yes" deprecation="yes"
+           srcdir="${source.dir}" destdir="${classes.dir}">
+      <patternset refid="sources"/>
+      <classpath refid="classpath"/>
+      <compilerarg value="-Xlint"/>
+    </javac>
+  </target>
+
+  <target name="junit" description="run unit tests">
+    <mkdir dir="${test-classes.dir}"/>
+    <javac debug="yes" deprecation="yes"
+           srcdir="${test-source.dir}" destdir="${test-classes.dir}">
+      <patternset refid="sources"/>
+      <classpath>
+        <path refid="classpath"/>
+        <pathelement path="${test-classes.dir}"/>
+        <pathelement path="${classes.dir}"/>
+      </classpath>
+      <compilerarg value="-Xlint"/>
+    </javac>
+    <junit printsummary="yes" haltonfailure="no"  haltonerror="no">
+      <classpath>
+        <path refid="classpath"/>
+        <pathelement path="${test-classes.dir}"/>
+        <pathelement path="${classes.dir}"/>
+      </classpath>
+      <batchtest fork="yes" todir="${reports.tests}">
+        <formatter type="failure"/>
+        <fileset dir="${test-source.dir}">
+          <include name="**/*Test.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+
+  <target name="jar" depends="compile" description="jar the main code">
+    <jar destfile="${jar.dir}/${jar.file}" compress="true">
+      <fileset dir="${classes.dir}"/>
+    </jar>
+  </target>
+
+  <target name="clean" description="remove class files">
+    <antcall target="submodules">
+      <param name="target" value="clean"/>
+    </antcall>
+    <delete>
+      <fileset dir="${classes.dir}" includes="**/*.class"/>
+    </delete>
+  </target>
+
+  <target name="cleanall"
+          description="remove class files, (internal) jars and war"
+          depends="clean">
+    <property name="subtarget" value="cleanall"/>
+    <antcall target="submodules">
+      <param name="target" value="cleanall"/>
+    </antcall>
+    <delete>
+      <fileset dir="${jar.dir}" includes="${jar.file}"/>
+    </delete>
+  </target>
+
+  <target name="tar" description="build distribution tar file">
+    <tar destfile="../${vname}.tar" basedir="../" includes="uttplanner/**"
+         excludes="*.tar*"/>
+    <gzip src="../${vname}.tar" destfile="../${vname}.tar.gz"/>
+    <delete file="../${vname}.tar"/>
+  </target>
+
+</project>
