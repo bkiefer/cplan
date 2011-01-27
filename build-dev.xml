@@ -47,19 +47,15 @@
     <path refid="classpath.libs"/>
     <path path="${cplan.dir}/target/classes"/>
     <path path="${cplan-ccg.dir}/target/classes"/>
-    <!--
     <path path="${j2emacs.dir}/classes"/>
     <path path="${dataviz.dir}/classes"/>
-    -->
   </path>
 
   <target name="submodules" description="make submodules">
     <ant dir="${cplan.dir}" target="${target}" inheritall="false"/>
     <ant dir="${cplan-ccg.dir}" target="${target}" inheritall="false"/>
-    <!--
     <ant dir="${dataviz.dir}" target="${target}" inheritall="false"/>
     <ant dir="${j2emacs.dir}" target="${target}" inheritall="false"/>
-    -->
   </target>
 
   <!-- ================================================================= -->
