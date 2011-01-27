@@ -115,6 +115,9 @@
     <delete>
       <fileset dir="${classes.dir}" includes="**/*.class"/>
     </delete>
+    <delete>
+      <fileset dir="${test-classes.dir}" includes="**/*.class"/>
+    </delete>
   </target>
 
   <target name="cleanall"
