@@ -63,13 +63,23 @@ implements UPMainFrame.CloseAllListener {
     return _j2e != null && _j2e.alive();
   }
 
+  /** Read the project file for this content planner. In addition to the super
+   *  class' method, start the Emacs connection.
+   *
+   *  @see CcgUtterancePlanner
+   */
   @Override
   public void readProjectFile(File projectFile) {
     if (isEmacsAlive()) {
       _j2e.clearBuffer(_compilationBufferName);
       _j2e.startBuffering(_compilationBufferName);
     }
-    super.readProjectFile(projectFile);
+    try {
+      super.readProjectFile(projectFile);
+    }
+    catch (IOException ioex) {
+      logger.warn(ioex);
+    }
     if (isEmacsAlive()) {
       _j2e.markAsProjectFiles(getProjectDir(), getAllRuleFiles());
       _j2e.flushBuffer(_compilationBufferName);
