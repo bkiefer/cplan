@@ -1,0 +1,83 @@
+#!/bin/bash
+#set -x
+
+here="`pwd`"
+cd "`dirname $0`"
+APP_HOME="`pwd`"
+ant jar > /dev/null 2>&1
+cd "$here"
+export APP_HOME
+
+JPDA_TRANSPORT="dt_socket"
+JPDA_ADDRESS="3194"
+debug="-Xdebug -Xrunjdwp:transport=$JPDA_TRANSPORT,address=$JPDA_ADDRESS,server=y,suspend=n"
+
+if test -n "$JAVA_HOME" ; then
+    "$JAVA_HOME"/bin/java -version 2>&1 | grep -q "version \"*1\.[56]" ||
+    unset JAVA_HOME JAVA_BINDIR JAVA_ROOT JDK_HOME JRE_HOME
+fi
+
+# look for an appropriate java installation
+{
+IFS=$'\n'
+if test -z "$JAVA_HOME" ; then
+    for path in `type -all java`; do
+        JAVA_HOME=`echo "${path##java is}" | sed 's|.* \(/.*\)/bin/java|\1|'`
+         if test -n "$JAVA_HOME" &&
+            $JAVA_HOME/bin/java -version 2>&1 | grep -q "version \"*1\.[56]" ; then
+            export JAVA_HOME
+            break
+        else
+            unset JAVA_HOME
+        fi
+    done
+fi
+if test "x$JAVA_HOME" = "x" ; then
+    echo "No appropriate java installation found (at least version 1.5)"
+    echo "... exiting"
+    exit 1;
+fi
+}
+if test "$1" = "-m" ; then
+    JAVA_OPTS="-Xmx${2}m"
+    shift 2
+else
+    JAVA_OPTS="-Xmx768m"
+fi
+
+classpath=$APP_HOME/target/classes:$APP_HOME/../cplan-ccg/target/classes:$APP_HOME/../cplan/target/classes
+for f in "$APP_HOME/lib/"*.jar ; do
+    classpath="$classpath:$f"
+done
+for f in "$APP_HOME/../cplan-ccg/lib/"*.jar ; do
+    classpath="$classpath:$f"
+done
+for f in "$APP_HOME/../cplan/lib/"*.jar ; do
+    classpath="$classpath:$f"
+done
+for modules in "../ltfs" "../dataviz" "../j2emacs" ; do
+    classpath=$classpath:$APP_HOME/$modules/classes
+    for f in "$APP_HOME/$modules/lib/"*.jar ; do
+        classpath="$classpath:$f"
+    done
+done
+
+#echo $classpath
+
+if test "x$1" = "x-X"; then
+    JAVA_OPTS="$JAVA_OPTS $debug"
+    shift
+fi
+
+if test -f "log4j.properties" ; then
+    L4JSETUP="log4j.properties"
+else
+    if test -f "${APP_HOME}/config/log4j.properties"; then
+        L4JSETUP="${APP_HOME}/config/log4j.properties"
+    fi
+fi
+if test -n "$L4JSETUP" ; then
+    JAVA_OPTS="$JAVA_OPTS -Dlog4j.configuration=file:${L4JSETUP}"
+fi
+MAINCLASS=de.dfki.lt.tr.dialogue.cplan.InteractivePlanner
+eval CLASSPATH="$classpath" "$JAVA_HOME"/bin/java "$JAVA_OPTS" $MAINCLASS -r "$here" $*
