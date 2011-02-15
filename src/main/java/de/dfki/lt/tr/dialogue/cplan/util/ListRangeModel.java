@@ -9,7 +9,14 @@ import javax.swing.event.ChangeListener;
 @SuppressWarnings("serial")
 public class ListRangeModel<E> extends ArrayList<E>
 implements BoundedRangeModel {
-  private DefaultBoundedRangeModel _brm = new DefaultBoundedRangeModel();
+  private DefaultBoundedRangeModel _brm;
+
+  public ListRangeModel() {
+    super();
+    _brm = new DefaultBoundedRangeModel();
+    setMinimum(0);
+    setMaximum(0);
+  }
 
   @Override
   public boolean add(E e) {
@@ -62,10 +69,12 @@ implements BoundedRangeModel {
 
   @Override
   public void setMaximum(int newMaximum) {
+    _brm.setMaximum(newMaximum);
   }
 
   @Override
   public void setMinimum(int newMinimum) {
+    _brm.setMinimum(newMinimum);
   }
 
   @Override

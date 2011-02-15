@@ -186,7 +186,7 @@ implements UPMainFrame.CloseAllListener {
     String[] usage = {
         "Usage: UPDebugger [-b<atch> inputfile] [-c<ompileonly>] [-d<ebugdags>]",
         "                  [-g<ui>] [-t<race>={1,2,3}] [-e<macs>]",
-        "                  <rulefile>",
+        "                  <projectfile>",
         "      -t : bit 1: trace match, bit 2 : trace modification"
     };
     System.out.println(msg);
@@ -269,11 +269,13 @@ implements UPMainFrame.CloseAllListener {
         traceFlags = Integer.parseInt((String) options.valueOf("t"));
       }
 
-      if (nonOptionArgs.size() > 0) {
+      if (nonOptionArgs.size() == 0) {
+        usage("No project file specified");
+      } else {
         ip.readProjectFile(new File(nonOptionArgs.get(0)));
+        ip.interactive(traceFlags);
+        ip.allClosed();
       }
-      ip.interactive(traceFlags);
-      ip.allClosed();
       break;
     }
     }

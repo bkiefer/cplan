@@ -235,6 +235,7 @@ implements UPMainFrame.RunStateListener {
    * ********************************************************************** */
 
   void displayState(int nr) {
+    if (_events.size() <= nr) return;
     // put the appropriate things into the different parts of this window
     TraceEvent curr = _events.get(nr);
     _matchDisplay.setModel(curr.lastMatch);
