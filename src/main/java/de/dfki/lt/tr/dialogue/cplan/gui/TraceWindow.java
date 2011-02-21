@@ -207,7 +207,7 @@ implements UPMainFrame.RunStateListener {
   @SuppressWarnings("serial")
   public TraceWindow(UPMainFrame parent, ListRangeModel<TraceEvent> events,
     int arrangement) {
-    super(parent, "Trace Window", true);
+    super(parent, "Trace Window", false);
     if (arrangement < TABBED_VERTICAL || arrangement > FOUR_QUADRANTS) {
       throw new IllegalArgumentException("Unknown arrangement: " + arrangement);
     }
