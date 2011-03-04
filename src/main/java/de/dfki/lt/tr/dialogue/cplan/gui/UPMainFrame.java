@@ -19,15 +19,17 @@ import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
 
+import org.apache.log4j.Logger;
+
 import de.dfki.lt.loot.gui.DrawingPanel;
 import de.dfki.lt.loot.gui.MainFrame;
 import de.dfki.lt.loot.gui.adapters.EmptyModelAdapter;
 import de.dfki.lt.loot.gui.adapters.ModelAdapter;
+import de.dfki.lt.tr.dialogue.cplan.BasicRule;
 import de.dfki.lt.tr.dialogue.cplan.CollectEventsTracer;
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
 import de.dfki.lt.tr.dialogue.cplan.InteractivePlanner;
 import de.dfki.lt.tr.dialogue.cplan.LoggingTracer;
-import de.dfki.lt.tr.dialogue.cplan.BasicRule;
 import de.dfki.lt.tr.dialogue.cplan.RuleTracer;
 import de.dfki.lt.tr.dialogue.cplan.SuspendableTracer;
 import de.dfki.lt.tr.dialogue.cplan.TraceEvent;
@@ -194,7 +196,17 @@ public class UPMainFrame extends MainFrame {
 
   public UPMainFrame(String title, InteractivePlanner ip, String ruleFile) {
     _planner = ip;
-    _history = new de.dfki.lt.loot.gui.util.InputHistory();
+
+    int historySize = 0;
+    try {
+      if (_planner.hasSetting("history_size")) {
+        historySize = Integer.parseInt(_planner.getSetting("history_size"));
+      }
+    } catch (NumberFormatException nex) {
+      Logger.getLogger("UtterancePlanner")
+      .warn("specified history size is not a number");
+    }
+    _history = new de.dfki.lt.loot.gui.util.InputHistory(historySize);
     loadPreferences();
     _preferredSize = new Dimension(800, 500);
     setTracing();

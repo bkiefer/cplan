@@ -137,6 +137,8 @@
   </target>
 
   <target name="tar" description="build distribution tar file">
+    <exec executable="svnversion" failonerror="false" outputproperty="svnversion"/>
+    <echo>SVN version = ${svnversion}</echo>
     <tar destfile="../${vname}.tar" basedir="../" includes="uttplanner/**"
          excludes="*.tar*"/>
     <gzip src="../${vname}.tar" destfile="../${vname}.tar.gz"/>
