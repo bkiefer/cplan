@@ -80,4 +80,4 @@ if test -n "$L4JSETUP" ; then
     JAVA_OPTS="$JAVA_OPTS -Dlog4j.configuration=file:${L4JSETUP}"
 fi
 MAINCLASS=de.dfki.lt.tr.dialogue.cplan.InteractivePlanner
-eval CLASSPATH="$classpath" "$JAVA_HOME"/bin/java "$JAVA_OPTS" $MAINCLASS -r "$here" $*
+eval CLASSPATH="$classpath" "$JAVA_HOME"/bin/java "$JAVA_OPTS" $MAINCLASS -r "$APP_HOME" $*
