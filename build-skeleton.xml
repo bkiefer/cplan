@@ -3,6 +3,31 @@
 <!-- In order to compile sources, it is necessary having installed an JDK
 (a simple JRE will not be sufficient -> no javac). -->
 
+<!--
+Main targets supported by this skeleton:
+
+jar: compile create local jar, requires deplibs to contain the jars from the
+     submodules, either because they are delivered or can be compiled.
+
+compile: compile locally, requires deplibs to contain the jars from the
+     submodules
+
+clean: remove locally created class and jar files
+
+TARGETS THAT SHOULD ONLY BE USED BY PEOPLE THAT KNOW WHAT THEY'RE DOING
+
+all: build all submodules and the current module, creating jars in deplibs
+     for the submodules and in target for the local module
+
+allclean: remove all created class and jar files, including those in deplibs.
+     WARNING: should only be called if deplibs can be restored, which needs
+     the code for all required submodules!
+
+
+
+-->
+
+
 <!--<project name="%%%%" basedir="." default="compile">-->
 <project>
 
@@ -10,64 +35,51 @@
   <!-- PROPERTIES                                                        -->
   <!-- ================================================================= -->
 
-  <property name="skeleton.version" value="0.1"/>
+  <property name="skeleton.version" value="0.3"/>
 
-  <property name="lib.dir"          value="lib"/>
-  <property name="external-lib.dir" value="target"/>
-  <property name="jar.dir"          value="target"/>
+  <property name="ant.build.javac.target"      value="1.6"/>
 
-  <property name="source.dir"       value="src/main/java"/>
-  <property name="classes.dir"      value="target/classes"/>
+  <property name="lib.dir"           value="lib"/>
 
-  <property name="test-source.dir"  value="src/test/java"/>
-  <property name="test-classes.dir" value="target/test-classes"/>
+  <property name="source.dir"        value="src/main/java"/>
+  <property name="classes.dir"       value="target/classes"/>
 
-  <property name="reports.tests"    value="target/test-reports"/>
+  <property name="tests.source.dir"  value="src/test/java"/>
+  <property name="tests.classes.dir" value="target/test-classes"/>
 
-  <property name="version"          value="0.1"/>
-  <property name="vname"            value="${ant.project.name}-${version}"/>
+  <property name="tests.reports.dir" value="target/test-reports"/>
 
-  <property name="jar.file"         value="${vname}.jar"/>
+  <property name="apidoc.dir"        value="target/apidocs"/>
+
+  <property name="version"           value="0.1"/>
+  <property name="vname"             value="${ant.project.name}-${version}"/>
+
+  <property name="jar.file"          value="${vname}.jar"/>
 
   <patternset id="sources">
     <include name="**/*.java"/>
   </patternset>
 
-  <path id="classpath">
-    <fileset dir="${lib.dir}">
-      <include name="**/*.jar"/>
-    </fileset>
-  </path>
-
   <!-- ================================================================= -->
-  <!-- SUBMODULES                                                        -->
+  <!-- SUBMODULES TEMPLATE                                               -->
   <!-- ================================================================= -->
 
-  <!-- This approach to submodules requires duplication in classpath and
-       the "submodules" target, which is not so nice. Maybe another approach
-       that would build the jars of submodules and make them availabe to
-       the current module would be nicer.
-
-
-  <path id="classpath">
-    <path refid="classpath.libs"/>
-  </path>
-
-
-       make sure to set inheritAll="false" in ant subtasks here, because,
-       e.g., jar.file will be inherited otherwise
-
-       It's nevertheless possible to inherit some properties, if needed
-
-    <ant antfile="middle.xml" inheritall="false">
-        <propertyset>
-            <propertyref prefix="foo."/>
-        </propertyset>
-        <property name="bar.1" value="${bar.1}"/>
-        <property name="bar.2" value="${bar.2}"/>
+  <target name="subant" description="make one submodule">
+    <ant dir="${dir}" target="${target}" inheritAll="false">
+      <property name="deplibs.dir" value="${deplibs.dir}"/>
     </ant>
+  </target>
 
-  <target name="submodules" description="make submodules">
+  <!--
+
+  <target name="modules" description="make modules">
+    <ant dir="${dir}" target="${target}" inheritAll="false">
+      <property name="deplibs.dir" value="${basedir}/${lib.dir}"/>
+    </ant>
+    <antcall target="subant">
+      <param name="target" value="${target}"/>
+      <param name="dir" value="<module-sub-dir>"/>
+    </antcall>
   </target>
 
   -->
@@ -76,10 +88,66 @@
   <!-- TARGETS                                                           -->
   <!-- ================================================================= -->
 
-  <target name="compile" description="compile all">
-    <antcall target="submodules">
+
+  <!-- =================================================================== -->
+  <!-- Init build system                                                   -->
+  <!-- =================================================================== -->
+
+  <target name="init" depends="init-external, init-root">
+    <tstamp/>
+    <path id="classpath">
+      <fileset dir="${lib.dir}">
+        <include name="**/*.jar"/>
+      </fileset>
+      <fileset dir="${deplibs.dir}">
+        <include name="**/*.jar"/>
+      </fileset>
+    </path>
+  </target>
+
+  <!-- We are the root system / module, we have our own deplibs and target
+       jar target folder
+  -->
+  <target name="init-external" unless="deplibs.dir">
+    <property name="deplibs.dir" value="${basedir}/deplibs"/>
+    <mkdir dir="${deplibs.dir}"/>
+    <property name="jar.dir"     value="target"/>
+  </target>
+
+  <!-- We are NOT the root system / module, put the jars into deplibs of the
+       root system / module
+  -->
+  <target name="init-root" if="deplibs.dir">
+    <property name="jar.dir"     value="${deplibs.dir}"/>
+  </target>
+
+  <!-- ================================================================= -->
+  <!-- ALL target to build all module jars, etc.                         -->
+  <!-- ================================================================= -->
+
+  <target name="all" depends="init">
+    <antcall target="modules">
       <param name="target" value="jar-external"/>
     </antcall>
+    <antcall target="jar"/>
+  </target>
+
+  <!-- ================================================================= -->
+  <!-- COMPILATION targets                                               -->
+  <!-- ================================================================= -->
+
+  <!-- target to compile additional things in this project, meant to be
+       overwritten -->
+  <target name="compile-special"/>
+
+  <target name="compile-modules" depends="init">
+    <antcall target="modules">
+      <param name="target" value="jar-external"/>
+    </antcall>
+  </target>
+
+  <target name="compile" description="compile main sources and modules"
+          depends="init, compile-special">
     <mkdir dir="${classes.dir}"/>
     <javac debug="yes" deprecation="yes"
            srcdir="${source.dir}" destdir="${classes.dir}">
@@ -89,26 +157,26 @@
     </javac>
   </target>
 
-  <target name="compile-all" description="compile tests" depends="compile">
-    <mkdir dir="${test-classes.dir}"/>
-    <mkdir dir="${reports.tests}"/>
+  <target name="compile-all" description="compile with tests" depends="compile">
+    <mkdir dir="${tests.classes.dir}"/>
+    <mkdir dir="${tests.reports.dir}"/>
     <javac debug="yes" deprecation="yes"
-           srcdir="${test-source.dir}" destdir="${test-classes.dir}">
+           srcdir="${tests.source.dir}" destdir="${tests.classes.dir}">
       <patternset refid="sources"/>
       <classpath>
         <path refid="classpath"/>
-        <pathelement path="${test-classes.dir}"/>
+        <pathelement path="${tests.classes.dir}"/>
         <pathelement path="${classes.dir}"/>
       </classpath>
       <compilerarg value="-Xlint"/>
     </javac>
   </target>
 
-  <target name="make-test-plugin" description="create a test plugin for junit"
-          depends="compile">
+  <target name="make-test-plugin" depends="init, compile"
+          description="create a test plugin for junit">
     <javac debug="yes" deprecation="yes"
-           srcdir="${test-source.dir}/../resources/plugins"
-           destdir="${test-source.dir}/../resources/plugins">
+           srcdir="${tests.source.dir}/../resources/plugins"
+           destdir="${tests.source.dir}/../resources/plugins">
       <patternset refid="sources"/>
       <classpath>
         <path refid="classpath"/>
@@ -116,86 +184,157 @@
       </classpath>
       <compilerarg value="-Xlint"/>
     </javac>
-    <jar destfile="${test-source.dir}/../resources/plugins/testplug.jar"
+    <jar destfile="${tests.source.dir}/../resources/plugins/testplug.jar"
          compress="true">
-      <fileset dir="${test-source.dir}/../resources/plugins/"
+      <fileset dir="${tests.source.dir}/../resources/plugins/"
                includes="**/*.class"/>
     </jar>
   </target>
 
-  <target name="junit" description="run unit tests"
-          depends="compile-all,make-test-plugin">
-    <mkdir dir="${reports.tests}"/>
+  <!-- =================================================================== -->
+  <!-- TEST targets                                                        -->
+  <!-- =================================================================== -->
+
+  <target name="alltest" depends="test-modules, test"/>
+
+  <target name="test-modules">
+    <antcall target="modules">
+      <param name="target" value="alltest"/>
+    </antcall>
+  </target>
+
+  <!-- target to do additional tests for this project,
+       meant to be overwritten -->
+  <target name="test-special"/>
+
+  <target name="test" depends="init, test-special, test-html-report"/>
+
+  <target name="test-run" description="run unit tests"
+          depends="compile-all, make-test-plugin, test-special">
+    <mkdir dir="${tests.reports.dir}"/>
     <junit printsummary="yes" haltonfailure="no"  haltonerror="no">
       <classpath>
         <path refid="classpath"/>
-        <pathelement path="${test-classes.dir}"/>
+        <pathelement path="${tests.classes.dir}"/>
         <pathelement path="${classes.dir}"/>
       </classpath>
       <formatter type="xml"/>
-      <batchtest fork="yes" todir="${reports.tests}">
+      <batchtest fork="yes" todir="${tests.reports.dir}">
         <!--formatter type="failure"/-->
-        <fileset dir="${test-source.dir}">
-          <include name="**/*Test.java"/>
-        </fileset>
+        <fileset dir="${tests.source.dir}" includes="**/*Test.java"/>
       </batchtest>
     </junit>
   </target>
 
-  <target name="jar" depends="compile" description="jar the main code">
+  <target name="test-html-report" depends="test-run">
+    <junitreport todir="${reports.test}">
+      <fileset dir="${reports.test}" includes="TEST-*.xml"/>
+      <report format="frames" todir="${junit.html}"/>
+    </junitreport>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Basic Packaging: JAR file creation                                  -->
+  <!-- =================================================================== -->
+
+  <!-- target to create additional jars for this project, meant to be
+       overwritten -->
+  <target name="jar-special"/>
+
+  <!-- if this is an submodule, jar.dir points do external dir, and this target
+       puts the generated jars into the right place
+  -->
+  <target name="jar" depends="compile, jar-special"
+          description="jar the main code">
     <jar destfile="${jar.dir}/${jar.file}" compress="true">
       <fileset dir="${classes.dir}"/>
     </jar>
   </target>
 
-  <target name="jar-external" depends="jar"
-          description="move fresh jar to an external location">
-    <copy todir="${external-lib.dir}" verbose="true">
+  <!-- if this is an submodule, jar.dir points do external dir, and jar already
+       puts the generated jars into the right place. We still have to provide
+       the external jars we locally depend on
+  -->
+  <target name="copy-deplibs" depends="jar"
+          description="move this module's external jars to the root module's location">
+    <copy todir="${deplibs.dir}" verbose="true">
       <fileset dir="${lib.dir}">
         <include name="*.jar"/>
-      </fileset>
-      <fileset dir="${jar.dir}">
-        <include name="${jar.file}"/>
       </fileset>
     </copy>
   </target>
 
-  <target name="clean" description="remove class files">
-    <antcall target="submodules">
-      <param name="target" value="clean-external"/>
+  <target name="jar-external">
+    <antcall target="modules">
+      <param name="target" value="jar-external"/>
     </antcall>
+    <antcall target="jar"/>
+    <antcall target="copy-deplibs"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Cleanup                                                             -->
+  <!-- =================================================================== -->
+
+  <target name="allclean"
+          description="remove class files, local jars and wars AND jars coming   from submodules"
+          depends="clean, depclean">
+    <delete failonerror="false">
+      <fileset dir="${deplibs.dir}" includes="*.jar"/>
+    </delete>
+  </target>
+
+  <target name="depclean">
+    <antcall target="modules">
+      <param name="target" value="allclean"/>
+    </antcall>
+  </target>
+
+  <!-- target to do specific project cleanup, meant to be overwritten -->
+  <target name="clean-special"/>
+
+  <target name="clean" depends="init, clean-special"
+          description="remove class files and generated jars">
     <delete failonerror="false">
       <fileset dir="${classes.dir}" includes="**/*.class"/>
     </delete>
     <delete failonerror="false">
-      <fileset dir="${test-classes.dir}" includes="**/*.class"/>
+      <fileset dir="${tests.classes.dir}" includes="**/*.class"/>
     </delete>
-  </target>
-
-  <target name="clean-external" description="remove external jars">
-    <!-- delete all jars needed here and copied to the external jar dir -->
-    <pathconvert property="target.files" refid="classpath" pathsep=",">
-      <map from="${basedir}/${lib.dir}/" to=""/>
-    </pathconvert>
-    <delete>
-      <fileset dir="${external-lib.dir}" includes="${target.files}"/>
-    </delete>
-    <!-- delete all versioned jars produced by this project -->
-    <delete>
-      <fileset dir="${external-lib.dir}" includes="${ant.project.name}-*.jar"/>
-    </delete>
-  </target>
-
-  <target name="cleanall"
-          description="remove class files, (internal) jars and war"
-          depends="clean">
-    <antcall target="submodules" value="cleanall">
-      <param name="target" value="cleanall"/>
-    </antcall>
     <delete failonerror="false">
-      <fileset dir="${jar.dir}" includes="${jar.file}"/>
+      <fileset dir="${jar.dir}" includes="*.jar"/>
     </delete>
+    <delete failonerror="false" dir="${apidoc.dir}"/>
   </target>
+
+  <!-- =================================================================== -->
+  <!-- Javadoc                                                             -->
+  <!-- =================================================================== -->
+
+  <target name="doc" depends="init, source-doc"/>
+
+  <target name="source-doc">
+    <javadoc destdir="${apidoc.dir}" author="true" version="true" use="true"
+             windowtitle="${apidoc.title}">
+      <fileset dir="${source.dir}" defaultexcludes="yes"/>
+      <doctitle><![CDATA[<h1>${apidoc.title}</h1>]]></doctitle>
+      <bottom><![CDATA[<i>${apidoc.bottomline}</i>]]></bottom>
+    </javadoc>
+  </target>
+
+  <target name="test-doc">
+    <javadoc destdir="${apidoc.dir}" author="true" version="true" use="true"
+             windowtitle="${apidoc.title} - Unit test documentation">
+      <fileset dir="${tests.source.dir}" defaultexcludes="yes"/>
+      <doctitle><![CDATA[<h1>${apidoc.title}</h1>]]></doctitle>
+      <bottom><![CDATA[<i>${apidoc.bottomline}</i>]]></bottom>
+    </javadoc>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Advanced Packaging: Creating Distribution (still TODO)              -->
+  <!-- =================================================================== -->
+
 
   <!-- this is just a stub, and most likely only of interest for systems, or
        standalone modules
@@ -206,11 +345,38 @@
     <tar destfile="${vname}${svnversion}.tar"
          basedir=".">
       <fileset dir="${source.dir}"/>
-      <fileset dir="${test-source.dir}"/>
+      <fileset dir="${tests.source.dir}"/>
       <fileset dir="." includes="build.xml"/>
     </tar>
     <gzip src="../${vname}.tar" destfile="../${vname}.tar.gz"/>
     <delete failonerror="false" file="../${vname}.tar"/>
   </target>
+
+
+  <!--
+jar: compile + jar local classes and put jar into target
+compile:compile local classes
+
+all ==>  jar-external for all submodules, then jar locally
+
+jar-external: ==> call jar external for all submodules, compile and jar
+                  (putting it into root's deplibs),
+                  and copy all local "external" jars into deplibs
+!!! Correctly breaks if recursive dependencies not fulfilled (internal target)
+
+clean ==> clean only locally produced classes and jars (in target)
+
+allclean -> clean + clean-external + delete deplibs
+	 !!! Correctly breaks if recursive dependencies not fulfilled
+
+clean-external ==> clean all submodules & clean (locally) (internal target)
+
+test -> run all local tests
+
+alltest -> run the tests of all submodules,
+           (putting reports into common folder?) & run local test
+
+doc
+  -->
 
 </project>
