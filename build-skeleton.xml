@@ -111,6 +111,7 @@ initialization. jar-special is executed after compile.
       <redirector outputproperty="svnversion"/>
     </exec>
     <available file="${tests.source.dir}" type="dir" property="tests.present"/>
+    <available file="${source.dir}" type="dir" property="sources.present"/>
     <path id="classpath">
       <fileset dir="${lib.dir}" erroronmissingdir="false">
         <include name="**/*.jar"/>
@@ -157,7 +158,7 @@ initialization. jar-special is executed after compile.
   <target name="compile-special"/>
 
   <target name="compile" description="compile main sources and modules"
-          depends="init, compile-special">
+          depends="init, compile-special" if="sources.present">
     <mkdir dir="${classes.dir}"/>
     <javac debug="yes" deprecation="yes"
            srcdir="${source.dir}" destdir="${classes.dir}">
