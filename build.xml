@@ -3,7 +3,7 @@
 <!-- In order to compile sources, it is necessary having installed an JDK
 (a simple JRE will not be sufficient -> no javac). -->
 
-<project name="utteranceplanner" basedir="." default="compile">
+<project name="cplan-gui" basedir="." default="compile">
 
   <import file="build-skeleton.xml" as=""/>
 
@@ -11,16 +11,11 @@
   <!-- SUBMODULES                                                        -->
   <!-- ================================================================= -->
 
-  <property name="dataviz.dir"  value="../dataviz"/>
-  <property name="j2emacs.dir"  value="../j2emacs"/>
-
-  <target name="submodules" description="make submodules">
-    <ant dir="../cplan" target="${target}" inheritAll="false">
-      <property name="external-lib.dir" value="${basedir}/${lib.dir}"/>
-    </ant>
-    <ant dir="../cplan-ccg" target="${target}" inheritAll="false">
-      <property name="external-lib.dir" value="${basedir}/${lib.dir}"/>
-    </ant>
+  <target name="modules" description="make submodules">
+    <antcall target="subant">
+      <param name="target" value="${target}"/>
+      <param name="dir" value="../cplan-ccg"/>
+    </antcall>
   </target>
 
 </project>

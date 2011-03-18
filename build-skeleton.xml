@@ -12,6 +12,10 @@ jar: compile create local jar, requires deplibs to contain the jars from the
 compile: compile locally, requires deplibs to contain the jars from the
      submodules
 
+test: run local tests for this module
+
+doc: create local api documentation
+
 clean: remove locally created class and jar files
 
 TARGETS THAT SHOULD ONLY BE USED BY PEOPLE THAT KNOW WHAT THEY'RE DOING
@@ -19,27 +23,36 @@ TARGETS THAT SHOULD ONLY BE USED BY PEOPLE THAT KNOW WHAT THEY'RE DOING
 all: build all submodules and the current module, creating jars in deplibs
      for the submodules and in target for the local module
 
+alltest: run local tests and tests in all submodules
+
 allclean: remove all created class and jar files, including those in deplibs.
      WARNING: should only be called if deplibs can be restored, which needs
      the code for all required submodules!
 
 
+For special needs, the following stub targets should be superseded
+
+compile-special
+test-special
+jar-special
+clean-special
+
+They are guaranteed to be executed before their local counterparts, but after
+initialization. jar-special is executed after compile.
 
 -->
 
-
-<!--<project name="%%%%" basedir="." default="compile">-->
 <project>
 
   <!-- ================================================================= -->
   <!-- PROPERTIES                                                        -->
   <!-- ================================================================= -->
 
-  <property name="skeleton.version" value="0.3"/>
+  <property name="skeleton.version" value="0.4"/>
 
   <property name="ant.build.javac.target"      value="1.6"/>
 
-  <property name="lib.dir"           value="lib"/>
+  <property name="lib.dir"           value="lib/java"/>
 
   <property name="source.dir"        value="src/main/java"/>
   <property name="classes.dir"       value="target/classes"/>
@@ -54,7 +67,7 @@ allclean: remove all created class and jar files, including those in deplibs.
   <property name="version"           value="0.1"/>
   <property name="vname"             value="${ant.project.name}-${version}"/>
 
-  <property name="jar.file"          value="${vname}.jar"/>
+  <property name="jar.file"          value="${ant.project.name}.jar"/>
 
   <patternset id="sources">
     <include name="**/*.java"/>
@@ -70,19 +83,18 @@ allclean: remove all created class and jar files, including those in deplibs.
     </ant>
   </target>
 
-  <!--
+  <!-- The way to specify modules this module depends on:
 
   <target name="modules" description="make modules">
-    <ant dir="${dir}" target="${target}" inheritAll="false">
-      <property name="deplibs.dir" value="${basedir}/${lib.dir}"/>
-    </ant>
     <antcall target="subant">
       <param name="target" value="${target}"/>
-      <param name="dir" value="<module-sub-dir>"/>
+      <param name="dir" value="<module-dir>"/>
     </antcall>
   </target>
 
   -->
+
+  <target name="modules" description="make modules"/>
 
   <!-- ================================================================= -->
   <!-- TARGETS                                                           -->
@@ -93,13 +105,17 @@ allclean: remove all created class and jar files, including those in deplibs.
   <!-- Init build system                                                   -->
   <!-- =================================================================== -->
 
-  <target name="init" depends="init-external, init-root">
+  <target name="init" depends="-init-external, -init-root">
     <tstamp/>
+    <exec executable="svnversion" searchpath="true" dir="${basedir}">
+      <redirector outputproperty="svnversion"/>
+    </exec>
+    <available file="${tests.source.dir}" type="dir" property="tests.present"/>
     <path id="classpath">
-      <fileset dir="${lib.dir}">
+      <fileset dir="${lib.dir}" erroronmissingdir="false">
         <include name="**/*.jar"/>
       </fileset>
-      <fileset dir="${deplibs.dir}">
+      <fileset dir="${deplibs.dir}" erroronmissingdir="false">
         <include name="**/*.jar"/>
       </fileset>
     </path>
@@ -108,17 +124,17 @@ allclean: remove all created class and jar files, including those in deplibs.
   <!-- We are the root system / module, we have our own deplibs and target
        jar target folder
   -->
-  <target name="init-external" unless="deplibs.dir">
-    <property name="deplibs.dir" value="${basedir}/deplibs"/>
+  <target name="-init-root" unless="deplibs.dir">
+    <property name="deplibs.dir" value="${basedir}/deplibs/java"/>
     <mkdir dir="${deplibs.dir}"/>
-    <property name="jar.dir"     value="target"/>
+    <property name="jar.dir" value="target"/>
   </target>
 
   <!-- We are NOT the root system / module, put the jars into deplibs of the
        root system / module
   -->
-  <target name="init-root" if="deplibs.dir">
-    <property name="jar.dir"     value="${deplibs.dir}"/>
+  <target name="-init-external" if="deplibs.dir">
+    <property name="jar.dir" value="${deplibs.dir}"/>
   </target>
 
   <!-- ================================================================= -->
@@ -140,12 +156,6 @@ allclean: remove all created class and jar files, including those in deplibs.
        overwritten -->
   <target name="compile-special"/>
 
-  <target name="compile-modules" depends="init">
-    <antcall target="modules">
-      <param name="target" value="jar-external"/>
-    </antcall>
-  </target>
-
   <target name="compile" description="compile main sources and modules"
           depends="init, compile-special">
     <mkdir dir="${classes.dir}"/>
@@ -157,7 +167,8 @@ allclean: remove all created class and jar files, including those in deplibs.
     </javac>
   </target>
 
-  <target name="compile-all" description="compile with tests" depends="compile">
+  <target name="-compile-all" description="compile tests too" depends="compile"
+          if="tests.present">
     <mkdir dir="${tests.classes.dir}"/>
     <mkdir dir="${tests.reports.dir}"/>
     <javac debug="yes" deprecation="yes"
@@ -172,30 +183,11 @@ allclean: remove all created class and jar files, including those in deplibs.
     </javac>
   </target>
 
-  <target name="make-test-plugin" depends="init, compile"
-          description="create a test plugin for junit">
-    <javac debug="yes" deprecation="yes"
-           srcdir="${tests.source.dir}/../resources/plugins"
-           destdir="${tests.source.dir}/../resources/plugins">
-      <patternset refid="sources"/>
-      <classpath>
-        <path refid="classpath"/>
-        <pathelement path="${classes.dir}"/>
-      </classpath>
-      <compilerarg value="-Xlint"/>
-    </javac>
-    <jar destfile="${tests.source.dir}/../resources/plugins/testplug.jar"
-         compress="true">
-      <fileset dir="${tests.source.dir}/../resources/plugins/"
-               includes="**/*.class"/>
-    </jar>
-  </target>
-
   <!-- =================================================================== -->
   <!-- TEST targets                                                        -->
   <!-- =================================================================== -->
 
-  <target name="alltest" depends="test-modules, test"/>
+  <target name="alltest" depends="all, test-modules, test"/>
 
   <target name="test-modules">
     <antcall target="modules">
@@ -207,10 +199,10 @@ allclean: remove all created class and jar files, including those in deplibs.
        meant to be overwritten -->
   <target name="test-special"/>
 
-  <target name="test" depends="init, test-special, test-html-report"/>
+  <target name="test" depends="init, test-special, -test-html-report"/>
 
-  <target name="test-run" description="run unit tests"
-          depends="compile-all, make-test-plugin, test-special">
+  <target name="-test-run" description="run unit tests" depends="-compile-all"
+          if="tests.present">
     <mkdir dir="${tests.reports.dir}"/>
     <junit printsummary="yes" haltonfailure="no"  haltonerror="no">
       <classpath>
@@ -226,10 +218,11 @@ allclean: remove all created class and jar files, including those in deplibs.
     </junit>
   </target>
 
-  <target name="test-html-report" depends="test-run">
-    <junitreport todir="${reports.test}">
-      <fileset dir="${reports.test}" includes="TEST-*.xml"/>
-      <report format="frames" todir="${junit.html}"/>
+  <target name="-test-html-report" depends="-test-run"
+          if="tests.present">
+    <junitreport todir="${tests.reports.dir}">
+      <fileset dir="${tests.reports.dir}" includes="TEST-*.xml"/>
+      <report format="frames" todir="${tests.reports.dir}"/>
     </junitreport>
   </target>
 
@@ -247,6 +240,12 @@ allclean: remove all created class and jar files, including those in deplibs.
   <target name="jar" depends="compile, jar-special"
           description="jar the main code">
     <jar destfile="${jar.dir}/${jar.file}" compress="true">
+      <manifest>
+        <attribute name="Bundle-Vendor" value="DFKI"/>
+        <attribute name="Bundle-Version" value="${svnversion}-${version}"/>
+        <attribute name="Bundle-Name" value="${ant.project.name}"/>
+        <attribute name="Bundle-ClassPath" value="${jar.file}"/>
+      </manifest>
       <fileset dir="${classes.dir}"/>
     </jar>
   </target>
@@ -255,21 +254,19 @@ allclean: remove all created class and jar files, including those in deplibs.
        puts the generated jars into the right place. We still have to provide
        the external jars we locally depend on
   -->
-  <target name="copy-deplibs" depends="jar"
+  <target name="jar-external" depends="-jar-modules, jar"
           description="move this module's external jars to the root module's location">
     <copy todir="${deplibs.dir}" verbose="true">
-      <fileset dir="${lib.dir}">
+      <fileset dir="${lib.dir}" erroronmissingdir="false">
         <include name="*.jar"/>
       </fileset>
     </copy>
   </target>
 
-  <target name="jar-external">
+  <target name="-jar-modules">
     <antcall target="modules">
       <param name="target" value="jar-external"/>
     </antcall>
-    <antcall target="jar"/>
-    <antcall target="copy-deplibs"/>
   </target>
 
   <!-- =================================================================== -->
@@ -278,13 +275,13 @@ allclean: remove all created class and jar files, including those in deplibs.
 
   <target name="allclean"
           description="remove class files, local jars and wars AND jars coming   from submodules"
-          depends="clean, depclean">
+          depends="clean, -depclean">
     <delete failonerror="false">
       <fileset dir="${deplibs.dir}" includes="*.jar"/>
     </delete>
   </target>
 
-  <target name="depclean">
+  <target name="-depclean">
     <antcall target="modules">
       <param name="target" value="allclean"/>
     </antcall>
@@ -303,6 +300,9 @@ allclean: remove all created class and jar files, including those in deplibs.
     </delete>
     <delete failonerror="false">
       <fileset dir="${jar.dir}" includes="*.jar"/>
+    </delete>
+    <delete failonerror="false">
+      <fileset dir="${tests.reports.dir}" includes="**/*"/>
     </delete>
     <delete failonerror="false" dir="${apidoc.dir}"/>
   </target>
