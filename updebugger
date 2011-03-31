@@ -4,7 +4,7 @@
 here="`pwd`"
 cd "`dirname $0`"
 APP_HOME="`pwd`"
-ant jar > /dev/null 2>&1
+ant all > /dev/null 2>&1
 cd "$here"
 export APP_HOME
 
@@ -46,21 +46,13 @@ else
 fi
 
 classpath=$APP_HOME/target/classes:$APP_HOME/../cplan-ccg/target/classes:$APP_HOME/../cplan/target/classes
-for f in "$APP_HOME/lib/"*.jar ; do
+for f in "$APP_HOME/lib/java/"*.jar ; do
     classpath="$classpath:$f"
 done
-for f in "$APP_HOME/../cplan-ccg/lib/"*.jar ; do
+for f in "$APP_HOME/deplibs/java/"*.jar ; do
     classpath="$classpath:$f"
 done
-for f in "$APP_HOME/../cplan/lib/"*.jar ; do
-    classpath="$classpath:$f"
-done
-for modules in "../ltfs" "../dataviz" "../j2emacs" ; do
-    classpath=$classpath:$APP_HOME/$modules/classes
-    for f in "$APP_HOME/$modules/lib/"*.jar ; do
-        classpath="$classpath:$f"
-    done
-done
+
 
 #echo $classpath
 

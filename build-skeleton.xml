@@ -40,6 +40,13 @@ clean-special
 They are guaranteed to be executed before their local counterparts, but after
 initialization. jar-special is executed after compile.
 
+Additionally, if you need to extend the classpath for compilation and jar'ing,
+use a path with id
+
+classpath-special
+
+which will be added to the default classpath
+
 -->
 
 <project>
@@ -48,7 +55,7 @@ initialization. jar-special is executed after compile.
   <!-- PROPERTIES                                                        -->
   <!-- ================================================================= -->
 
-  <property name="skeleton.version" value="0.4"/>
+  <property name="skeleton.version" value="0.5"/>
 
   <property name="ant.build.javac.target"      value="1.6"/>
 
@@ -72,6 +79,8 @@ initialization. jar-special is executed after compile.
   <patternset id="sources">
     <include name="**/*.java"/>
   </patternset>
+
+  <path id="classpath-special"/>
 
   <!-- ================================================================= -->
   <!-- SUBMODULES TEMPLATE                                               -->
@@ -108,7 +117,11 @@ initialization. jar-special is executed after compile.
   <target name="init" depends="-init-external, -init-root">
     <tstamp/>
     <exec executable="svnversion" searchpath="true" dir="${basedir}">
-      <redirector outputproperty="svnversion"/>
+      <redirector outputproperty="svnversion">
+        <outputfilterchain>
+          <replaceregex pattern=".*:" replace=""/>
+        </outputfilterchain>
+      </redirector>
     </exec>
     <available file="${tests.source.dir}" type="dir" property="tests.present"/>
     <available file="${source.dir}" type="dir" property="sources.present"/>
@@ -119,6 +132,7 @@ initialization. jar-special is executed after compile.
       <fileset dir="${deplibs.dir}" erroronmissingdir="false">
         <include name="**/*.jar"/>
       </fileset>
+      <path refid="classpath-special"/>
     </path>
   </target>
 
@@ -157,9 +171,12 @@ initialization. jar-special is executed after compile.
        overwritten -->
   <target name="compile-special"/>
 
-  <target name="compile" description="compile main sources and modules"
-          depends="init, compile-special" if="sources.present">
+  <target name="-init-compile">
     <mkdir dir="${classes.dir}"/>
+  </target>
+
+  <target name="compile" description="compile main sources and modules"
+          depends="init, -init-compile, compile-special" if="sources.present">
     <javac debug="yes" deprecation="yes"
            srcdir="${source.dir}" destdir="${classes.dir}">
       <patternset refid="sources"/>
