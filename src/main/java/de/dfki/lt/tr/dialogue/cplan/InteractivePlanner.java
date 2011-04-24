@@ -54,7 +54,7 @@ implements UPMainFrame.CloseAllListener {
     }
     File pluginDirectory = new File(getResourcesDir(), "plugins");
     if (pluginDirectory.isDirectory()) {
-      FunctionFactory.registerPlugins(pluginDirectory);
+      FunctionFactory.registerPlugins(pluginDirectory, this);
     }
     return false;
   }

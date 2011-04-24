@@ -27,6 +27,7 @@ import de.dfki.lt.loot.gui.adapters.EmptyModelAdapter;
 import de.dfki.lt.loot.gui.adapters.ModelAdapter;
 import de.dfki.lt.tr.dialogue.cplan.BasicRule;
 import de.dfki.lt.tr.dialogue.cplan.CollectEventsTracer;
+import de.dfki.lt.tr.dialogue.cplan.DagEdge;
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
 import de.dfki.lt.tr.dialogue.cplan.InteractivePlanner;
 import de.dfki.lt.tr.dialogue.cplan.LoggingTracer;
@@ -92,7 +93,16 @@ public class UPMainFrame extends MainFrame {
     {"Realize", "insert-text", "Realize output", "Realize",
       new Runnable() {
        public void run() {
-         String result = _planner.realize(_output);
+         String result;
+         // handle "canned text" output.
+         DagEdge edge = _output.getEdge(DagNode.TYPE_FEAT_ID);
+         if (edge != null && edge.getValue().getTypeName().equals("canned")){
+           edge = _output.getEdge(DagNode.getFeatureId("string"))
+           .getValue().getEdge(DagNode.PROP_FEAT_ID);
+           result = edge.getValue().getTypeName();
+         } else {
+           result = _planner.realize(_output);
+         }
          setStatusLine(result);
        }
       }
