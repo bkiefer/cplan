@@ -62,8 +62,9 @@ public class UPMainFrame extends MainFrame {
   private static final int STEP_BTN = STOP_BTN + 1;
   private static final int CONTINUE_BTN = STEP_BTN + 1;
   */
-  private static final int CLEAR_BTN = TRACE_BTN + 1;
+  private static final int CLEAR_BTN = STOP_BTN + 1;
   private static final int REALIZE_BTN = CLEAR_BTN + 1;
+  private static final int PARSE_BTN = REALIZE_BTN + 1;
 
 
   @Override
@@ -90,7 +91,7 @@ public class UPMainFrame extends MainFrame {
     {"Clear", "edit-clear", "Clear Input", "Clear",
       new Runnable() { public void run() { clearInput(); } }
     },
-    {"Realize", "insert-text", "Realize output", "Realize",
+    {"Realize", "generate-text", "Realize output", "Realize",
       new Runnable() {
        public void run() {
          String result;
@@ -106,6 +107,9 @@ public class UPMainFrame extends MainFrame {
          setStatusLine(result);
        }
       }
+    },
+    {"Parse", "insert-text", "Analyze Sentence", "Parse",
+      new Runnable() { public void run() { parseInput(); } }
     }
     };
     return results;
@@ -426,7 +430,7 @@ public class UPMainFrame extends MainFrame {
     _actionButtons.get(CONTINUE_BTN).setEnabled(! _finished);
     **/
     _actionButtons.get(REALIZE_BTN).setEnabled(runnable);
-
+    _actionButtons.get(PARSE_BTN).setEnabled(runnable);
   }
 
   /** Call this method when the processing of new input starts */
@@ -464,6 +468,30 @@ public class UPMainFrame extends MainFrame {
     _planner.interruptProcessing();
   }
 
+  private boolean runPlanner() {
+    // should be in its own thread, with a listener that sets the
+    // output, and an indicator that it's running
+    if (isStopped()) {
+      _processingThread = new Thread(
+          new Runnable() {
+            public void run() {
+              try {
+                processingStarts();
+                _output = _planner.process(_input);
+                setInputDisplay(_input);
+                setOutputDisplay(_output);
+              }
+              finally {
+                processingEnds();
+              }
+            }
+          } );
+      _processingThread.start();
+      return true;
+    }
+    return false;
+  }
+
   /** This method takes the input string from the input area and tries to
    *  process it. If parsing the input reveals a syntax error, the caret is
    *  put to the error position and the error is signaled by using a reddish
@@ -483,27 +511,7 @@ public class UPMainFrame extends MainFrame {
     if (_input != null) {
       // add currentText to the history
       _history.add(currentText);
-
-      // should be in its own thread, with a listener that sets the
-      // output, and an indicator that it's running
-      if (isStopped()) {
-        _processingThread = new Thread(
-            new Runnable() {
-              public void run() {
-                try {
-                  processingStarts();
-                  _output = _planner.process(_input);
-                  setInputDisplay(_input);
-                  setOutputDisplay(_output);
-                }
-                finally {
-                  processingEnds();
-                }
-              }
-            } );
-        _processingThread.start();
-        return true;
-      }
+      return runPlanner();
     }
     else {
       setOutputDisplay(null);
@@ -526,6 +534,30 @@ public class UPMainFrame extends MainFrame {
     }
     return false;
   }
+
+  private boolean parseInput() {
+    clearStatusLine();
+    _inputArea.setBackground(NORMAL_COLOR);
+    String currentText = _inputArea.getText();
+    if (currentText.isEmpty()) {
+      return false;
+    }
+    try {
+      _input = _planner.analyze(currentText);
+      if (_input == null) {
+        clearInput(); // will be cleared if null
+      } else {
+        _history.add(currentText);
+        setInputDisplay(_input);
+        return runPlanner();
+      }
+    }
+    catch (IllegalArgumentException ex) {
+      setStatusLine(ex.getMessage());
+    }
+    return _input == null;
+  }
+
 
   /* **********************************************************************
    * Initialization / Creation
