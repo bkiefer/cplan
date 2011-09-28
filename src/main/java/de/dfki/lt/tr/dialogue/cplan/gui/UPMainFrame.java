@@ -25,15 +25,17 @@ import de.dfki.lt.loot.gui.DrawingPanel;
 import de.dfki.lt.loot.gui.MainFrame;
 import de.dfki.lt.loot.gui.adapters.EmptyModelAdapter;
 import de.dfki.lt.loot.gui.adapters.ModelAdapter;
+import de.dfki.lt.loot.gui.util.FileProcessor;
 import de.dfki.lt.tr.dialogue.cplan.BasicRule;
 import de.dfki.lt.tr.dialogue.cplan.CollectEventsTracer;
-import de.dfki.lt.tr.dialogue.cplan.DagEdge;
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
 import de.dfki.lt.tr.dialogue.cplan.InteractivePlanner;
 import de.dfki.lt.tr.dialogue.cplan.LoggingTracer;
+import de.dfki.lt.tr.dialogue.cplan.PlanningException;
 import de.dfki.lt.tr.dialogue.cplan.RuleTracer;
 import de.dfki.lt.tr.dialogue.cplan.SuspendableTracer;
 import de.dfki.lt.tr.dialogue.cplan.TraceEvent;
+import de.dfki.lt.tr.dialogue.cplan.InteractivePlanner.BatchTest;
 import de.dfki.lt.tr.dialogue.cplan.util.ListRangeModel;
 import de.dfki.lt.tr.dialogue.cplan.util.Position;
 
@@ -45,7 +47,7 @@ import de.dfki.lt.tr.dialogue.cplan.util.Position;
  * @version
  */
 @SuppressWarnings("serial")
-public class UPMainFrame extends MainFrame {
+public class UPMainFrame extends MainFrame implements FileProcessor {
 
   /** Objects that listen to the change of the processor's run state */
   private List<RunStateListener> _runStateListeners =
@@ -65,6 +67,7 @@ public class UPMainFrame extends MainFrame {
   private static final int CLEAR_BTN = STOP_BTN + 1;
   private static final int REALIZE_BTN = CLEAR_BTN + 1;
   private static final int PARSE_BTN = REALIZE_BTN + 1;
+  private static final int BATCH_BTN = PARSE_BTN + 1;
 
 
   @Override
@@ -92,24 +95,13 @@ public class UPMainFrame extends MainFrame {
       new Runnable() { public void run() { clearInput(); } }
     },
     {"Realize", "generate-text", "Realize output", "Realize",
-      new Runnable() {
-       public void run() {
-         String result;
-         // handle "canned text" output.
-         DagEdge edge = _output.getEdge(DagNode.TYPE_FEAT_ID);
-         if (edge != null && edge.getValue().getTypeName().equals("canned")){
-           edge = _output.getEdge(DagNode.getFeatureId("string"))
-           .getValue().getEdge(DagNode.PROP_FEAT_ID);
-           result = edge.getValue().getTypeName();
-         } else {
-           result = _planner.realize(_output);
-         }
-         setStatusLine(result);
-       }
-      }
+      new Runnable() { public void run() { doRealization(_output); } }
     },
     {"Parse", "insert-text", "Analyze Sentence", "Parse",
       new Runnable() { public void run() { parseInput(); } }
+    },
+    {"Batch", "batch", "Batch process", "Batch",
+      new Runnable() { public void run() { batchProcess(); } }
     }
     };
     return results;
@@ -123,7 +115,9 @@ public class UPMainFrame extends MainFrame {
         new Runnable() { public void run() { newFrame(); } }
       },
       {"Open", KeyEvent.VK_O,
-        new Runnable() { public void run() { openFileDialog(); } }
+        new Runnable() {
+          public void run() { openFileDialog(UPMainFrame.this); }
+        }
       },
       {"Close",
         KeyStroke.getKeyStroke(Character.valueOf('w'),
@@ -229,7 +223,7 @@ public class UPMainFrame extends MainFrame {
     updateButtonStates();
     _displayPane.setDividerLocation(.5);
     setTitle(title);
-    openFile(ruleFile == null ? null : new File(ruleFile));
+    processFile(ruleFile == null ? null : new File(ruleFile));
 
     setProcessorStopped();
     addRunStateListener(new RunStateListener() {
@@ -242,9 +236,19 @@ public class UPMainFrame extends MainFrame {
    *  For GuiTracer, and other objects to communicate things to the user
    * ********************************************************************** */
 
+  /** set the field and display the given data structure in the input area */
+  public void setInput(DagNode dag) {
+    setInputDisplay(_input = dag);
+  }
+
   /** display the given data structure in the input area */
   public void setInputDisplay(DagNode dag) {
     _inputDisplay.setModel(dag);
+  }
+
+  /** set the field and display the given data structure in the output area */
+  public void setOutput(DagNode dag) {
+    setOutputDisplay(_output = dag);
   }
 
   /** display the given data structure in the output area */
@@ -261,7 +265,7 @@ public class UPMainFrame extends MainFrame {
   @Override
   protected void newFrame() {
     UPMainFrame newMf = new UPMainFrame("Empty Planner");
-    newMf.openFileDialog();
+    newMf.openFileDialog(this);
   }
 
   /** Wipe the input area clean */
@@ -292,6 +296,9 @@ public class UPMainFrame extends MainFrame {
     }
   }
 
+  private void doRealization(DagNode dag) {
+    setStatusLine(_planner.doRealization(_output));
+  }
 
   // **********************************************************************
   // PROJECT FILE HANDLING
@@ -323,7 +330,7 @@ public class UPMainFrame extends MainFrame {
 
   /** Set the project file to the given file and load its contents */
   @Override
-  public boolean openFile(File projectFile) {
+  public boolean processFile(File projectFile) {
     if (projectFile == null) {
       _projectFile = null;
       _currentDir = new File(".");
@@ -363,8 +370,12 @@ public class UPMainFrame extends MainFrame {
   // processing state, signalling and executing methods
   // *************************************************************************
 
+  public void showPosition(Position p) {
+    _planner.showPosition(p);
+  }
+
   public void showRule(BasicRule r) {
-    _planner.showRule(r);
+    showPosition(r.getPosition());
   }
 
   public interface RunStateListener {
@@ -431,6 +442,7 @@ public class UPMainFrame extends MainFrame {
     **/
     _actionButtons.get(REALIZE_BTN).setEnabled(runnable);
     _actionButtons.get(PARSE_BTN).setEnabled(runnable);
+    _actionButtons.get(BATCH_BTN).setEnabled(runnable);
   }
 
   /** Call this method when the processing of new input starts */
@@ -477,9 +489,14 @@ public class UPMainFrame extends MainFrame {
             public void run() {
               try {
                 processingStarts();
-                _output = _planner.process(_input);
                 setInputDisplay(_input);
-                setOutputDisplay(_output);
+                setOutput(_planner.process(_input));
+                if (_output == null) {
+                  setStatusLine("No output", Color.ORANGE);
+                }
+              }
+              catch (PlanningException ex) {
+                setStatusLine(ex.getMessage(), Color.ORANGE);
               }
               finally {
                 processingEnds();
@@ -506,15 +523,14 @@ public class UPMainFrame extends MainFrame {
       return false;
     }
 
-    _input = _planner.parseLfString(currentText);
-    setInputDisplay(_input); // will be cleared if null
+    setInput(_planner.parseLfString(currentText));
+    setOutputDisplay(null);
     if (_input != null) {
       // add currentText to the history
       _history.add(currentText);
       return runPlanner();
     }
     else {
-      setOutputDisplay(null);
       Position errPos = _planner.getLastLFErrorPosition();
       _inputArea.setBackground(ERROR_COLOR);
       if (errPos.line >= 0) {
@@ -556,6 +572,35 @@ public class UPMainFrame extends MainFrame {
       setStatusLine(ex.getMessage());
     }
     return _input == null;
+  }
+
+  private class BatchProcessor implements FileProcessor {
+    public BatchTest bt = null;
+
+    @Override
+    public boolean processFile(File toProcess) {
+      try {
+        bt = _planner.batchProcess(toProcess);
+      } catch (IOException e) {
+        return false;
+      }
+      return true;
+    }
+  }
+
+  private void batchProcess() {
+    // select and process batch file
+    BatchProcessor bp = new BatchProcessor();
+    openFileDialog(bp);
+    if (bp.bt == null)
+      return;
+    if (bp.bt.bad.isEmpty()) {
+      setStatusLine("All Test Items passed", Color.GREEN);
+    } else {
+      // show the failing items in a list window
+      //openItemsWindow(bp.bt);
+      ItemsTableWindow tw = new ItemsTableWindow(this, bp.bt, true);
+    }
   }
 
 

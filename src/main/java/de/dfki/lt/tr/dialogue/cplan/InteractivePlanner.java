@@ -1,9 +1,14 @@
 package de.dfki.lt.tr.dialogue.cplan;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jline.ConsoleReader;
 import joptsimple.OptionException;
@@ -86,6 +91,76 @@ implements UPMainFrame.CloseAllListener {
     }
   }
 
+  public static class BatchTest {
+    public List<TestItem> items = new ArrayList<TestItem>();
+    public List<BadItem> bad = new ArrayList<BadItem>();
+
+    public String percentageGood() {
+      int good = items.size() - bad.size();
+      return "Successful: " + good + " (" +
+      (int)((100.0 * good) / items.size()) + "%)";
+    }
+  }
+
+  public static class TestItem {
+    public DagNode lf;
+    public Set<String> answers;
+    public Position position;
+
+    public TestItem(DagNode d, Set<String> a, Position l) {
+      lf = d;
+      answers = a;
+      position = l;
+    }
+  }
+
+  public static class BadItem {
+    public int testItemIndex;
+    public DagNode outputLf;
+    public String realized;
+
+    public BadItem(int t, DagNode out, String r) {
+      testItemIndex = t;
+      outputLf = out;
+      realized = r;
+    }
+  }
+
+  public BatchTest batchProcess(File batchFile) throws IOException {
+    Reader in = new FileReader(batchFile);
+    Lexer l = new Lexer(batchFile.getCanonicalPath(), in);
+    LFParser parser = new LFParser(l);
+    BatchTest bt = new BatchTest();
+    do {
+      boolean good = parser.parse();
+      Position pos = l.getStartPos();
+      if (! good) break;
+      DagNode nextLf = parser.getResultLF();
+      Set<String> answers = new HashSet<String>();
+      do {
+        String nextSentence = l.readLine();
+        if (nextSentence.isEmpty()) break;
+        answers.add(nextSentence);
+      } while (true);
+      bt.items.add(new TestItem(nextLf, answers, pos));
+    } while (! l.atEOF());
+    int i = 0;
+    for (TestItem item : bt.items) {
+      DagNode result = process(item.lf);
+      String generated = "";
+      try {
+        generated = doRealization(result);
+      }
+      catch (NullPointerException ex) {
+        generated = "*FAILURE*";
+      }
+      if (! item.answers.contains(generated)) {
+        bt.bad.add(new BadItem(i, result, generated));
+      }
+      ++i;
+    }
+    return bt;
+  }
 
   private ConsoleReader cinput = null;
   private String getInputFromTerminal() {
@@ -170,9 +245,8 @@ implements UPMainFrame.CloseAllListener {
     _j2e = null;
   }
 
-  public void showRule(BasicRule r) {
+  public void showPosition(Position p) {
     if (_j2e == null) return;
-    Position p = r.getPosition();
     try {
       File f = new File(p.msg).getCanonicalFile();
       _j2e.startEmacs(f, p.line, p.column, "");
@@ -224,7 +298,6 @@ implements UPMainFrame.CloseAllListener {
 
     List<String> nonOptionArgs = options.nonOptionArguments();
 
-    @SuppressWarnings("unused")
     String optionArg = null;
 
     char what = 'i';
@@ -255,7 +328,24 @@ implements UPMainFrame.CloseAllListener {
     }
     switch (what) {
     case 'b':
-      // batchProcess(optionArg);
+      try {
+        if (nonOptionArgs.size() == 0) {
+          usage("No project file specified");
+        } else {
+          File batchFile = new File(optionArg);
+          if (! batchFile.exists()) {
+            usage("Batch input file not found:" + batchFile);
+          } else {
+            ip.readProjectFile(new File(nonOptionArgs.get(0)));
+            BatchTest bt = ip.batchProcess(batchFile);
+            ip.logger.info(bt.percentageGood());
+            ip.allClosed();
+          }
+        }
+      }
+      catch (IOException ex) {
+        ip.logger.error("Problem during batch processing: " +  ex);
+      }
       break;
     case 'g':
       ip.startGui(nonOptionArgs.size() > 0 ? nonOptionArgs.get(0) : null);
