@@ -27,6 +27,7 @@ import de.dfki.lt.loot.gui.adapters.EmptyModelAdapter;
 import de.dfki.lt.loot.gui.adapters.ModelAdapter;
 import de.dfki.lt.loot.gui.util.FileProcessor;
 import de.dfki.lt.tr.dialogue.cplan.BasicRule;
+import de.dfki.lt.tr.dialogue.cplan.BatchTest;
 import de.dfki.lt.tr.dialogue.cplan.CollectEventsTracer;
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
 import de.dfki.lt.tr.dialogue.cplan.InteractivePlanner;
@@ -35,7 +36,6 @@ import de.dfki.lt.tr.dialogue.cplan.PlanningException;
 import de.dfki.lt.tr.dialogue.cplan.RuleTracer;
 import de.dfki.lt.tr.dialogue.cplan.SuspendableTracer;
 import de.dfki.lt.tr.dialogue.cplan.TraceEvent;
-import de.dfki.lt.tr.dialogue.cplan.InteractivePlanner.BatchTest;
 import de.dfki.lt.tr.dialogue.cplan.util.ListRangeModel;
 import de.dfki.lt.tr.dialogue.cplan.util.Position;
 
@@ -70,6 +70,7 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
   private static final int BATCH_BTN = PARSE_BTN + 1;
 
 
+  /* specs describing the buttons in the tool bar */
   @Override
   protected Object[][] actionSpecs() {
     Object [][] results = {
@@ -219,6 +220,7 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
     _preferredSize = new Dimension(800, 500);
     setTracing();
     startEmacs();
+    _toolBarName = "Content Planner Tools";
     initFrame();
     updateButtonStates();
     _displayPane.setDividerLocation(.5);
@@ -297,7 +299,12 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
   }
 
   private void doRealization(DagNode dag) {
-    setStatusLine(_planner.doRealization(_output));
+    try {
+      setStatusLine(_planner.doRealization(_output));
+    }
+    catch (NullPointerException ex) {
+      setStatusLine("Exception during realization", Color.RED);
+    }
   }
 
   // **********************************************************************
@@ -594,7 +601,7 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
     openFileDialog(bp);
     if (bp.bt == null)
       return;
-    if (bp.bt.bad.isEmpty()) {
+    if (bp.bt.totalSuccess()) {
       setStatusLine("All Test Items passed", Color.GREEN);
     } else {
       // show the failing items in a list window
