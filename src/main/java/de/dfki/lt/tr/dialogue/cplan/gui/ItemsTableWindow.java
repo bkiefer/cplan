@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -27,10 +28,11 @@ import de.dfki.lt.tr.dialogue.cplan.BatchTest.TestItem;
 public class ItemsTableWindow extends JDialog {
   private static final long serialVersionUID = 1L;
 
-  private UPMainFrame _parent;
-
   /** show the list of test items, or the test failures */
   private JTable _itemsDisplay;
+
+  /** displays error and status information */
+  protected JLabel _statusLine;
 
   private BatchTest _bt;
 
@@ -44,21 +46,11 @@ public class ItemsTableWindow extends JDialog {
   protected Object[][] actionSpecs() {
     Object [][] results = {
         {"Rerun", "view-refresh", "Rerun Batch", "Rerun",
-          new Runnable() { public void run() { _bt.run(); } } },
+          new Runnable() { public void run() { rerun(); } } },
         {"Reload", "edit-redo", "Relaod Batch File", "Reload",
-            new Runnable() {
-              public void run() {
-                try {
-                  _bt.reload();
-                } catch (IOException e) {
-                  _parent.setStatusLine(e.getMessage(), Color.RED);
-                }
-              }
-            }
-        },
-        {"Close", "window-close", "Close Trace Window", "Close",
-          new Runnable() { public void run() { close(); } }
-        },
+          new Runnable() { public void run() { reload(); } } },
+        {"Close", "window-close", "Close Batch Window", "Close",
+          new Runnable() { public void run() { close(); } } },
     };
     return results;
   }
@@ -139,6 +131,31 @@ public class ItemsTableWindow extends JDialog {
     }
   }
 
+  /* **********************************************************************
+   *  Communicate things to the user
+   * ********************************************************************** */
+
+  /** Clear the status line (a line at the bottom of the window for status
+   *  messages).
+   */
+  public void clearStatusLine() {
+    setStatusLine(" ");
+  }
+
+  /** Put the given message into the status line with black (default) text color
+   */
+  public void setStatusLine(String msg) {
+    setStatusLine(msg, Color.BLACK);
+  }
+
+  /** Put the given message into the status line with the text color given by
+   *  col
+   */
+  public void setStatusLine(String msg, Color col) {
+    _statusLine.setForeground(col);
+    _statusLine.setText(msg);
+  }
+
   private static String showSet(Set<String> strings) {
     if (strings.isEmpty())
       return "[]";
@@ -152,6 +169,21 @@ public class ItemsTableWindow extends JDialog {
     return sb.toString();
   }
 
+
+  private void rerun() {
+    _bt.run();
+    setStatusLine(_bt.percentageGood());
+  }
+
+  private void reload() {
+    try {
+      _bt.reload();
+    } catch (IOException e) {
+      setStatusLine(e.getMessage(), Color.RED);
+    }
+  }
+
+
   class SharedListSelectionHandler implements ListSelectionListener {
 
     public void valueChanged(ListSelectionEvent e) {
@@ -161,12 +193,12 @@ public class ItemsTableWindow extends JDialog {
       TestItem testItem = null;
       if (_bad) {
         testItem = _bt.getItem(_bt.getBad(row).testItemIndex);
-        _parent.setOutput(_bt.getBad(row).outputLf);
+        parent().setOutput(_bt.getBad(row).outputLf);
       } else {
         testItem = _bt.getItem(row);
       }
-      _parent.setInput(testItem.lf);
-      _parent.showPosition(testItem.position);
+      parent().setInput(testItem.lf);
+      parent().showPosition(testItem.position);
     }
   }
 
@@ -175,16 +207,20 @@ public class ItemsTableWindow extends JDialog {
     this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
   }
 
+  private UPMainFrame parent() {
+    return (UPMainFrame) getOwner();
+  }
+
   /* **********************************************************************
    * Constructors
    * ********************************************************************** */
 
   public ItemsTableWindow(UPMainFrame parent, BatchTest bt, boolean bad) {
     super(parent, "Failed Test Items", false);
-    _parent = parent;
     _bt = bt;
     _bad = bad;
     initPanel();
+    setStatusLine(_bt.percentageGood());
   }
 
   private void initPanel() {
@@ -194,10 +230,15 @@ public class ItemsTableWindow extends JDialog {
     this.setContentPane(contentPane);
 
     JToolBar toolBar =
-      _parent.newToolBar(actionSpecs(), _toolBarName, _buttons);
+      parent().newToolBar(actionSpecs(), _toolBarName, _buttons);
     if (toolBar != null) {
       contentPane.add(toolBar, BorderLayout.NORTH);
     }
+
+    // add statusline
+    _statusLine = new JLabel();
+    contentPane.add(_statusLine, BorderLayout.SOUTH);
+    clearStatusLine();
 
     // create scrollable display areas
     _itemsDisplay = new JTable(new ItemsTableModel(_bt));
@@ -215,7 +256,7 @@ public class ItemsTableWindow extends JDialog {
 
     // use native windowing system to position new frames
     this.setLocationByPlatform(true);
-    this.setPreferredSize(new Dimension(800, 500));
+    this.setPreferredSize(new Dimension(800, 400));
     // set handler for closing operations
     // CLOSE_ON_EXIT
     // this.addWindowListener(new Terminator());

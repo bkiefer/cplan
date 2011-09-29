@@ -308,25 +308,9 @@ implements UPMainFrame.RunStateListener {
 
   private JToolBar makeButtons() {
     _actionButtons = new ArrayList<JButton>();
-    JToolBar toolbar = new JToolBar();
+    JToolBar toolbar =
+      parent().newToolBar(actionSpecs, "Trace Buttons", _actionButtons);
     toolbar.setFloatable(false);
-    for (Object[] spec : actionSpecs) {
-      if (spec[1] != null) {
-        final Runnable r = (Runnable) spec[4];
-        JButton newButton =
-          UPMainFrame.newButton((String) spec[1],(String) spec[0],
-              (String) spec[2],(String) spec[3],
-              new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                  parent().clearStatusLine(); r.run();
-                }
-              }
-          );
-        _actionButtons.add(newButton);
-        toolbar.add(newButton);
-      }
-    }
     return toolbar;
   }
 

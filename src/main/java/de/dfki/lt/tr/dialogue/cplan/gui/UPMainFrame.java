@@ -606,6 +606,7 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
     } else {
       // show the failing items in a list window
       //openItemsWindow(bp.bt);
+      @SuppressWarnings("unused")
       ItemsTableWindow tw = new ItemsTableWindow(this, bp.bt, true);
     }
   }
