@@ -28,12 +28,6 @@ import de.dfki.lt.tr.dialogue.cplan.BatchTest.TestItem;
 public class ItemsTableWindow extends JDialog {
   private static final long serialVersionUID = 1L;
 
-  /** show the list of test items, or the test failures */
-  private JTable _itemsDisplay;
-
-  /** displays error and status information */
-  protected JLabel _statusLine;
-
   private BatchTest _bt;
 
   private boolean _bad;
@@ -59,11 +53,8 @@ public class ItemsTableWindow extends JDialog {
    * fields for GUI elements
    * *************************************************************************/
 
-  /** Name of tool bar containing the action buttons */
-  protected String _toolBarName = "Batch Testing";
-
-  /** Action Buttons */
-  protected ArrayList<JButton> _buttons = new ArrayList<JButton>();
+  /** displays error and status information */
+  protected JLabel _statusLine;
 
   private static String[] namesBad = {
     "Input LF", "Output LF", "Realized output", "Expected Output"
@@ -71,7 +62,10 @@ public class ItemsTableWindow extends JDialog {
 
   private static String[] names = { "Input LF", "Expected Output" };
 
-  /** A read-only model to display the test items in a JTable */
+  /** A read-only model to display the test items in a JTable.
+   *  Depending on the _bad field of {@link ItemsTableWindow}, this will
+   *  either show all test items, or the failed tests.
+   */
   private class ItemsTableModel extends AbstractTableModel {
     private static final long serialVersionUID = 1L;
 
@@ -229,29 +223,28 @@ public class ItemsTableWindow extends JDialog {
     // contentPane.setLayout(new BorderLayout());
     this.setContentPane(contentPane);
 
-    JToolBar toolBar =
-      parent().newToolBar(actionSpecs(), _toolBarName, _buttons);
-    if (toolBar != null) {
-      contentPane.add(toolBar, BorderLayout.NORTH);
-    }
+    // no need to store the action buttons in a field, they don't change state
+    JToolBar toolBar = parent().newToolBar(actionSpecs(), "Batch Tools",
+        new ArrayList<JButton>());
+    contentPane.add(toolBar, BorderLayout.NORTH);
 
-    // add statusline
+    // add status line
     _statusLine = new JLabel();
     contentPane.add(_statusLine, BorderLayout.SOUTH);
     clearStatusLine();
 
-    // create scrollable display areas
-    _itemsDisplay = new JTable(new ItemsTableModel(_bt));
+    // to show the list of test items, or the test failures
+    JTable itemsDisplay = new JTable(new ItemsTableModel(_bt));
     // _itemsDisplay.addMouseListener(new ShowItemListener());
-    JScrollPane toDisplay = new JScrollPane(_itemsDisplay);
-    _itemsDisplay.setFillsViewportHeight(true);
+    JScrollPane toDisplay = new JScrollPane(itemsDisplay);
+    itemsDisplay.setFillsViewportHeight(true);
     // _itemsDisplay.setCellSelectionEnabled(true);
-    _itemsDisplay.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    ListSelectionModel listSelectionModel = _itemsDisplay.getSelectionModel();
+    itemsDisplay.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    ListSelectionModel listSelectionModel = itemsDisplay.getSelectionModel();
     listSelectionModel.addListSelectionListener(
         new SharedListSelectionHandler());
 
-    contentPane.add(_itemsDisplay.getTableHeader(), BorderLayout.PAGE_START);
+    contentPane.add(itemsDisplay.getTableHeader(), BorderLayout.PAGE_START);
     contentPane.add(toDisplay, BorderLayout.CENTER);
 
     // use native windowing system to position new frames

@@ -241,6 +241,7 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
   /** set the field and display the given data structure in the input area */
   public void setInput(DagNode dag) {
     setInputDisplay(_input = dag);
+    _inputArea.setText(dag.toString());
   }
 
   /** display the given data structure in the input area */
