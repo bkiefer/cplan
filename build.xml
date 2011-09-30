@@ -5,7 +5,7 @@
 
 <project name="cplan-gui" basedir="." default="compile">
 
-  <import file="build-skeleton.xml" as=""/>
+  <import file="../buildsys/build-skeleton.xml" as=""/>
 
   <!-- ================================================================= -->
   <!-- SUBMODULES                                                        -->
