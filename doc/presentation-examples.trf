@@ -1,0 +1,177 @@
+/* Sub-node is replaced with fresh content. Notice the match
+   condition for the absence of a feature */
+
+:dvp ^ ! <AcknoModality> ^ <SpeechAct> assertion
+     ^ <Relation> accept ^ <Content> ( #c1: )
+->
+#c1 = (:marker ^ ok).
+
+
+// Selecting a specific relation, and adding to it
+
+<C>(<Mod>(#m:g ^ ! <Cont>)) -> #m ^ <Cont>(:new ^ clean).
+
+
+// Add a default in case of feature absence
+
+:ascription ^ !<Tense> -> # ^ <Tense>pres.
+
+
+// Set a global variable as marker
+
+:dvp ^ <SpeechAct>#v -> ##speechact = #v.
+
+// Test for the global variable (multiple matches)
+
+:ascription ^ <Tense>, ##speechact ^ assertion
+->
+# ^ <Mood>ind.
+
+
+// type disjunction, variable \texttt{t} matching the whole node
+// add two relations, delete \texttt{Target} feature (multiple actions)
+:ascription ^ <Target> #t:(entity | thing)
+->
+# ^ <Cop-Restr>(#t:) ^ <Subject>(#t:),
+# ! <Target>.
+
+
+// Less preferable rewrite of the last example, the same variable name has to
+// be used twice!  Works only because of disjunction.
+:ascription ^ (<Target> (#t:entity) | <Target> (#t:thing))
+->
+# ^ <Cop-Restr>(#t:), # ^ <Subject>(#t:),
+# ! <Target>.
+
+
+// Randomizing with complex values
+:dvp ^ <SpeechAct>opening ^ <Content> (#c1:top)
+->
+###opening1 = :opening ^ hi,
+###opening2 = :opening ^ hello,
+# ! <SpeechAct>,
+// Note the colon after the function call! It means that the whole node is the
+// value, not just the proposition.
+#c1 = random(###opening1, ###opening2): .
+
+// Alternative randomization
+:dvp ^ <SpeechAct>closing ^ <Content> (#c1:top)
+->
+##randomclosing = random(1,2).
+
+:dvp ^ <SpeechAct>closing ^ <Content> (#c1:top),
+##randomclosing ^ 1
+->
+#c1 = :closing ^ bye.
+
+:dvp ^ <SpeechAct>closing ^ <Content> (#c1:top),
+##randomclosing ^ 2
+->
+#c1 = :closing ^ see_you.
+
+// Using global variable as node store
+:ascription ^ <Target> (#t:testtype)
+->
+##fromStore = #t:.
+
+:ascription ^ !<PointToTarget>
+->
+// Again, note the colon after the global variable in the addition
+
+# ^ <PointToTarget> ##fromStore:.
+// After application of these rules \texttt{Target} and \texttt{PointToTarget}
+// point to the same node.
+
+
+/******************************************************************************
+ Adding to relations the wrong way
+ *****************************************************************************/
+
+/* Input to test the difference of the rules below
+@a:dvp(foo ^ <SpeechAct>question ^
+             <Content>(c1:ascription ^
+                 <Subject>(s1:entity ^ <Delimitation>unique
+                                     ^ <Quantification>specific) ^
+                 <Cop-Scope>(s2:gaga ^ prop ^ <Questioned>true)))
+*/
+
+//This will not add to the existing \texttt{Subject} and \texttt{Cop-Scope}, but
+//introduce new ones.
+:dvp ^ <SpeechAct>question
+     ^ <Content>(#cont:ascription ^
+                 <Subject>(:entity ^
+                           <Delimitation>unique ^
+                           <Quantification>specific) ^
+                 <Cop-Scope>(#cop-scope: ^ <Questioned>true))
+->
+#cont ^ <Wh-Restr>(:specifier ^ what ^ <Scope> #cop-scope:)
+      ^ <Subject>( context ^ <Proximity> proximal )
+      ^ <Cop-Scope>(<Delimitation>unique ^
+                    <Quantification>specific ^ <Num> sg),
+#cop-scope ! <Questioned>.
+
+
+// Adding to relations: the correct alternative:
+// This adds the new information to the previously matched nodes.
+:dvp ^ <SpeechAct>question
+     ^ <Content>(#cont:ascription ^
+                 <Subject>(#subj:entity ^
+                           <Delimitation>unique ^
+                           <Quantification>specific) ^
+                 <Cop-Scope>(#cop-scope: ^ <Questioned>true))
+->
+#cont ^ <Wh-Restr>(:specifier ^ what ^ <Scope> #cop-scope:),
+#subj ^ context ^ <Proximity> proximal,
+#cop-scope ! <Questioned>,
+#cop-scope ^ <Delimitation>unique ^
+             <Quantification>specific ^ <Num> sg.
+
+/*****************************************************************************
+ * Global variable "maps"
+ *****************************************************************************/
+
+:dvp ^ <Content> #c:
+->
+##gvar<Content> = #c:.
+
+:dvp ^ !<Cont2>, ##gvar ^ <Content> #v:
+->
+# ^ <Cont2> ( #v: ).
+
+// or, alternatively for the second rule
+
+:dvp ^ !<Cont2>, ##gvar ^ <Content>
+->
+# ^ <Cont2> ( ##gvar<Content>: ).
+
+/*****************************************************************************
+ * All you can do with variables
+ *****************************************************************************/
+
+:a ^ <F> (#i:#t ^ #p)
+->
+##partial = :#t ^ #p,
+##whole = #i:.
+
+:a ^ !<W>
+->
+# ^ <W> ##whole: ^ <P> ##partial:.
+
+// Be careful that you use bound variables correctly! If you use them as simple
+// (type or proposition) values on the right hand side, you must have bound them
+// to simple values, or complex values containing the appropriate edge!
+
+:a ^ ! <Subject>
+->
+# ^ <Subject> ###s: ^ <WhRestr> ###s:.
+
+// Right hand local variables can also be used to establish coreferences in the
+// replacement part.
+
+// check for structural equality (will also succeed if coreferent)
+:dvp ^ <Content>#c: ^ <Wh-Restr>#c: -> # ^ :equals.
+
+
+// check for identity (will only succeed if coreferent)
+:dvp ^ <Content>#c: ^ <Wh-Restr> = #c: -> # ^ identical.
+

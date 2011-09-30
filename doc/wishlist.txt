@@ -1,0 +1,13 @@
+(POSSIBLY) USEFUL FEATURES FOR GRAMMAR SYNTAX/UTTERANCE PLANNER
+
+- Ability to test for the existence of a particular global variable, e.g.:
+  	  ##qualityType,
+	  :dvp ^ <SpeechAct>clarification ^ <Modality>speech ^ <Content>(#c1)
+	  -> 
+	  #c1 = ...
+
+- A "map function" which allows returning a particular item given a particular input, e.g.:
+  ##qualities = {q-size : size, q-color : color, q-shape : shape}
+  :dvp ^ <SpeechAct>clarification ^ <Modality>speech ^ <Content>(#c1:#qualityType)
+	  -> 
+	  #c1: = ##qualities[#qualityType]
