@@ -175,3 +175,16 @@
 // check for identity (will only succeed if coreferent)
 :dvp ^ <Content>#c: ^ <Wh-Restr> = #c: -> # ^ identical.
 
+/*****************************************************************************
+ * Use of functions for tests and results
+ *****************************************************************************/
+
+:dvp ^ <SpeechAct>provideQuestionQuiz
+     ^ <Context>(<Question> #q: ^ <QuestionCount> #x: ),
+eq(#x, 1) ^ 1
+->
+###part1 = random("La prima domanda è: ",
+                  "Ecco la prima domanda: ",
+                  "Qui viene la prima domanda: ",
+                  "Puoi rispondere a la prima domanda: "),
+# = :canned ^ <string>concatenate(###part1, #q, "?").

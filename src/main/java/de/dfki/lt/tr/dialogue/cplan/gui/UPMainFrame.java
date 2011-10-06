@@ -531,9 +531,10 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
       return false;
     }
 
-    setInput(_planner.parseLfString(currentText));
+    _input = _planner.parseLfString(currentText);
     setOutputDisplay(null);
     if (_input != null) {
+      setInputDisplay(_input);
       // add currentText to the history
       _history.add(currentText);
       return runPlanner();
