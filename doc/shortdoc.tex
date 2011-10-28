@@ -302,44 +302,55 @@ the whole rewrite process, respectively.
 
 Rules have the following form:
 {
-\newcommand{\nt}[1]{\emph{#1}}
+\newcommand{\nt}[1]{\,\mbox{\emph{#1}}\,}
 %\newcommand{\tok}[1]{\texttt{'#1'}}
-\newcommand{\tok}[1]{\texttt{\textbf{#1}}}
-\newcommand{\id}{\mbox{\texttt{ID}}}
+\newcommand{\tok}[1]{\,\mbox{\texttt{\textbf{#1}}}\,}
+\newcommand{\id}{\,\mbox{\texttt{ID}}\,}
+\newcommand{\BAR}{\,|\,}
 \begin{center}
 
+\if0
 $\underbrace{\mbox{\nt{match} ( \tok{,}
     (\nt{global\_variable} \textbar\ \nt{function}\tok{(}\nt{args}*\tok{)})
     \tok{\^} \nt{match} )*}}_{\mbox{matching part}} \mbox{\ \tok{->}\ }
 \underbrace{\mbox{\nt{action} ( \tok{,} \nt{action} )*}}_{\mbox{action
     part}} \mbox{\ \tok{.}}$
-
+\fi
+$\underbrace{\rule[-.5ex]{0pt}{1ex}\ \nt{match}^{+}\ }_{\mbox{matching part}} \mbox{\ \tok{->}\ }
+\underbrace{\mbox{\nt{action} ( \tok{,} \nt{action} )*}}_{\mbox{action
+    part}} \mbox{\ \tok{.}}$
 \end{center}
 
 \subsection{Matching Part}
 \label{matching_part}
 The reduced BNF for one match looks like this:
-
-\begin{flushleft}
-\nt{match} $\rightarrow$
-  \nt{pathmatch} (\tok{\^{}} \textbar\  \tok{|} ) \nt{match} \textbar\
+\[
+\begin{array}{lcl}
+\nt{match} & \rightarrow &
+  \nt{pathmatch}\ (\tok{\^{}} \BAR  \tok{|} )\  \nt{match} \BAR
   \nt{pathmatch}\\
-\nt{pathmatch} $\rightarrow$
-  \tok{<} ID \tok{>} [ \nt{pathmatch} ] \textbar\
-  \nt{simplematch}\\
-\nt{simplematch} $\rightarrow$
-  \nt{atomic} \tok{:} \textbar\
-  \nt{atomic} [ \tok{:} \nt{atomic} ] \textbar\
-  \tok{!} \nt{pathmatch} \textbar\
-  \tok{(} \nt{match} \tok{)} \textbar\ \tok{=} \nt{var} \tok{:} \\
-\nt{atomic} $\rightarrow$
-  \mbox{\texttt{ID}} \textbar\
-  \tok{\#} \mbox{\texttt{ID}}\\
-\nt{var} $\rightarrow$
-  \tok{\#} \mbox{\texttt{ID}} \textbar\
-  \tok{\#\#} \mbox{\texttt{ID}}\\
-\end{flushleft}
-}
+\nt{pathmatch} & \rightarrow &
+  \tok{<} \id \tok{>} [ \nt{pathmatch} ] \BAR \nt{simplematch}\\
+\nt{simplematch} & \rightarrow &
+  \nt{atomic} \tok{:} \BAR
+  \nt{atomic} [ \tok{:} \nt{atomic} ] \BAR
+  \tok{!} \nt{pathmatch} \BAR
+  \tok{(} \nt{match} \tok{)}\\
+& & \BAR \tok{=} ( \nt{var} \BAR \nt{gvar} ) \tok{:} \BAR
+    \tok{(} ( \nt{gvar} \BAR \nt{funcall} ) \tok{\~} \nt{match} \tok{)}\\
+\nt{atomic} & \rightarrow & \id \BAR \nt{var}\\
+\nt{var} & \rightarrow & \tok{\#}\!\!\id \\
+\nt{gvar}  & \rightarrow & \tok{\#\#}\!\!\id \\
+\nt{funcall} & \rightarrow &
+  \id \tok{(} \nt{arg} (\tok{,} \nt{arg})^{*} \tok{)} \BAR
+  \id \tok{( )} \\
+\nt{arg} & \rightarrow &
+  \id \BAR \mbox{\texttt{STRING}} \BAR \tok{\#} \BAR \nt{var}
+  \BAR \nt{gvar} \nt{path} \BAR \nt{funcall}\\
+\nt{path} & \rightarrow & (\tok{<} \id \tok{>})^{*}\\
+\end{array}
+\]
+
 The match part consists of atomic match expressions which can be combined with
 conjunction, disjunction and negation operators to obtain complex match
 expressions:
@@ -370,8 +381,10 @@ follows:
 \end{itemize}
 
 Alternatively, a (bound) global variable can be used for the above checks.
-Global variables can not be bound on the match side, but their values can
-be checked against the local value as for local variables.
+Global variables, in contrast to local variables, must begin with two hash
+characters, e.g., \texttt{\#\#global\_var}. Global variables can not be bound
+on the match side, but their values can be checked against the local value as
+for local variables.
 
 %\newpage
 There are two binary and one unary combination operator to combine atomic
@@ -396,61 +409,48 @@ matches a node that has a relation \cd{feat} which points to a node with
 nominal name \cd{nom} and binds the type of that nominal to the local variable
 \cd{\#type2}.
 
-The first match, which may be empty, will always be applied to the current node
-that is under consideration. For a detailed description of how the matching an
-modification of the dag works, see section \ref{sec:procregime}. The subsequent
-match conditions, which are separated by commas, match against global variables
-that have to be specified at the beginning of the match condition. Global
-variables, in contrast to local variables, must begin with two hash characters,
-e.g., \texttt{\#\#global\_var}. If the global variable is not bound, the match
-is executed as if it were applied to an independent, empty node.
+The match conditions, which may be empty, will always be applied to the current
+node that is under consideration, except if a parenthesized condition with the
+\textbf{\~} operator is used. Then, the operand to the left must be either a
+global variable or a function call, and either the value bound to the variable
+or the return value of the function call will be matched against the match
+conditions to the right of the operand. If the global variable is not bound,
+the match is executed as if it were applied to an independent, empty node.
 
-It is also possible to call functions in the matching part, as additional
-matches, similar to the matching against a global variable. Those functions
-may have either atomic values or (already bound) local variables as arguments,
-and the result value will be matched in same way as against the content of
-a global variable, or the current structure.
-
-The following extensions are planned for the matching side:
-\begin{itemize}
-\item Global and local variables to match against (part) of the current node,
-  either checking equality or coreference
-\item type subsumption if a CCG type system is available (should that be an
-  operator different from \cd{\^} ?)
-\end{itemize}
+There is a set of build-in functions, but there is also the possibility of
+providing your own custom functions via plugins. For a description of the
+build-in functions and the plug-in interface see sections \ref{sec:build-ins}
+and \ref{sec:plugins}, respectively. For a detailed description of how the
+matching and modification of the dag works, see section \ref{sec:procregime}.
 
 \subsection{Actions}
 
 The BNF for one action looks like this:
-{
-\newcommand{\nt}[1]{\emph{#1}}
-%\newcommand{\tok}[1]{\texttt{'#1'}}
-\newcommand{\tok}[1]{\texttt{\textbf{#1}}}
-\newcommand{\id}{\mbox{\textit{\textsf{ID}}}}
-\begin{flushleft}
-\nt{action} $\rightarrow$ \nt{appoint} \tok{!} \tok{<}\id \tok{>} \textbar\
-\nt{appoint} \tok{=} \nt{rexpr} \textbar\  \nt{appoint} \tok{\^{}} \nt{rexpr}\\
-\nt{rexpr} $\rightarrow$
-  \nt{rpathexpr} \tok{\^{}} \nt{rexpr} \textbar\
+\[
+\begin{array}{lcl}
+\nt{action} & \rightarrow & \nt{appoint} \tok{!} \tok{<}\id \tok{>} \BAR
+\nt{appoint} \tok{=} \nt{rexpr} \BAR  \nt{appoint} \tok{\^{}} \nt{rexpr}\\
+\nt{rexpr} & \rightarrow &
+  \nt{rpathexpr} \tok{\^{}} \nt{rexpr} \BAR
   \nt{rpathexpr}\\
-\nt{rpathexpr} $\rightarrow$
-  \tok{<}\id \tok{>} \nt{rpathexpr} \textbar\
+\nt{rpathexpr} & \rightarrow &
+  \tok{<}\id \tok{>} \nt{rpathexpr} \BAR
   \nt{rsimpleexpr}\\
-\nt{rsimpleexpr} $\rightarrow$
-  \nt{atomic} \tok{:} [ \nt{atomic} ] \textbar\
-  \nt{atomic} \textbar\ \ \verb$"STRING"$  \textbar\
-  \tok{(} \nt{rexpr} \tok{)} \textbar\
+\nt{rsimpleexpr} & \rightarrow &
+  \nt{atomic} \tok{:} [ \nt{atomic} ] \BAR
+  \nt{atomic} \BAR \ \verb$"STRING"$  \BAR
+  \tok{(} \nt{rexpr} \tok{)} \BAR
   \id\tok{(}\nt{args}\tok{)}\\
-\nt{atomic} $\rightarrow$ \id \ \textbar\ \nt{var}\\
-\nt{var} $\rightarrow$
+\nt{atomic} & \rightarrow & \id \ \BAR \nt{var}\\
+\nt{var} & \rightarrow &
   \tok{\#}\id \ \textbar
-  \ \tok{\#\#}\id [ \tok{<}\id \tok{>} ( \tok{,} \tok{<}\id \tok{>} )* ] \textbar\
+  \ \tok{\#\#}\id [ \tok{<}\id \tok{>} ( \tok{,} \tok{<}\id \tok{>} )* ] \BAR
   \ \tok{\#\#\#}\id \\
-\nt{appoint} $\rightarrow$ \tok{\#}  \ \textbar\ \nt{var}\\
-\nt{args} $\rightarrow$ $\epsilon$
-  \textbar\ \nt{atomic} (\tok{,} \nt{atomic})*
-\end{flushleft}
-}
+\nt{appoint} & \rightarrow & \tok{\#}  \ \BAR \nt{var}\\
+\nt{args} & \rightarrow & \epsilon
+  \BAR \nt{atomic} (\tok{,} \nt{atomic})*
+\end{array}
+\]
 
 \newpage
 An action consists of the following elements:
@@ -600,8 +600,41 @@ Functions can also be used on the matching side (see section
 Also look into the file \texttt{presentation-examples.trf}, which contains
 much more elaborate examples with explanations attached to it.
 
-\section{Adding New Functions}
+\section{Build-in Functions}
+\label{sec:build-ins}
 
+\subsection{Mathematical Functions}
+Mathematical functions expecting \texttt{double} arguments will return
+\verb\NaN\, if one of the arguments is not a valid number.
+\begin{itemize}
+\item \texttt{add}, \texttt{sub}, \texttt{div}, \texttt{mult} expecting two
+  \texttt{double} arguments, returning a \texttt{double} argument, the usual
+  binary operators
+\item \texttt{lt}, \texttt{gt}, \texttt{lteq}, \texttt{gteq}, \texttt{eq}
+  expecting two \texttt{double} arguments, returning either one or zero,
+  representing true and false, for comparison of numbers
+\item \texttt{not} returns zero if the (\texttt{double}) argument is
+  non-zero, one otherwise
+\item \texttt{neg} is unary minus.
+\end{itemize}
+
+\subsection{Other Functions}
+\begin{itemize}
+\item \texttt{concatenate} concatenates an arbitrary number of strings and
+  returns the result
+\item \texttt{clone} clones the argument node, to get independent copies of
+  parts of the current structure
+\item \texttt{random} takes an arbitrary number of arguments and randomly
+  returns one of them
+\item \texttt{throwException} takes an (optional) message argument and throws
+  a \texttt{PlanningException} with the given message. This will end the
+  processing of the current input.
+\item \texttt{warning} logs a warning message on to the
+  \texttt{UtterancePlanner} main logger, and always returns \texttt{true}
+\end{itemize}
+
+\section{Adding New Functions}
+\label{sec:plugins}
 New functions can be added using a lightweight plug-in mechanism. All functions
 must be subclasses of \texttt{Function}, if they work on the internal
 structures of the planner directly, or of \texttt{LFFunction}, if they work
