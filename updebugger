@@ -4,23 +4,35 @@
 here="`pwd`"
 cd "`dirname $0`"
 APP_HOME="`pwd`"
-ant all > /dev/null 2>&1
+#BINARY=true
+if test -z "$BINARY"; then
+    ant all > /dev/null 2>&1
+fi
 cd "$here"
 export APP_HOME
+
+if echo `uname` | grep -qi "cygwin" ; then
+    CYGWIN=true
+fi
 
 JPDA_TRANSPORT="dt_socket"
 JPDA_ADDRESS="3194"
 debug="-Xdebug -Xrunjdwp:transport=$JPDA_TRANSPORT,address=$JPDA_ADDRESS,server=y,suspend=n"
 
-if test -n "$JAVA_HOME" ; then
-    "$JAVA_HOME"/bin/java -version 2>&1 | grep -q "version \"*1\.[56]" ||
-    unset JAVA_HOME JAVA_BINDIR JAVA_ROOT JDK_HOME JRE_HOME
+if test -z "$CYGWIN" ; then
+    if test -n "$JAVA_HOME" ; then
+        "$JAVA_HOME"/bin/java -version 2>&1 | grep -q "version \"*1\.[56]" ||
+        unset JAVA_HOME JAVA_BINDIR JAVA_ROOT JDK_HOME JRE_HOME
+    fi
+    CPSEP=':'
+else
+    CPSEP=';'
 fi
 
 # look for an appropriate java installation
 {
 IFS=$'\n'
-if test -z "$JAVA_HOME" ; then
+if test -z "$CYGWIN" -a -z "$JAVA_HOME" ; then
     for path in `type -all java`; do
         JAVA_HOME=`echo "${path##java is}" | sed 's|.* \(/.*\)/bin/java|\1|'`
          if test -n "$JAVA_HOME" &&
@@ -32,7 +44,7 @@ if test -z "$JAVA_HOME" ; then
         fi
     done
 fi
-if test "x$JAVA_HOME" = "x" ; then
+if test -z "$CYGWIN" -a "x$JAVA_HOME" = "x" ; then
     echo "No appropriate java installation found (at least version 1.5)"
     echo "... exiting"
     exit 1;
@@ -45,16 +57,32 @@ else
     JAVA_OPTS="-Xmx768m"
 fi
 
-classpath=$APP_HOME/target/classes:$APP_HOME/../cplan-ccg/target/classes:$APP_HOME/../cplan/target/classes
-for f in "$APP_HOME/lib/java/"*.jar ; do
-    classpath="$classpath:$f"
-done
-for f in "$APP_HOME/deplibs/java/"*.jar ; do
-    classpath="$classpath:$f"
-done
+cp=$APP_HOME/target/\*
+cp=$cp${CPSEP}$APP_HOME/deplibs/java/\*${CPSEP}$APP_HOME/lib/java/\*
 
+dozify_path() {
+    if test -n "$CYGWIN" ; then
+        echo "$1" | \
+            sed -e 's|/cygdrive/c|C:|g' -e 's|/cygdrive/d|D:|g' -e 's@/@\\@g'
+    else
+        echo "$1"
+    fi
+}
 
-#echo $classpath
+cygwinify_path() {
+    if test -n "$CYGWIN" ; then
+        here=`pwd`
+        cd "$1"
+        result=`pwd`
+        cd "$here"
+        echo $result
+    else
+        echo $1
+    fi
+}
+
+cp=`dozify_path $cp`
+JAVA_OPTS="$JAVA_OPTS -cp '$cp'"
 
 if test "x$1" = "x-X"; then
     JAVA_OPTS="$JAVA_OPTS $debug"
@@ -68,8 +96,20 @@ else
         L4JSETUP="${APP_HOME}/config/log4j.properties"
     fi
 fi
+
+L4JSETUP=`dozify_path "$L4JSETUP"`
+
+if test -z "$JAVA_HOME" ; then
+    JAVA_BIN="java"
+else
+    # won't work, i'm sure
+    JAVA_BIN=`cygwinify_path "$JAVA_HOME/bin/java"`
+fi
+
+APP_HOME=`dozify_path $APP_HOME`
+
 if test -n "$L4JSETUP" ; then
     JAVA_OPTS="$JAVA_OPTS -Dlog4j.configuration=file:${L4JSETUP}"
 fi
 MAINCLASS=de.dfki.lt.tr.dialogue.cplan.InteractivePlanner
-eval CLASSPATH="$classpath" "$JAVA_HOME"/bin/java "$JAVA_OPTS" $MAINCLASS -r "$APP_HOME" $*
+eval "$JAVA_BIN" "$JAVA_OPTS" $MAINCLASS -r "'$APP_HOME'" $*

@@ -77,7 +77,7 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
     {"Load", "edit-redo", "Reload Rules", "Reload Rules",
       new Runnable() { public void run() { reloadCurrentProject(); } } },
     {"Process", "gnome-run", "Process Input", "Process",
-      new Runnable() { public void run() { processInput(); } } },
+      new Runnable() { public void run() { processInput(true); } } },
     {"Trace", "go-next", "Trace Processing", "Trace",
       new Runnable() { public void run() { processTracing(); } } },
     /*
@@ -293,9 +293,10 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
         setProcessorSuspended(isSuspended);
       }
     });
-    if (processInput()) {
+    if (processInput(false)) {
       @SuppressWarnings("unused")
       TraceWindow tw = new TraceWindow(UPMainFrame.this, events);
+      runPlanner();
     }
   }
 
@@ -488,33 +489,29 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
     _planner.interruptProcessing();
   }
 
-  private boolean runPlanner() {
+  private void runPlanner() {
     // should be in its own thread, with a listener that sets the
     // output, and an indicator that it's running
-    if (isStopped()) {
-      _processingThread = new Thread(
-          new Runnable() {
-            public void run() {
-              try {
-                processingStarts();
-                setInputDisplay(_input);
-                setOutput(_planner.process(_input));
-                if (_output == null) {
-                  setStatusLine("No output", Color.ORANGE);
-                }
-              }
-              catch (PlanningException ex) {
-                setStatusLine(ex.getMessage(), Color.ORANGE);
-              }
-              finally {
-                processingEnds();
+    _processingThread = new Thread(
+        new Runnable() {
+          public void run() {
+            try {
+              processingStarts();
+              setInputDisplay(_input);
+              setOutput(_planner.process(_input));
+              if (_output == null) {
+                setStatusLine("No output", Color.ORANGE);
               }
             }
-          } );
-      _processingThread.start();
-      return true;
-    }
-    return false;
+            catch (PlanningException ex) {
+              setStatusLine(ex.getMessage(), Color.ORANGE);
+            }
+            finally {
+              processingEnds();
+            }
+          }
+        } );
+    _processingThread.start();
   }
 
   /** This method takes the input string from the input area and tries to
@@ -523,7 +520,7 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
    *  color as background for the input area. Otherwise, the processing is
    *  started in a new thread.
    */
-  private boolean processInput() {
+  private boolean processInput(boolean startPlanner) {
     clearStatusLine();
     _inputArea.setBackground(NORMAL_COLOR);
     String currentText = _inputArea.getText();
@@ -537,7 +534,10 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
       setInputDisplay(_input);
       // add currentText to the history
       _history.add(currentText);
-      return runPlanner();
+      if (! isStopped()) return false;
+      if (startPlanner)
+        runPlanner();
+      return true;
     }
     else {
       Position errPos = _planner.getLastLFErrorPosition();
@@ -574,7 +574,9 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
       } else {
         _history.add(currentText);
         setInputDisplay(_input);
-        return runPlanner();
+        if (! isStopped()) return false;
+        runPlanner();
+        return true;
       }
     }
     catch (IllegalArgumentException ex) {
