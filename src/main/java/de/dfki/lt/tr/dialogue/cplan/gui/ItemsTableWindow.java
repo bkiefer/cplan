@@ -2,7 +2,9 @@ package de.dfki.lt.tr.dialogue.cplan.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +22,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import de.dfki.lt.tr.dialogue.cplan.BatchTest;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest.BadItem;
@@ -55,6 +60,9 @@ public class ItemsTableWindow extends JDialog {
 
   /** displays error and status information */
   protected JLabel _statusLine;
+
+  /** The table displaying the items */
+  JTable _itemsDisplay;
 
   private static String[] namesBad = {
     "Input LF", "Output LF", "Realized output", "Expected Output"
@@ -177,14 +185,21 @@ public class ItemsTableWindow extends JDialog {
     }
   }
 
-
+  /** transfer the data in the selected row to the main panel
+   *
+   *  This is the decicated mouse click handler for the batch display.
+   */
   class SharedListSelectionHandler implements ListSelectionListener {
 
     public void valueChanged(ListSelectionEvent e) {
       ListSelectionModel lsm = (ListSelectionModel)e.getSource();
       // single selection: only one row selected
-      int row = lsm.getMinSelectionIndex();
       TestItem testItem = null;
+      int row = lsm.getMinSelectionIndex();
+      if (row < 0)
+        return;
+
+      row = _itemsDisplay.convertRowIndexToModel(row);
       if (_bad) {
         testItem = _bt.getItem(_bt.getBad(row).testItemIndex);
         parent().setOutput(_bt.getBad(row).outputLf);
@@ -193,6 +208,33 @@ public class ItemsTableWindow extends JDialog {
       }
       parent().setInput(testItem.lf);
       parent().showPosition(testItem.position);
+    }
+  }
+
+  public class FailBoldTableCellRenderer
+  extends DefaultTableCellRenderer {
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value,
+      boolean isSelected, boolean hasFocus, int row, int column) {
+      Component c =
+        super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
+            row, column);
+
+      if ((value instanceof String) && (((String)value).startsWith("***"))) {
+        Font f = c.getFont();
+        f = f.deriveFont(f.getStyle() | Font.BOLD);
+        c.setFont(f);
+      }
+
+      /* Only for specific cell
+      if (row == SPECIAL_ROW && column == SPECIAL_COULMN) {
+        c.setFont(<special font>);
+        // you may want to address isSelected here too
+        c.setForeground(<special foreground color>);
+        c.setBackground(<special background color>);
+      }
+      */
+      return c;
     }
   }
 
@@ -234,17 +276,27 @@ public class ItemsTableWindow extends JDialog {
     clearStatusLine();
 
     // to show the list of test items, or the test failures
-    JTable itemsDisplay = new JTable(new ItemsTableModel(_bt));
+    _itemsDisplay = new JTable(new ItemsTableModel(_bt));
+    TableRowSorter<TableModel> sorter =
+      new TableRowSorter<TableModel>(_itemsDisplay.getModel());
+    sorter.setSortable(0, false);
+    sorter.setSortable(1, false);
+    _itemsDisplay.setRowSorter(sorter);
+
+    _itemsDisplay.setDefaultRenderer(
+        _itemsDisplay.getColumnClass(2),
+        new FailBoldTableCellRenderer());
+
     // _itemsDisplay.addMouseListener(new ShowItemListener());
-    JScrollPane toDisplay = new JScrollPane(itemsDisplay);
-    itemsDisplay.setFillsViewportHeight(true);
+    JScrollPane toDisplay = new JScrollPane(_itemsDisplay);
+    _itemsDisplay.setFillsViewportHeight(true);
     // _itemsDisplay.setCellSelectionEnabled(true);
-    itemsDisplay.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    ListSelectionModel listSelectionModel = itemsDisplay.getSelectionModel();
+    _itemsDisplay.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    ListSelectionModel listSelectionModel = _itemsDisplay.getSelectionModel();
     listSelectionModel.addListSelectionListener(
         new SharedListSelectionHandler());
 
-    contentPane.add(itemsDisplay.getTableHeader(), BorderLayout.PAGE_START);
+    contentPane.add(_itemsDisplay.getTableHeader(), BorderLayout.PAGE_START);
     contentPane.add(toDisplay, BorderLayout.CENTER);
 
     // use native windowing system to position new frames
