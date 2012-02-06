@@ -4,6 +4,7 @@
 \usepackage{tikz}
 \usetikzlibrary{calc}
 \newcommand{\cd}[1]{\texttt{#1}}
+\newcommand{\example}[1]{\textbf{Example #1}}
 
 \begin{titlepage}
 \title{\Large \bf Content Planner Module for Talking Robots}
@@ -311,7 +312,7 @@ Rules have the following form:
 
 \if0
 $\underbrace{\mbox{\nt{match} ( \tok{,}
-    (\nt{global\_variable} \textbar\ \nt{function}\tok{(}\nt{args}*\tok{)})
+    (\nt{global\_variable} \mbox{\textbar}\ \nt{function}\tok{(}\nt{args}*\tok{)})
     \tok{\^} \nt{match} )*}}_{\mbox{matching part}} \mbox{\ \tok{->}\ }
 \underbrace{\mbox{\nt{action} ( \tok{,} \nt{action} )*}}_{\mbox{action
     part}} \mbox{\ \tok{.}}$
@@ -320,6 +321,23 @@ $\underbrace{\rule[-.5ex]{0pt}{1ex}\ \nt{match}^{+}\ }_{\mbox{matching part}} \m
 \underbrace{\mbox{\nt{action} ( \tok{,} \nt{action} )*}}_{\mbox{action
     part}} \mbox{\ \tok{.}}$
 \end{center}
+
+To get a more compact representation when having many rules that share a lot
+of the preconditions, you can use \emph{rule groups}. The syntax for rule groups
+(as opposed to a single rule is as follows:
+
+\[
+\begin{array}{lcl}
+\nt{group} & \rightarrow &
+   \nt{match}^{+}\ ( (\tok{\^{}} \BAR  \tok{|})\ (\tok{\{}
+ \nt{match}^{+}\mbox{\ \tok{->}\ }
+    \mbox{\nt{action} ( \tok{,} \nt{action} )*} \tok{.} \BAR \nt{group} \tok{\}})+ \\
+\end{array}
+\]
+
+All match expressions are recursively collected (connecting with the given
+operator) until a rule is reached, whose action is only applied when all the
+collected match conditions are fulfilled.
 
 \subsection{Matching Part}
 \label{matching_part}
@@ -423,6 +441,8 @@ build-in functions and the plug-in interface see sections \ref{sec:build-ins}
 and \ref{sec:plugins}, respectively. For a detailed description of how the
 matching and modification of the dag works, see section \ref{sec:procregime}.
 
+\newpage
+
 \subsection{Actions}
 
 The BNF for one action looks like this:
@@ -443,7 +463,7 @@ The BNF for one action looks like this:
   \id\tok{(}\nt{args}\tok{)}\\
 \nt{atomic} & \rightarrow & \id \ \BAR \nt{var}\\
 \nt{var} & \rightarrow &
-  \tok{\#}\id \ \textbar
+  \tok{\#}\id \ \mbox{\textbar}
   \ \tok{\#\#}\id [ \tok{<}\id \tok{>} ( \tok{,} \tok{<}\id \tok{>} )* ] \BAR
   \ \tok{\#\#\#}\id \\
 \nt{appoint} & \rightarrow & \tok{\#}  \ \BAR \nt{var}\\
@@ -452,7 +472,6 @@ The BNF for one action looks like this:
 \end{array}
 \]
 
-\newpage
 An action consists of the following elements:
 \begin{itemize}
 \item first the specification of the place it is applied to
@@ -727,4 +746,8 @@ they appear in the project file, independent of their names.
 \end{itemize}
 \fi
 
+\appendix
+\section{More Examples}
+
+\input{examples.tex}
 \end{document}

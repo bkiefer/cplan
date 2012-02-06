@@ -1,0 +1,5 @@
+sed -e 's|//\[.*|\\begin{verbatim}|' \
+ -e 's|//\].*|\\end{verbatim}|' \
+ -e 's|^// ||' -e's|^//$||' \
+ -e 's|^/\*\*\**|\\subsection{|' \
+ -e 's|^ \**\*\*/|}|' < "$1"
