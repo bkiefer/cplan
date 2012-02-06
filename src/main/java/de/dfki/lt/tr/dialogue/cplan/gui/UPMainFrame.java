@@ -470,9 +470,7 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
     if (_tracer != null) {
       _tracer = null;
     }
-    if (_oldTracer != null) {
-      _planner.setTracing(_oldTracer);
-    }
+    _planner.setTracing(_oldTracer);
     setProcessorStopped();
   }
 
