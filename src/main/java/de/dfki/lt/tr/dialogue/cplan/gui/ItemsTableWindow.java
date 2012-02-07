@@ -213,6 +213,8 @@ public class ItemsTableWindow extends JDialog {
 
   public class FailBoldTableCellRenderer
   extends DefaultTableCellRenderer {
+    private static final long serialVersionUID = -742588800582533386L;
+
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value,
       boolean isSelected, boolean hasFocus, int row, int column) {

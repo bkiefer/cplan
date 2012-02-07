@@ -54,7 +54,7 @@ public class LFModelAdapter extends ModelAdapter {
     }
   }
 
-  @SuppressWarnings("unused")
+  @SuppressWarnings({ "unused", "rawtypes" })
   private class EdgeProjectionIterator implements Iterator {
     Iterator<? extends DagEdge> _iterator;
 
@@ -76,6 +76,7 @@ public class LFModelAdapter extends ModelAdapter {
 
   private class TreeMarker {
     DagNode _root;
+    @SuppressWarnings("unused")
     TreeMarker(DagNode root) { _root = root; }
   }
 
