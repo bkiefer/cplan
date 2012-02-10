@@ -1,6 +1,8 @@
 
 - batch disjunctive normal form
 
+- syntax error in batch file should not break the whole process
+
 - batch window does not refresh on batch rerun
 
 - pretty printing for LF's so selected inputs from batch window are readable

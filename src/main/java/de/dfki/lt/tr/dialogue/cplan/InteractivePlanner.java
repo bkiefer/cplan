@@ -86,13 +86,6 @@ implements UPMainFrame.CloseAllListener {
     }
   }
 
-  public BatchTest batchProcess(File batchFile) throws IOException {
-    BatchTest bt = new BatchTest(this);
-    bt.init(batchFile);
-    bt.run();
-    return bt;
-  }
-
   private ConsoleReader cinput = null;
   private String getInputFromTerminal() {
     String prompt = ">> ";
