@@ -1,0 +1,36 @@
+
+- batch disjunctive normal form
+
+- batch window does not refresh on batch rerun
+
+- pretty printing for LF's so selected inputs from batch window are readable
+
+- j2emacs does not work properly on Windows/cygwin
+  --> packaging a lean binary distribution & make bundle available for
+      TNO (mail of 25. Nov '11)
+
+- history does not work properly
+- and not properly saved in project file
+
+Today:
+
+- get ASR parsing for AlizE to work
+  * + n-best lattices instead of best only
+    > check with giacomo/heriberto, more general: check interface,
+  * connect parser with Dialogue manager (heriberto) , or directly ASR??
+  * Urbify the parser (Heriberto)
+  * best-first parsing
+- manage partiality for AlizE: return n-best chunks
+- get conversion to FS to work
+
++ Exception catching during batch test?
++ better logging for generation in urbi system (log4j properties?)
++ log4j properties: see file components/dialogue-fst/start-dialogue-fst.sh
++ if there is additional material in the LF input window, there is NO parse
+  error! (fixed: due to batch LFs parsing)
++ batch reload does not clean items
++ sorting results in wrong selection in main window and editor
++ *** FAILURE *** disappeared in batch result window
++ sorting for batch result window
+
+

@@ -119,7 +119,7 @@ Again, note the colon after the global variable in the addition
                  <Cop-Scope>(s2:gaga ^ prop ^ <Questioned>true)))
  */
 \end{verbatim}
-
+\example{10}
 This will not add to the existing \texttt{Subject} and \texttt{Cop-Scope},
 but introduce new ones.
 \begin{verbatim}
@@ -151,12 +151,11 @@ This adds the new information to the previously matched nodes.
 \subsection{
  Global variable ``maps''
 }
+\example{11} Global variables can be used with path expressions to get
+dictionary-like structures
 \begin{verbatim}
 /// @d:dvp2(<Cont> (x:y ^ z) ^ <S>x)
-:dvp2 ^ <Cont> #c: ^ <S>#s:
-->
-##gvar<cont> = #c:,
-##gvar<s><t> = #s:.
+:dvp2 ^ <Cont> #c: ^ <S>#s: -> ##gvar<cont> = #c:, ##gvar<s><t> = #s:.
 
 :dvp2 ^ !<SpeechAct> ^ !<Cont2> ^ ( ##gvar ~ <cont> #v: )
 ->
@@ -173,45 +172,54 @@ This adds the new information to the previously matched nodes.
 \subsection{
  All you can do with variables
 }
+\example{12} Bind values to global variables and use them in another rule
 \begin{verbatim}
 /// @d:dvp(<foo>(:a ^ <F>(b:c ^ d)))
-:a ^ <F> (#i:#t ^ #p)
-->
-##partial = :#t ^ #p,
-##whole = #i:.
+:a ^ <F> (#i:#t ^ #p) -> ##partial = :#t ^ #p, ##whole = #i:.
 
-:a ^ !<W>
-->
-# ^ <W> ##whole: ^ <P> ##partial:.
+:a ^ !<W> -> # ^ <W> ##whole: ^ <P> ##partial:.
 \end{verbatim}
-Be careful that you use bound variables correctly! If you use them as simple
-(type or proposition) values on the right hand side, you must have bound them
-to simple values, or complex values containing the appropriate edge!
-\begin{verbatim}
-<Actor>(#a:) -> ###s = #a:.
 
-:s ^ ! <Subject> -> # ^ <Subject> ###s: ^ <WhRestr> ###s:.
+
+ \example{13} Be careful that you use bound variables correctly! If you use
+ them as simple (type or proposition) values on the right hand side, you
+ must have bound them to simple values, or complex values containing the
+ appropriate edge!
+
+The second rule illustrates how to get type and prop out of a complex node
+in a global variable
+\begin{verbatim}
+/// @d:test(<Actor>(:type ^ prop ^ <foo> bar))
+<Actor>(#a:) -> ##s = #a:.
+
+:test ^ ! <Subject> ^ (##s ~ (:#type ^ #prop))
+->
+# ^ <Subject> ##s: ^ <Prop> #prop ^ <Type> :#type.
 \end{verbatim}
 
 Right hand local variables can also be used to establish coreferences in the
-replacement part.
+replacement part. \vspace*{1.0ex}
 
-check for structural equality (will also succeed if coreferent)
+\example{14} Check for structural equality (will also succeed if coreferent)
 \begin{verbatim}
+/// @d:dvp(<Content>(:bar ^ baz) ^ <Wh-Restr>(:bar ^ baz))
 :dvp ^ <Content>#c: ^ <Wh-Restr>#c: -> # ^ :equals.
 \end{verbatim}
 
-check for identity (will only succeed if coreferent)
+\example{15} Check for identity (will only succeed if coreferent)
 \begin{verbatim}
-:dvp ^ <Content>#c: ^ <Wh-Restr> = #c: -> # ^ identical.
+/// @d:coref(<Content>(:bar ^ baz) ^ <Wh-Restr>(:bar ^ baz))
+/// @d:coref(<Content>(a:bar ^ baz) ^ <Wh-Restr>(a:bar))
+/// @d:coref(<Content>(a:bar ^ baz) ^ <Wh-Restr>a:)
+:coref ^ <Content>#c: ^ <Wh-Restr> = #c: -> # ^ identical.
 \end{verbatim}
 
 \subsection{
  Use of functions for tests and results
 }
-
+\example{16} Bind values to global variables and use them in another rule
 \begin{verbatim}
-/// @d:dvp(<SpeechAct>provideQuestion ^ <Context>(<Question> "quest1" ^ <Count> "1" ))
+/// @d:dvp(<SpeechAct>provideQuestion ^ <Context>(<Question> "quest1 " ^ <Count> "1" ))
 :dvp ^ <SpeechAct>provideQuestion
      ^ <Context>(<Question> #q ^ <Count> #x: ) ^
 ( eq(#x, 1) ~ 1 )
@@ -219,7 +227,21 @@ check for identity (will only succeed if coreferent)
 ###part1 = random("La prima domanda è: ",
                   "Ecco la prima domanda: ",
                   "Qui viene la prima domanda: ",
-                  "Puoi rispondere a la prima domanda: "):,
+                  "Puoi rispondere a la prima domanda: "),
 # = :canned ^ <string>concatenate(###part1, #q, "?").
 \end{verbatim}
 
+\example{17} Non-integer numbers must be passed to functions as strings. Boolean functions
+return zero or one.
+\begin{verbatim}
+/// @m:math(<arg1>9 ^ <arg2>2)
+/// @m:math(<arg1>9 ^ <arg2>"30.33")
+
+:math ^ <arg1>#arg1 ^ <arg2>#arg2 ^ (lteq("0.3", div(#arg1, #arg2)) ~ 1)
+->
+# ^ <res> div(#arg1, #arg2).
+
+:math ^ <arg1>#arg1 ^ <arg2>#arg2
+->
+# ^ <bool> lteq("0.3", div(#arg1, #arg2)).
+\end{verbatim}
