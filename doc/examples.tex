@@ -219,12 +219,12 @@ replacement part. \vspace*{1.0ex}
 }
 \example{16} Bind values to global variables and use them in another rule
 \begin{verbatim}
-/// @d:dvp(<SpeechAct>provideQuestion ^ <Context>(<Question> "quest1 " ^ <Count> "1" ))
+/// @d:dvp(<SpeechAct>provideQuestion ^ <Context>(<Question> "question " ^ <Count> "1" ))
 :dvp ^ <SpeechAct>provideQuestion
      ^ <Context>(<Question> #q ^ <Count> #x: ) ^
 ( eq(#x, 1) ~ 1 )
 ->
-###part1 = random("La prima domanda √®: ",
+###part1 = random("La prima domanda Ë: ",
                   "Ecco la prima domanda: ",
                   "Qui viene la prima domanda: ",
                   "Puoi rispondere a la prima domanda: "),
@@ -244,4 +244,12 @@ return zero or one.
 :math ^ <arg1>#arg1 ^ <arg2>#arg2
 ->
 # ^ <bool> lteq("0.3", div(#arg1, #arg2)).
+\end{verbatim}
+
+\newpage\example{18} You can use arbitrary encodings in your grammar files,
+but if it's not UTF-8, you have to specify as `encoding' setting in the
+grammar file, and, consequently, you can only have one encoding per project.
+\begin{verbatim}
+/// @e:enc(<enc> iso-8859-15 ^ <val> "‰÷Ï‚È")
+<enc> iso-8859-15 ^ <val> "‰÷Ï‚È" -> # ^ <right> true.
 \end{verbatim}

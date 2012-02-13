@@ -5,6 +5,8 @@
 \usetikzlibrary{calc}
 \newcommand{\cd}[1]{\texttt{#1}}
 \newcommand{\example}[1]{\textbf{Example #1}}
+% Use this for the examples which use non-default latin encoding
+\usepackage[latin1]{inputenc}
 
 \begin{titlepage}
 \title{\Large \bf Content Planner Module for Talking Robots}
@@ -103,6 +105,7 @@ comment and ignored.
 
 [Settings]\\
 history\_file = history.txt\\
+encoding = ISO-8859-15\\
 ccg\_grammar = ../../resources/grammars/openccg/grammar.xml\\[2ex]
 
 [Rules Stage 1]\\
@@ -126,9 +129,11 @@ Currently, the content planner distinguishes two kinds of sections, the
 more than one.
 
 The \texttt{Settings} section contains key-value pairs that are separated by
-the equal sign (\texttt{`='}). Currently, there is only one setting in effect
-namely the path to the corresponding CCG grammar, whose key must be
-\texttt{ccg\_grammar}.
+the equal sign (\texttt{`='}). Currently, valid settings are the path to the
+corresponding CCG grammar, whose key must be \texttt{ccg\_grammar}, a
+\texttt{history\_file} to store recent inputs, and an \texttt{encoding} for the
+grammar files. If no encoding is specified, \texttt{UTF-8} is taken as a
+default.
 
 The section names for rules have to start with the word \texttt{Rules}, the
 rest before the closing bracket is taken as the stage name for the rule
