@@ -182,7 +182,7 @@ implements UPMainFrame.CloseAllListener {
 
   private static void usage(String msg) {
     String[] usage = {
-        "Usage: UPDebugger [-b<atch> inputfile] [-c<ompileonly>] [-d<ebugdags>]",
+        "Usage: UPDebugger [-[bB]<atch> inputfile] [-c<ompileonly>] [-d<ebugdags>]",
         "                  [-g<ui>] [-t<race>={1,2,3}] [-e<macs>]",
         "                  <projectfile>",
         "      -t : bit 1: trace match, bit 2 : trace modification"
@@ -204,7 +204,7 @@ implements UPMainFrame.CloseAllListener {
           new ConsoleAppender(new SimpleLayout(), "System.err"));
     }
 
-    OptionParser parser = new OptionParser("b:cdgt:e::r:");
+    OptionParser parser = new OptionParser("B:b:cdgt:e::r:");
     OptionSet options = null;
     try {
       options = parser.parse(args);
@@ -226,11 +226,11 @@ implements UPMainFrame.CloseAllListener {
 
     char what = 'i';
     // x and T are only for test purposes
-    String[] actionOptions = { "b", "c", "g" };
+    String[] actionOptions = { "B", "b", "c", "g" };
     for (String action : actionOptions) {
       if (options.has(action)) {
         if (what != 'i')
-          usage("Only one of -b, -c or -g allowed.") ;
+          usage("Only one of -B, -b, -c or -g allowed.") ;
         what = action.charAt(0);
         optionArg = (String) options.valueOf(action);
       }
@@ -252,6 +252,7 @@ implements UPMainFrame.CloseAllListener {
     }
     switch (what) {
     case 'b':
+    case 'B':
       try {
         if (nonOptionArgs.size() == 0) {
           usage("No project file specified");
@@ -263,6 +264,12 @@ implements UPMainFrame.CloseAllListener {
             ip.readProjectFile(new File(nonOptionArgs.get(0)));
             BatchTest bt = ip.batchProcess(batchFile);
             ip.logger.info(bt.percentageGood());
+            if (what == 'B') {
+              for (int i = 0; i < bt.goodSize(); ++i) {
+                BatchTest.ResultItem good = bt.getGood(i);
+                System.out.println(good.realized);
+              }
+            }
             ip.allClosed();
           }
         }

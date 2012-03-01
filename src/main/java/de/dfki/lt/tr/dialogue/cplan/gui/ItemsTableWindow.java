@@ -27,7 +27,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import de.dfki.lt.tr.dialogue.cplan.BatchTest;
-import de.dfki.lt.tr.dialogue.cplan.BatchTest.BadItem;
+import de.dfki.lt.tr.dialogue.cplan.BatchTest.ResultItem;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest.TestItem;
 
 public class ItemsTableWindow extends JDialog {
@@ -116,7 +116,7 @@ public class ItemsTableWindow extends JDialog {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
       if (_bad) {
-        BadItem bad = _bt.getBad(rowIndex);
+        ResultItem bad = _bt.getBad(rowIndex);
         switch (columnIndex) {
         case 0: return _bt.getItem(bad.testItemIndex).lf;
         case 1: return bad.outputLf;
