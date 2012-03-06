@@ -5,13 +5,19 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -23,6 +29,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -35,7 +42,7 @@ public class ItemsTableWindow extends JDialog {
 
   private BatchTest _bt;
 
-  private boolean _bad;
+  private boolean _showGood, _showBad;
 
   /* *************************************************************************
    * Button and Menu specifications
@@ -64,11 +71,11 @@ public class ItemsTableWindow extends JDialog {
   /** The table displaying the items */
   JTable _itemsDisplay;
 
-  private static String[] namesBad = {
-    "Input LF", "Output LF", "Realized output", "Expected Output"
+  private static String[] columnNames = {
+    " ", "Input LF", "Output LF", "Realized output", "Expected Output"
   };
 
-  private static String[] names = { "Input LF", "Expected Output" };
+  //private static String[] names = { "Input LF", "Expected Output" };
 
   /** A read-only model to display the test items in a JTable.
    *  Depending on the _bad field of {@link ItemsTableWindow}, this will
@@ -77,7 +84,7 @@ public class ItemsTableWindow extends JDialog {
   private class ItemsTableModel extends AbstractTableModel {
     private static final long serialVersionUID = 1L;
 
-    protected String[] colNames() { return _bad ? namesBad : names; }
+    protected String[] colNames() { return columnNames; }
 
     /** create a new model with initial content */
     public ItemsTableModel(BatchTest bt) { setTest(bt); }
@@ -100,7 +107,9 @@ public class ItemsTableWindow extends JDialog {
 
     @Override
     public int getRowCount() {
-      return _bad ? _bt.badSize() : _bt.itemSize();
+      int result = _showGood ? _bt.goodSize() : 0;
+      if (_showBad) result += _bt.badSize();
+      return result;
     }
 
     /** This is a read-only model */
@@ -115,22 +124,32 @@ public class ItemsTableWindow extends JDialog {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-      if (_bad) {
-        ResultItem bad = _bt.getBad(rowIndex);
-        switch (columnIndex) {
-        case 0: return _bt.getItem(bad.testItemIndex).lf;
-        case 1: return bad.outputLf;
-        case 2: return bad.realized;
-        case 3: return showSet(_bt.getItem(bad.testItemIndex).answers);
-        }
-      } else {
-        switch (columnIndex) {
-        case 0: return _bt.getItem(rowIndex).lf;
-        case 1: return showSet(_bt.getItem(rowIndex).answers);
-        }
+      ResultItem item = getItem(rowIndex);
+      switch (columnIndex) {
+      case 0: return item.itemStatus.name().substring(0, 1);
+      case 1: return _bt.getItem(item.testItemIndex).lf;
+      case 2: return item.outputLf;
+      case 3: return item.realized;
+      case 4: return showSet(_bt.getItem(item.testItemIndex).answers);
       }
       assert(false); return null;
     }
+  }
+
+  public ResultItem getItem(int rowIndex) {
+    ResultItem item = null;
+    if (_showBad) {
+      if (rowIndex >= _bt.badSize()) {
+        assert(_showGood);
+        item = _bt.getGood(rowIndex - _bt.badSize());
+      } else {
+        item = _bt.getBad(rowIndex);
+      }
+    } else {
+      assert(_showGood);
+      item = _bt.getGood(rowIndex);
+    }
+    return item;
   }
 
   /* **********************************************************************
@@ -200,12 +219,9 @@ public class ItemsTableWindow extends JDialog {
         return;
 
       row = _itemsDisplay.convertRowIndexToModel(row);
-      if (_bad) {
-        testItem = _bt.getItem(_bt.getBad(row).testItemIndex);
-        parent().setOutput(_bt.getBad(row).outputLf);
-      } else {
-        testItem = _bt.getItem(row);
-      }
+      ResultItem item = getItem(row);
+      testItem = _bt.getItem(item.testItemIndex);
+      parent().setOutput(item.outputLf);
       parent().setInput(testItem.lf);
       parent().showPosition(testItem.position);
     }
@@ -222,11 +238,22 @@ public class ItemsTableWindow extends JDialog {
         super.getTableCellRendererComponent(table, value, isSelected, hasFocus,
             row, column);
 
+      row = _itemsDisplay.convertRowIndexToModel(row);
+      ResultItem item = getItem(row);
+      final Color[] colors = {
+          new Color(0xEC, 0x8D, 0x9C),
+          new Color(0xEC, 0xA1, 0x8D),
+          new Color(0xEC, 0xC1, 0x8D),
+          new Color(0xBE, 0xEC, 0x8D)
+      };
+      c.setBackground(colors[item.itemStatus.ordinal()]);
+      /*
       if ((value instanceof String) && (((String)value).startsWith("***"))) {
         Font f = c.getFont();
         f = f.deriveFont(f.getStyle() | Font.BOLD);
         c.setFont(f);
       }
+      */
 
       /* Only for specific cell
       if (row == SPECIAL_ROW && column == SPECIAL_COULMN) {
@@ -253,10 +280,11 @@ public class ItemsTableWindow extends JDialog {
    * Constructors
    * ********************************************************************** */
 
-  public ItemsTableWindow(UPMainFrame parent, BatchTest bt, boolean bad) {
+  public ItemsTableWindow(UPMainFrame parent, BatchTest bt,
+    boolean bad, boolean good) {
     super(parent, "Failed Test Items", false);
     _bt = bt;
-    _bad = bad;
+    _showBad = bad; _showGood = good;
     initPanel();
     setStatusLine(_bt.percentageGood());
   }
@@ -272,17 +300,55 @@ public class ItemsTableWindow extends JDialog {
         new ArrayList<JButton>());
     contentPane.add(toolBar, BorderLayout.NORTH);
 
+    // add check boxes to display only good or bad items
+    JCheckBox showGood = new JCheckBox(new AbstractAction("good") {
+      private static final long serialVersionUID = 1L;
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        _showGood = ((JCheckBox)e.getSource()).isSelected();
+        ((ItemsTableModel)ItemsTableWindow.this._itemsDisplay.getModel())
+        .fireTableDataChanged();
+      }
+    });
+    showGood.setSelected(_showGood);
+    JCheckBox showBad = new JCheckBox(new AbstractAction("bad") {
+      private static final long serialVersionUID = 1L;
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        _showBad = ((JCheckBox)e.getSource()).isSelected();
+        ((ItemsTableModel)ItemsTableWindow.this._itemsDisplay.getModel())
+        .fireTableDataChanged();
+      }
+    });
+    showBad.setSelected(_showBad);
+
     // add status line
     _statusLine = new JLabel();
-    contentPane.add(_statusLine, BorderLayout.SOUTH);
     clearStatusLine();
+
+    JPanel buttonPane = new JPanel();
+    buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
+    buttonPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+    _statusLine.setAlignmentX(Component.LEFT_ALIGNMENT);
+    buttonPane.add(_statusLine);
+    buttonPane.add(Box.createHorizontalGlue());
+    showGood.setAlignmentX(Component.RIGHT_ALIGNMENT);
+    buttonPane.add(showGood);
+    buttonPane.add(Box.createRigidArea(new Dimension(0, 0)));
+    showGood.setAlignmentX(Component.RIGHT_ALIGNMENT);
+    buttonPane.add(showBad);
+
+    contentPane.add(buttonPane, BorderLayout.SOUTH);
 
     // to show the list of test items, or the test failures
     _itemsDisplay = new JTable(new ItemsTableModel(_bt));
+    // First column should not be too wide
+    _itemsDisplay.getColumnModel().getColumn(0).setMaxWidth(15);
+
     TableRowSorter<TableModel> sorter =
       new TableRowSorter<TableModel>(_itemsDisplay.getModel());
-    sorter.setSortable(0, false);
     sorter.setSortable(1, false);
+    sorter.setSortable(2, false);
     _itemsDisplay.setRowSorter(sorter);
 
     _itemsDisplay.setDefaultRenderer(

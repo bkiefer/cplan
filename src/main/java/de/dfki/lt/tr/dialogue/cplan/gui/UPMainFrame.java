@@ -609,7 +609,7 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
       // show the failing items in a list window
       //openItemsWindow(bp.bt);
       @SuppressWarnings("unused")
-      ItemsTableWindow tw = new ItemsTableWindow(this, bp.bt, true);
+      ItemsTableWindow tw = new ItemsTableWindow(this, bp.bt, true, true);
     }
   }
 
