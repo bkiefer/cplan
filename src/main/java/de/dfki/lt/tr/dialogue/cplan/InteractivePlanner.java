@@ -1,9 +1,15 @@
 package de.dfki.lt.tr.dialogue.cplan;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import jline.ConsoleReader;
 import joptsimple.OptionException;
@@ -180,6 +186,68 @@ implements UPMainFrame.CloseAllListener {
     }
   }
 
+  public void batchGenerate(String optionArg, File projectFile,
+    File initialSentences)
+  throws IOException {
+    int repeat = 1;
+    String fileName = optionArg;
+    Pattern split = Pattern.compile("^(([0-9]*):)?(.*)$");
+    Matcher m = split.matcher(optionArg);
+    if (m.matches()) {
+      fileName = m.group(3);
+      String repeatNo = m.group(2);
+      if (! repeatNo.isEmpty()) {
+        try {
+          repeat = Integer.parseInt(repeatNo);
+        }
+        catch (NumberFormatException nfex) {
+          System.out.println("Not a number for batch: " +repeatNo);
+          repeat = 1;
+        }
+      }
+    }
+    File batchFile = new File(fileName);
+    if (! batchFile.exists()) {
+      usage("Batch input file not found:" + batchFile);
+      return;
+    }
+
+    Pattern punctRegex =
+        Pattern.compile("\\s*(?:[;:,.?]\\s*)*([;:,.?])");
+    Pattern spaceRegex = Pattern.compile("\\s+");
+
+    this.readProjectFile(projectFile);
+    HashSet<String> sents = new HashSet<String>();
+
+    if (initialSentences != null) {
+      BufferedReader initSents = new BufferedReader(
+          new InputStreamReader(
+              new FileInputStream(initialSentences), "utf-8"));
+      while (initSents.ready()) {
+        String sent = initSents.readLine();
+        sents.add(sent);
+      }
+      initSents.close();
+    }
+
+    for (int r = 0; r < repeat; ++r) {
+      BatchTest bt = this.batchProcess(batchFile);
+      this.logger.info(bt.percentageGood());
+      for (int i = 0; i < bt.goodSize(); ++i) {
+        BatchTest.ResultItem good = bt.getGood(i);
+        String result =
+            punctRegex.matcher(good.realized).replaceAll("$1");
+        result = spaceRegex.matcher(result).replaceAll(" ");
+        if (! sents.contains(result)) {
+          sents.add(result);
+          System.out.println(result);
+        }
+      }
+      System.err.println(sents.size());
+    }
+  }
+
+
   private static void usage(String msg) {
     String[] usage = {
         "Usage: UPDebugger [-[bB]<atch> inputfile] [-c<ompileonly>] [-d<ebugdags>]",
@@ -252,7 +320,6 @@ implements UPMainFrame.CloseAllListener {
     }
     switch (what) {
     case 'b':
-    case 'B':
       try {
         if (nonOptionArgs.size() == 0) {
           usage("No project file specified");
@@ -264,14 +331,26 @@ implements UPMainFrame.CloseAllListener {
             ip.readProjectFile(new File(nonOptionArgs.get(0)));
             BatchTest bt = ip.batchProcess(batchFile);
             ip.logger.info(bt.percentageGood());
-            if (what == 'B') {
-              for (int i = 0; i < bt.goodSize(); ++i) {
-                BatchTest.ResultItem good = bt.getGood(i);
-                System.out.println(good.realized);
-              }
-            }
             ip.allClosed();
           }
+        }
+      }
+      catch (IOException ex) {
+        ip.logger.error("Problem during batch processing: " +  ex);
+      }
+      break;
+    case 'B':
+      try {
+        if (nonOptionArgs.size() == 0) {
+          usage("No project file specified");
+        } else {
+          File initialSentences = null;
+          if (nonOptionArgs.size() > 1) {
+            initialSentences = new File(nonOptionArgs.get(1));
+          }
+          ip.batchGenerate(optionArg, new File(nonOptionArgs.get(0)),
+              initialSentences);
+          ip.allClosed();
         }
       }
       catch (IOException ex) {
