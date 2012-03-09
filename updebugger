@@ -5,7 +5,7 @@ here="`pwd`"
 cd "`dirname $0`"
 APP_HOME="`pwd`"
 #BINARY=true
-if test -z "$BINARY"; then
+if test -z "$BINARY" -a -d src ; then
     ant all > /dev/null 2>&1
 fi
 cd "$here"

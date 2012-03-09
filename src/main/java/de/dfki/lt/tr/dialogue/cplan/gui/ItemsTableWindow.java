@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -29,7 +28,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -40,7 +38,7 @@ import de.dfki.lt.tr.dialogue.cplan.BatchTest.TestItem;
 public class ItemsTableWindow extends JDialog {
   private static final long serialVersionUID = 1L;
 
-  private BatchTest _bt;
+  private ItemsTableModel _model;
 
   private boolean _showGood, _showBad;
 
@@ -86,6 +84,8 @@ public class ItemsTableWindow extends JDialog {
 
     protected String[] colNames() { return columnNames; }
 
+    private BatchTest _bt;
+
     /** create a new model with initial content */
     public ItemsTableModel(BatchTest bt) { setTest(bt); }
 
@@ -99,7 +99,7 @@ public class ItemsTableWindow extends JDialog {
     /** put a new set of bindings into this model, changing its content */
     public void setTest(BatchTest bt) {
       _bt = bt;
-      this.fireTableDataChanged();
+      fireTableDataChanged();
     }
 
     @Override
@@ -134,22 +134,48 @@ public class ItemsTableWindow extends JDialog {
       }
       assert(false); return null;
     }
-  }
 
-  public ResultItem getItem(int rowIndex) {
-    ResultItem item = null;
-    if (_showBad) {
-      if (rowIndex >= _bt.badSize()) {
-        assert(_showGood);
-        item = _bt.getGood(rowIndex - _bt.badSize());
+    public ResultItem getItem(int rowIndex) {
+      ResultItem item = null;
+      if (_showBad) {
+        if (rowIndex >= _bt.badSize()) {
+          assert(_showGood);
+          item = _bt.getGood(rowIndex - _bt.badSize());
+        } else {
+          item = _bt.getBad(rowIndex);
+        }
       } else {
-        item = _bt.getBad(rowIndex);
+        assert(_showGood);
+        item = _bt.getGood(rowIndex);
       }
-    } else {
-      assert(_showGood);
-      item = _bt.getGood(rowIndex);
+      return item;
     }
-    return item;
+
+    /** Indirection method that also registers model data change.
+     *  @see BatchTest.run()
+     */
+    public void run() {
+      _bt.run();
+      fireTableDataChanged();
+    }
+
+    /** Indirection method */
+    public String percentageGood() {
+      return _bt.percentageGood();
+    }
+
+    /** Indirection method that also registers model data change.
+     *  @see BatchTest.run()
+     */
+    public void reload() throws IOException {
+      _bt.reload();
+      fireTableDataChanged();
+    }
+
+    /** Indirection method */
+    public TestItem getTestItem(int testItemIndex) {
+      return _bt.getItem(testItemIndex);
+    }
   }
 
   /* **********************************************************************
@@ -192,13 +218,13 @@ public class ItemsTableWindow extends JDialog {
 
 
   private void rerun() {
-    _bt.run();
-    setStatusLine(_bt.percentageGood());
+    _model.run();
+    setStatusLine(_model.percentageGood());
   }
 
   private void reload() {
     try {
-      _bt.reload();
+      _model.reload();
     } catch (IOException e) {
       setStatusLine(e.getMessage(), Color.RED);
     }
@@ -219,8 +245,8 @@ public class ItemsTableWindow extends JDialog {
         return;
 
       row = _itemsDisplay.convertRowIndexToModel(row);
-      ResultItem item = getItem(row);
-      testItem = _bt.getItem(item.testItemIndex);
+      ResultItem item = _model.getItem(row);
+      testItem = _model.getTestItem(item.testItemIndex);
       parent().setOutput(item.outputLf);
       parent().setInput(testItem.lf);
       parent().showPosition(testItem.position);
@@ -239,7 +265,7 @@ public class ItemsTableWindow extends JDialog {
             row, column);
 
       row = _itemsDisplay.convertRowIndexToModel(row);
-      ResultItem item = getItem(row);
+      ResultItem item = _model.getItem(row);
       final Color[] colors = {
           new Color(0xEC, 0x8D, 0x9C),
           new Color(0xEC, 0xA1, 0x8D),
@@ -283,13 +309,12 @@ public class ItemsTableWindow extends JDialog {
   public ItemsTableWindow(UPMainFrame parent, BatchTest bt,
     boolean bad, boolean good) {
     super(parent, "Failed Test Items", false);
-    _bt = bt;
     _showBad = bad; _showGood = good;
-    initPanel();
-    setStatusLine(_bt.percentageGood());
+    initPanel(bt);
+    setStatusLine(_model.percentageGood());
   }
 
-  private void initPanel() {
+  private void initPanel(BatchTest bt) {
     // create content panel and add it to the frame
     JPanel contentPane = new JPanel(new BorderLayout());
     // contentPane.setLayout(new BorderLayout());
@@ -340,8 +365,9 @@ public class ItemsTableWindow extends JDialog {
 
     contentPane.add(buttonPane, BorderLayout.SOUTH);
 
+    _model = new ItemsTableModel(bt);
     // to show the list of test items, or the test failures
-    _itemsDisplay = new JTable(new ItemsTableModel(_bt));
+    _itemsDisplay = new JTable(_model);
     // First column should not be too wide
     _itemsDisplay.getColumnModel().getColumn(0).setMaxWidth(15);
 
@@ -351,8 +377,7 @@ public class ItemsTableWindow extends JDialog {
     sorter.setSortable(2, false);
     _itemsDisplay.setRowSorter(sorter);
 
-    _itemsDisplay.setDefaultRenderer(
-        _itemsDisplay.getColumnClass(2),
+    _itemsDisplay.setDefaultRenderer(_itemsDisplay.getColumnClass(2),
         new FailBoldTableCellRenderer());
 
     // _itemsDisplay.addMouseListener(new ShowItemListener());
