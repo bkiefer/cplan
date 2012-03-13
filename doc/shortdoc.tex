@@ -10,7 +10,7 @@
 
 \begin{titlepage}
 \title{\Large \bf Content Planner Module for Talking Robots}
-\date{Saarbr\"ucken, \today}
+\date{Version 1.2, \today}
 \author{Bernd Kiefer, DFKI Saarbr\"ucken}
 \end{titlepage}
 
@@ -23,8 +23,10 @@
 {CPlanMainWindow}
 \pgfdeclareimage[interpolate=true,width=\textwidth]{AllWindows}
 {CPlanAllWindows}
-\pgfdeclareimage[interpolate=true,width=.9\textwidth]{TraceWindow}
+\pgfdeclareimage[interpolate=true,width=.7\textwidth]{TraceWindow}
 {CPlanTraceWindow}
+\pgfdeclareimage[interpolate=true,width=.9\textwidth]{BatchWindow}
+{CPlanBatchWindow}
 
 \section{Installation}
 
@@ -282,7 +284,7 @@ the location of the rule whose application is currently shown.
 Additionally, there is a button toolbar at the top of the window, which allows
 you to perform the following actions:
 
-\begin{itemize}\addtolength{\itemsep}{-.33\itemsep}
+\begin{itemize}\addtolength{\itemsep}{-.7\itemsep}
 \item Jump to the current rule in the editor (the same as double clicking into
   the text areas)
 \item Suspend processing for very long or infinite runs
@@ -291,7 +293,36 @@ you to perform the following actions:
 \item Close the trace window
 \end{itemize}
 
-\newpage
+\subsection{Batch Test Window}
+
+Figure \ref{fig:batchwindow} shows the batch test window that will be opened
+when the batch button in the main window is pressed. Currently, it is designed
+to be used with subsequent generation. The batch files syntax is a sequence of
+one input form, followed by a set of possible output sentences, each on a
+single line, finished by an empty line. To indicate that no generation is
+expected, the set of output sentences may be empty. A single line with only a
+\texttt{*} on it signals that any generation output is fine, except an empty
+output.
+
+\begin{figure}[htbp]
+  \centering
+  \pgfuseimage{BatchWindow}
+  \caption{Batch Test Window}
+  \label{fig:batchwindow}
+\end{figure}
+
+Failed test items will appear in red (or yellow, if there was a warning
+during processing), successful ones in green or blue. The Buttons in the
+tool area reload the batch file, run the batch test again or close the window,
+respectively.
+
+The row header tabs of column one, four and five can be used to re-sort the
+table. Furthermore, the two check boxes at the bottom of the window can be used
+to filter the table appropriately. Clicking a row will put the input and
+output data into the main window, and open the corresponding line in the batch
+file in the editor window.
+
+%\newpage
 \section{General Description}
 The new utterance planner module is very much like a specialized graph
 rewriting system for logical forms as they are used in OpenCCG. A set of
@@ -446,8 +477,6 @@ build-in functions and the plug-in interface see sections \ref{sec:build-ins}
 and \ref{sec:plugins}, respectively. For a detailed description of how the
 matching and modification of the dag works, see section \ref{sec:procregime}.
 
-\newpage
-
 \subsection{Actions}
 
 The BNF for one action looks like this:
@@ -493,6 +522,7 @@ matched.
 For addition and replacement, full or partial logical forms, also containing
 local variables, can be specified. Deletion can currently only be applied to
 single features or relations.
+\newpage
 
 Minimal examples for the three operations are:
 \begin{list}{}{\setlength{\leftmargin}{3.2cm}\setlength{\labelwidth}{2.6cm}
@@ -751,8 +781,14 @@ they appear in the project file, independent of their names.
 \end{itemize}
 \fi
 
+\newpage
 \appendix
 \section{More Examples}
+
+The following examples are a \LaTeX{}ed version of the file
+\texttt{examples.trf}, which is used also for testing and can be found in the
+directory \texttt{cplan/src/test/resources/grammars} to try out the things
+in the running system, and to experiment with variations.\\
 
 \input{examples.tex}
 \end{document}

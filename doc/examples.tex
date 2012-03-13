@@ -3,8 +3,7 @@ condition for the absence of a feature.
 
 \begin{verbatim}
 /// @d:dvp(<SA>assertion ^ <Rel> accept ^ <Cont> (:conttype ^ <foo> bar))
-:dvp ^ ! <Ackno> ^ <SA> assertion
-     ^ <Rel> accept ^ <Cont> ( #c1: )
+:dvp ^ ! <Ackno> ^ <SA> assertion ^ <Rel> accept ^ <Cont> ( #c1: )
 ->
 #c1 = (:marker ^ ok).
 \end{verbatim}
@@ -73,9 +72,10 @@ name has to be used twice! Works only because of disjunction.
 ###opening3 = "nice to see you" ^ <form> polite,
 # ! <SpeechAct>,
 #c1 = random(###opening1, ###opening2, ###opening3):opening .
+
 \end{verbatim}
 
-\newpage\example{8}: Alternative randomization, maybe not very convenient
+\example{8}: Alternative randomization, maybe not very convenient
 \begin{verbatim}
 /// @d:dvp(<SpeechAct>closing ^ <Content> (foo))
 :dvp ^ <SpeechAct>closing -> ##randomclosing = random(1,2).
@@ -134,7 +134,7 @@ but introduce new ones.
 #cop-scope ! <Questioned>.
 \end{verbatim}
 
-\newpage Adding to relations: the correct alternative:\\
+Adding to relations: the correct alternative:\\
 This adds the new information to the previously matched nodes.
 \begin{verbatim}
 :dvp ^ <SpeechAct>question
@@ -147,7 +147,7 @@ This adds the new information to the previously matched nodes.
 #cop-scope ! <Questioned>,
 #cop-scope ^ <Delimitation>unique ^ <Num> sg.
 \end{verbatim}
-
+\newpage
 \subsection{
  Global variable ``maps''
 }
@@ -246,7 +246,7 @@ return zero or one.
 # ^ <bool> lteq("0.3", div(#arg1, #arg2)).
 \end{verbatim}
 
-\newpage\example{18} You can use arbitrary encodings in your grammar files,
+\example{18} You can use arbitrary encodings in your grammar files,
 but if it's not UTF-8, you have to specify as `encoding' setting in the
 grammar file, and, consequently, you can only have one encoding per project.
 \begin{verbatim}

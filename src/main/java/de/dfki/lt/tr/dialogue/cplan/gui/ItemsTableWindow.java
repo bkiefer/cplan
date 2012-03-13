@@ -49,10 +49,10 @@ public class ItemsTableWindow extends JDialog {
   /* specs describing the buttons in the tool bar */
   protected Object[][] actionSpecs() {
     Object [][] results = {
-        {"Rerun", "view-refresh", "Rerun Batch", "Rerun",
-          new Runnable() { public void run() { rerun(); } } },
-        {"Reload", "edit-redo", "Relaod Batch File", "Reload",
+        {"Reload", "edit-redo", "Reload Batch File", "Reload",
           new Runnable() { public void run() { reload(); } } },
+        {"Rerun", "gnome-run", "Rerun Batch", "Rerun",
+          new Runnable() { public void run() { rerun(); } } },
         {"Close", "window-close", "Close Batch Window", "Close",
           new Runnable() { public void run() { close(); } } },
     };
@@ -208,12 +208,16 @@ public class ItemsTableWindow extends JDialog {
       return "[]";
     Iterator<String> it = strings.iterator();
     StringBuilder sb = new StringBuilder();
-    sb.append("[ ").append(it.next());
-    while (it.hasNext()) {
-      sb.append(" | ").append(it.next());
+    String first = it.next();
+    if (it.hasNext()) {
+      sb.append("[ ").append(first);
+      while (it.hasNext()) {
+        sb.append(" | ").append(it.next());
+      }
+      sb.append(" ]");
+      return sb.toString();
     }
-    sb.append(" ]");
-    return sb.toString();
+    return first;
   }
 
 
@@ -267,12 +271,13 @@ public class ItemsTableWindow extends JDialog {
       row = _itemsDisplay.convertRowIndexToModel(row);
       ResultItem item = _model.getItem(row);
       final Color[] colors = {
-          new Color(0xEC, 0x8D, 0x9C),
-          new Color(0xEC, 0xA1, 0x8D),
-          new Color(0xEC, 0xC1, 0x8D),
-          new Color(0xBE, 0xEC, 0x8D)
+          new Color(0xB9, 0x4A, 0x48), new Color(0xF2, 0xDE, 0xDE),
+          new Color(0xC0, 0x98, 0x53), new Color(0xFC, 0xF8, 0xE3),
+          new Color(0x3A, 0x87, 0xAD), new Color(0xD9, 0xED, 0xF7),
+          new Color(0x46, 0x88, 0x47), new Color(0xDF, 0xF0, 0xD8)
       };
-      c.setBackground(colors[item.itemStatus.ordinal()]);
+      c.setForeground(colors[item.itemStatus.ordinal() * 2]);
+      c.setBackground(colors[item.itemStatus.ordinal() * 2 + 1]);
       /*
       if ((value instanceof String) && (((String)value).startsWith("***"))) {
         Font f = c.getFont();
@@ -308,7 +313,7 @@ public class ItemsTableWindow extends JDialog {
 
   public ItemsTableWindow(UPMainFrame parent, BatchTest bt,
     boolean bad, boolean good) {
-    super(parent, "Failed Test Items", false);
+    super(parent, "Batch Test Items", false);
     _showBad = bad; _showGood = good;
     initPanel(bt);
     setStatusLine(_model.percentageGood());
