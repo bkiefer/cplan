@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<!-- In order to compile sources, it is necessary having installed an JDK
+(a simple JRE will not be sufficient -> no javac). -->
+
+<project name="cplan-ccg" basedir="." default="compile">
+
+  <import file="../buildsys/build-skeleton.xml" as=""/>
+
+  <!-- ================================================================= -->
+  <!-- SUBMODULES                                                        -->
+  <!-- ================================================================= -->
+
+  <target name="modules" description="make submodules">
+    <antcall target="subant">
+      <param name="target" value="${target}"/>
+      <param name="dir" value="../cplan"/>
+    </antcall>
+    <antcall target="subant">
+      <param name="target" value="${target}"/>
+      <param name="dir" value="../openccg-dfki"/>
+    </antcall>
+  </target>
+
+</project>
