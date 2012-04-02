@@ -1,0 +1,68 @@
+@d:dvp(<SA>assertion ^ <Rel> accept ^ <Cont> (:conttype ^ <foo> bar))
+*
+
+@aa:bb(<C>(<Mod>(:g ^ <x> y)))
+*
+
+@d:dvp(<SpeechAct>assertion ^ <w>(:foo ^ <Tense>pres))
+*
+
+@d:disj(<T>(:entity ^ <Tense>pres))
+*
+
+@d:disj(<T>(:thing ^ <Tense>pres))
+*
+
+@d:disj2(<T>(:entity ^ <Tense>pres))
+*
+
+@d:disj2(<T>(:thing ^ <Tense>pres))
+*
+
+@d:rand(<SpeechAct>opening ^ <Content>(:top ^ <X> y))
+*
+
+@d:rand2(<SpeechAct>opening ^ <Content>(:top ^ <X> y))
+*
+
+@d:dvp(<SpeechAct>closing ^ <Content> (foo))
+*
+
+@d:dvp(<Speechact>assertion ^ <Content>(a:ascription))
+*
+
+@a:dvp(foo ^ <SpeechAct>question ^
+             <Content>(c1:ascription ^
+                 <Subject>(s1:entity ^ <Delimitation>unique) ^
+                 <Cop-Scope>(s2:gaga ^ prop ^ <Questioned>true)))
+*
+
+@d:dvp2(<Cont> (x:y ^ z) ^ <S>x)
+*
+
+@d:test(<Actor>(:type ^ prop ^ <foo> bar))
+*
+
+@d:dvp(<Content>(:bar ^ baz) ^ <Wh-Restr>(:bar ^ baz))
+*
+
+@d:coref(<Content>(:bar ^ baz) ^ <Wh-Restr>(:bar ^ baz))
+*
+
+@d:coref(<Content>(a:bar ^ baz) ^ <Wh-Restr>(a:bar))
+*
+
+@d:coref(<Content>(a:bar ^ baz) ^ <Wh-Restr>a:)
+*
+
+@d:dvp(<SpeechAct>provideQuestion ^ <Context>(<Question> "question " ^ <Count> "1" ))
+*
+
+@m:math(<arg1>9 ^ <arg2>2)
+*
+
+@m:math(<arg1>9 ^ <arg2>"30.33")
+*
+
+@c:canned(<string>"test")
+test
