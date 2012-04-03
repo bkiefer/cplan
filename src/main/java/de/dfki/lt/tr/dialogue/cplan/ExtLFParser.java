@@ -44,7 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
 
- @SuppressWarnings({"fallthrough", "unused", "rawtypes", "unchecked"})
+@SuppressWarnings({"fallthrough", "unused"})
 
 
 
@@ -303,8 +303,8 @@ public class ExtLFParser
   if (yyn == 2)
     
 /* Line 353 of lalr1.java  */
-/* Line 113 of "ExtLFParser.y"  */
-    { yyval = null; _lfs = (( List )(yystack.valueAt (1-(1)))); return YYACCEPT; };
+/* Line 87 of "ExtLFParser.y"  */
+    { yyval = null; _lf = (( DagNode )(yystack.valueAt (1-(1)))); return YYACCEPT; };
   break;
     
 
@@ -312,11 +312,8 @@ public class ExtLFParser
   if (yyn == 3)
     
 /* Line 353 of lalr1.java  */
-/* Line 118 of "ExtLFParser.y"  */
-    {
-     yyval = unify(setNominal(getNewLF((( String )(yystack.valueAt (7-(2)))))),
-                unify(newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (7-(4))))), (( List )(yystack.valueAt (7-(6))))));
-   };
+/* Line 88 of "ExtLFParser.y"  */
+    { yyval = null; _lf = null; };
   break;
     
 
@@ -324,9 +321,10 @@ public class ExtLFParser
   if (yyn == 4)
     
 /* Line 353 of lalr1.java  */
-/* Line 122 of "ExtLFParser.y"  */
+/* Line 93 of "ExtLFParser.y"  */
     {
-     yyval = unify(setNominal(getNewLF((( String )(yystack.valueAt (5-(2)))))), (( List )(yystack.valueAt (5-(4)))));
+     yyval = unify(getNewLF((( String )(yystack.valueAt (7-(2))))).setNominal(),
+                unify(newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (7-(4))))), (( DagNode )(yystack.valueAt (7-(6))))));
    };
   break;
     
@@ -335,8 +333,10 @@ public class ExtLFParser
   if (yyn == 5)
     
 /* Line 353 of lalr1.java  */
-/* Line 125 of "ExtLFParser.y"  */
-    { yyval = setNominal((( List )(yystack.valueAt (3-(2))))); };
+/* Line 97 of "ExtLFParser.y"  */
+    {
+     yyval = unify(getNewLF((( String )(yystack.valueAt (5-(2))))).setNominal(), (( DagNode )(yystack.valueAt (5-(4)))));
+   };
   break;
     
 
@@ -344,8 +344,8 @@ public class ExtLFParser
   if (yyn == 6)
     
 /* Line 353 of lalr1.java  */
-/* Line 128 of "ExtLFParser.y"  */
-    { yyval = disjunction((( List )(yystack.valueAt (3-(1)))), (( List )(yystack.valueAt (3-(3))))); };
+/* Line 100 of "ExtLFParser.y"  */
+    { yyval = (( DagNode )(yystack.valueAt (3-(2)))).setNominal(); };
   break;
     
 
@@ -353,8 +353,8 @@ public class ExtLFParser
   if (yyn == 7)
     
 /* Line 353 of lalr1.java  */
-/* Line 129 of "ExtLFParser.y"  */
-    { yyval = (( List )(yystack.valueAt (1-(1)))); };
+/* Line 103 of "ExtLFParser.y"  */
+    { yyval = unify((( DagNode )(yystack.valueAt (3-(1)))), (( DagNode )(yystack.valueAt (3-(3))))); };
   break;
     
 
@@ -362,8 +362,8 @@ public class ExtLFParser
   if (yyn == 8)
     
 /* Line 353 of lalr1.java  */
-/* Line 132 of "ExtLFParser.y"  */
-    { yyval = unify((( List )(yystack.valueAt (3-(1)))), (( List )(yystack.valueAt (3-(3))))); };
+/* Line 104 of "ExtLFParser.y"  */
+    { yyval = (( DagNode )(yystack.valueAt (1-(1)))); };
   break;
     
 
@@ -371,8 +371,8 @@ public class ExtLFParser
   if (yyn == 9)
     
 /* Line 353 of lalr1.java  */
-/* Line 133 of "ExtLFParser.y"  */
-    { yyval = (( List )(yystack.valueAt (1-(1)))); };
+/* Line 107 of "ExtLFParser.y"  */
+    { yyval = newLF((( String )(yystack.valueAt (6-(2)))), (( DagNode )(yystack.valueAt (6-(5))))).setNominal(); };
   break;
     
 
@@ -380,8 +380,10 @@ public class ExtLFParser
   if (yyn == 10)
     
 /* Line 353 of lalr1.java  */
-/* Line 136 of "ExtLFParser.y"  */
-    { yyval = setNominal(newLF((( String )(yystack.valueAt (6-(2)))), (( List )(yystack.valueAt (6-(5)))))); };
+/* Line 108 of "ExtLFParser.y"  */
+    { yyval = newLF((( String )(yystack.valueAt (4-(2)))), newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (4-(4))))))
+                                    .setNominal();
+                        };
   break;
     
 
@@ -389,10 +391,10 @@ public class ExtLFParser
   if (yyn == 11)
     
 /* Line 353 of lalr1.java  */
-/* Line 137 of "ExtLFParser.y"  */
-    { yyval = setNominal(
-                                 newLF((( String )(yystack.valueAt (4-(2)))), newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (4-(4)))))));
-                        };
+/* Line 111 of "ExtLFParser.y"  */
+    { yyval = newLF((( String )(yystack.valueAt (4-(2)))), newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (4-(4))))))
+                                    .setNominal();
+                           };
   break;
     
 
@@ -400,10 +402,12 @@ public class ExtLFParser
   if (yyn == 12)
     
 /* Line 353 of lalr1.java  */
-/* Line 140 of "ExtLFParser.y"  */
-    { yyval = setNominal(
-                                    newLF((( String )(yystack.valueAt (4-(2)))), newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (4-(4)))))));
-                           };
+/* Line 115 of "ExtLFParser.y"  */
+    { yyval = newLF((( String )(yystack.valueAt (6-(2)))),
+                                     unify(getNewLF((( String )(yystack.valueAt (6-(4))))).setNominal(),
+                                           newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (6-(6)))))))
+                            .setNominal();
+                        };
   break;
     
 
@@ -411,11 +415,9 @@ public class ExtLFParser
   if (yyn == 13)
     
 /* Line 353 of lalr1.java  */
-/* Line 144 of "ExtLFParser.y"  */
-    { yyval = setNominal(
-                                 newLF((( String )(yystack.valueAt (6-(2)))),
-                                       unify(setNominal(getNewLF((( String )(yystack.valueAt (6-(4)))))),
-                                             newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (6-(6))))))));
+/* Line 121 of "ExtLFParser.y"  */
+    { yyval = newLF((( String )(yystack.valueAt (5-(2)))), getNewLF((( String )(yystack.valueAt (5-(4))))).setNominal())
+                            .setNominal();
                         };
   break;
     
@@ -424,8 +426,9 @@ public class ExtLFParser
   if (yyn == 14)
     
 /* Line 353 of lalr1.java  */
-/* Line 150 of "ExtLFParser.y"  */
-    { yyval = setNominal(newLF((( String )(yystack.valueAt (5-(2)))), setNominal(getNewLF((( String )(yystack.valueAt (5-(4))))))));
+/* Line 124 of "ExtLFParser.y"  */
+    { yyval = unify(getNewLF((( String )(yystack.valueAt (3-(1))))).setNominal(),
+                                     newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (3-(3))))));
                         };
   break;
     
@@ -434,10 +437,8 @@ public class ExtLFParser
   if (yyn == 15)
     
 /* Line 353 of lalr1.java  */
-/* Line 152 of "ExtLFParser.y"  */
-    { yyval = unify(setNominal(getNewLF((( String )(yystack.valueAt (3-(1)))))),
-                                     newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (3-(3))))));
-                        };
+/* Line 127 of "ExtLFParser.y"  */
+    { yyval = getNewLF((( String )(yystack.valueAt (2-(1))))).setNominal(); };
   break;
     
 
@@ -445,8 +446,8 @@ public class ExtLFParser
   if (yyn == 16)
     
 /* Line 353 of lalr1.java  */
-/* Line 155 of "ExtLFParser.y"  */
-    { yyval = setNominal(getNewLF((( String )(yystack.valueAt (2-(1)))))); };
+/* Line 128 of "ExtLFParser.y"  */
+    { yyval = newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (2-(2))))).setNominal(); };
   break;
     
 
@@ -454,33 +455,15 @@ public class ExtLFParser
   if (yyn == 17)
     
 /* Line 353 of lalr1.java  */
-/* Line 156 of "ExtLFParser.y"  */
-    { yyval = setNominal(newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (2-(2)))))); };
-  break;
-    
-
-  case 18:
-  if (yyn == 18)
-    
-/* Line 353 of lalr1.java  */
-/* Line 157 of "ExtLFParser.y"  */
+/* Line 129 of "ExtLFParser.y"  */
     { yyval = newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (1-(1))))); };
   break;
     
 
-  case 19:
-  if (yyn == 19)
-    
-/* Line 353 of lalr1.java  */
-/* Line 158 of "ExtLFParser.y"  */
-    { yyval = (( List )(yystack.valueAt (3-(2)))); };
-  break;
-    
-
 
 
 /* Line 353 of lalr1.java  */
-/* Line 484 of "ExtLFParser.java"  */
+/* Line 467 of "ExtLFParser.java"  */
 	default: break;
       }
 
@@ -833,14 +816,13 @@ public class ExtLFParser
 
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
      STATE-NUM.  */
-  private static final byte yypact_ninf_ = -20;
+  private static final byte yypact_ninf_ = -15;
   private static final byte yypact_[] =
   {
-        -5,    -2,    -1,     5,   -20,     8,     6,    18,    -1,    19,
-      -4,    10,    11,   -20,    21,    -1,    23,   -20,    15,    12,
-     -20,    -1,    -1,    20,    17,   -20,   -20,     9,   -20,   -20,
-      -1,   -20,    22,   -20,    -1,    24,    27,    25,   -20,   -20,
-     -20
+         5,   -15,     6,    -2,    13,   -15,    -7,     7,    15,    16,
+       8,     9,   -15,    18,    -2,    20,   -15,    10,   -15,    -2,
+      17,    12,   -15,    -1,   -15,    -2,   -15,    19,   -15,    -2,
+      14,    24,    21,   -15,   -15,   -15
   };
 
   /* YYDEFACT[S] -- default rule to reduce with in state S when YYTABLE
@@ -848,24 +830,23 @@ public class ExtLFParser
      error.  */
   private static final byte yydefact_[] =
   {
-         0,     0,     0,     0,     2,     0,    18,     0,     0,     0,
-       0,     7,     9,     1,     0,     0,    16,    17,     0,     0,
-       5,     0,     0,     0,     0,    15,    19,     0,     6,     8,
-       0,     4,    11,    12,     0,     0,    14,     0,     3,    13,
-      10
+         0,     3,     0,     0,     0,     2,     0,    17,     0,     0,
+       0,     8,     1,     0,     0,    15,    16,     0,     6,     0,
+       0,     0,    14,     0,     7,     0,     5,    10,    11,     0,
+       0,    13,     0,     4,    12,     9
   };
 
   /* YYPGOTO[NTERM-NUM].  */
   private static final byte yypgoto_[] =
   {
-       -20,   -20,   -20,    -8,   -19,   -20
+       -15,   -15,   -15,   -14,   -15
   };
 
   /* YYDEFGOTO[NTERM-NUM].  */
   private static final byte
   yydefgoto_[] =
   {
-        -1,     3,     4,    10,    11,    12
+        -1,     4,     5,    10,    11
   };
 
   /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -875,20 +856,20 @@ public class ExtLFParser
   private static final byte
   yytable_[] =
   {
-        18,     5,     6,    29,     1,    13,     2,    24,    20,     7,
-       8,    35,    32,    28,     9,    37,    16,    33,    14,    15,
-      34,    17,    19,    21,    23,    22,    25,    26,    27,    31,
-      39,    30,    36,     0,     0,     0,    38,    40
+        21,     7,    27,    13,    14,    24,     1,    28,     8,     6,
+      29,    30,     9,    12,     2,    32,     3,    15,    16,    17,
+      18,    20,    19,    22,    26,    23,    33,    34,    25,    31,
+       0,     0,     0,    35
   };
 
   /* YYCHECK.  */
   private static final byte
   yycheck_[] =
   {
-         8,     3,     3,    22,     9,     0,    11,    15,    12,    10,
-      11,    30,     3,    21,    15,    34,    10,     8,    10,    11,
-      11,     3,     3,    13,     3,    14,     3,    12,    16,    12,
-       3,    11,    10,    -1,    -1,    -1,    12,    12
+        14,     3,     3,    10,    11,    19,     1,     8,    10,     3,
+      11,    25,    14,     0,     9,    29,    11,    10,     3,     3,
+      12,     3,    13,     3,    12,    15,    12,     3,    11,    10,
+      -1,    -1,    -1,    12
   };
 
   /* STOS_[STATE-NUM] -- The (internal number of the) accessing
@@ -896,11 +877,10 @@ public class ExtLFParser
   private static final byte
   yystos_[] =
   {
-         0,     9,    11,    18,    19,     3,     3,    10,    11,    15,
-      20,    21,    22,     0,    10,    11,    10,     3,    20,     3,
-      12,    13,    14,     3,    20,     3,    12,    16,    20,    21,
-      11,    12,     3,     8,    11,    21,    10,    21,    12,     3,
-      12
+         0,     1,     9,    11,    17,    18,     3,     3,    10,    14,
+      19,    20,     0,    10,    11,    10,     3,     3,    12,    13,
+       3,    19,     3,    15,    19,    11,    12,     3,     8,    11,
+      19,    10,    19,    12,     3,    12
   };
 
   /* TOKEN_NUMBER_[YYLEX-NUM] -- Internal symbol number corresponding
@@ -909,23 +889,23 @@ public class ExtLFParser
   yytoken_number_[] =
   {
          0,   256,   264,   258,   259,   260,   261,   262,   263,    64,
-      58,    40,    41,   124,    94,    60,    62
+      58,    40,    41,    94,    60,    62
   };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
   private static final byte
   yyr1_[] =
   {
-         0,    17,    18,    19,    19,    19,    20,    20,    21,    21,
-      22,    22,    22,    22,    22,    22,    22,    22,    22,    22
+         0,    16,    17,    17,    18,    18,    18,    19,    19,    20,
+      20,    20,    20,    20,    20,    20,    20,    20
   };
 
   /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
   private static final byte
   yyr2_[] =
   {
-         0,     2,     1,     7,     5,     3,     3,     1,     3,     1,
-       6,     4,     4,     6,     5,     3,     2,     2,     1,     3
+         0,     2,     1,     1,     7,     5,     3,     3,     1,     6,
+       4,     4,     6,     5,     3,     2,     2,     1
   };
 
   /* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
@@ -933,37 +913,36 @@ public class ExtLFParser
   private static final String yytname_[] =
   {
     "$end", "error", "$undefined", "ID", "VAR", "GVAR", "COMPARISON",
-  "ARROW", "STRING", "'@'", "':'", "'('", "')'", "'|'", "'^'", "'<'",
-  "'>'", "$accept", "start", "lf", "lfdisj", "lfconj", "lfterm", null
+  "ARROW", "STRING", "'@'", "':'", "'('", "')'", "'^'", "'<'", "'>'",
+  "$accept", "start", "lf", "lfconj", "lfterm", null
   };
 
   /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
   private static final byte yyrhs_[] =
   {
-        18,     0,    -1,    19,    -1,     9,     3,    10,     3,    11,
-      21,    12,    -1,     9,     3,    11,    20,    12,    -1,    11,
-      20,    12,    -1,    21,    13,    20,    -1,    21,    -1,    22,
-      14,    21,    -1,    22,    -1,    15,     3,    16,    11,    21,
-      12,    -1,    15,     3,    16,     3,    -1,    15,     3,    16,
-       8,    -1,    15,     3,    16,     3,    10,     3,    -1,    15,
-       3,    16,     3,    10,    -1,     3,    10,     3,    -1,     3,
-      10,    -1,    10,     3,    -1,     3,    -1,    11,    20,    12,
-      -1
+        17,     0,    -1,    18,    -1,     1,    -1,     9,     3,    10,
+       3,    11,    19,    12,    -1,     9,     3,    11,    19,    12,
+      -1,    11,    19,    12,    -1,    20,    13,    19,    -1,    20,
+      -1,    14,     3,    15,    11,    19,    12,    -1,    14,     3,
+      15,     3,    -1,    14,     3,    15,     8,    -1,    14,     3,
+      15,     3,    10,     3,    -1,    14,     3,    15,     3,    10,
+      -1,     3,    10,     3,    -1,     3,    10,    -1,    10,     3,
+      -1,     3,    -1
   };
 
   /* YYPRHS[YYN] -- Index of the first RHS symbol of rule number YYN in
      YYRHS.  */
   private static final byte yyprhs_[] =
   {
-         0,     0,     3,     5,    13,    19,    23,    27,    29,    33,
-      35,    42,    47,    52,    59,    65,    69,    72,    75,    77
+         0,     0,     3,     5,     7,    15,    21,    25,    29,    31,
+      38,    43,    48,    55,    61,    65,    68,    71
   };
 
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
   private static final short yyrline_[] =
   {
-         0,   113,   113,   118,   122,   125,   128,   129,   132,   133,
-     136,   137,   140,   143,   149,   152,   155,   156,   157,   158
+         0,    87,    87,    88,    93,    97,   100,   103,   104,   107,
+     108,   111,   114,   120,   124,   127,   128,   129
   };
 
   // Report on the debug stream that the rule yyrule is going to be reduced.
@@ -994,13 +973,13 @@ public class ExtLFParser
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
       11,    12,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,    10,     2,
-      15,     2,    16,     2,     9,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,    14,     2,     2,     2,     2,     2,
+      14,     2,    15,     2,     9,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,    13,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -1025,13 +1004,13 @@ public class ExtLFParser
       return yyundef_token_;
   }
 
-  private static final int yylast_ = 37;
-  private static final int yynnts_ = 6;
+  private static final int yylast_ = 33;
+  private static final int yynnts_ = 5;
   private static final int yyempty_ = -2;
-  private static final int yyfinal_ = 13;
+  private static final int yyfinal_ = 12;
   private static final int yyterror_ = 1;
   private static final int yyerrcode_ = 256;
-  private static final int yyntokens_ = 17;
+  private static final int yyntokens_ = 16;
 
   private static final int yyuser_token_number_max_ = 264;
   private static final int yyundef_token_ = 2;
@@ -1042,72 +1021,46 @@ public class ExtLFParser
 /* Line 875 of lalr1.java  */
 /* Line 20 of "ExtLFParser.y"  */
 
-  private List<DagNode> _lfs;
+  private DagNode _lf;
 
   private HashMap<String, DagNode> _nodes = new HashMap<String, DagNode>();
 
-  private List<DagNode> listify(DagNode d) {
-    List<DagNode> result = new LinkedList<DagNode>();
-    result.add(d);
-    return result;
+  private DagNode newLF(String feature, String type) {
+    return new DagNode(feature, new DagNode(type));
   }
 
-  private List<DagNode> newLF(String feature, String type) {
-    return listify(new DagNode(feature, new DagNode(type)));
+  private DagNode newLF(String feature, DagNode value) {
+    return new DagNode(feature, value);
   }
 
-  private List<DagNode> newLF(String feature, List<DagNode> values) {
-    List<DagNode> result = new LinkedList<DagNode>();
-    for (DagNode value : values) {
-      result.add(new DagNode(feature, value));
-    }
-    return result;
+  private DagNode newLF(short feature, String type) {
+    return new DagNode(feature, new DagNode(type));
   }
 
-  private List<DagNode> newLF(short feature, String type) {
-    return listify(new DagNode(feature, new DagNode(type)));
-  }
-
-  private List<DagNode> getNewLF(String id) {
+  private DagNode getNewLF(String id) {
     DagNode lf = _nodes.get(id);
     if (lf == null) {
-      lf = newLF(DagNode.ID_FEAT_ID, id).get(0);
+      lf = newLF(DagNode.ID_FEAT_ID, id);
       _nodes.put(id, lf);
     }
-    return listify(lf);
+    return lf;
   }
 
-  /** unify two lists of dag nodes */
-  private List<DagNode> unify(List<DagNode> leftList, List<DagNode> rightList) {
-    List<DagNode> result = new LinkedList<DagNode>();
-    for (DagNode left : leftList) {
-      for (DagNode right : rightList) {
-        boolean unifies = left.add(right);
-        result.add(left.copyAndInvalidate());
-      }
-    }
-    return result;
-  }
-
-  private List<DagNode> disjunction(List<DagNode> left, List<DagNode> right) {
-    left.addAll(right);
+  /** unify two conjunctions */
+  private DagNode unify(DagNode left, DagNode right) {
+    left.add(right);
     return left;
-  }
-
-  private List<DagNode> setNominal(List<DagNode> dags) {
-    for (DagNode dag : dags) {
-      dag.setNominal();
-    }
-    return dags;
   }
 
   /** Transfer the result back to the caller of the parser */
   public List<DagNode> getResultLFs() {
-    return _lfs;
+    List<DagNode> result = new LinkedList<DagNode>();
+    result.add(_lf.copyAndInvalidate());
+    return result;
   }
 
   public void reset() {
-    _lfs = null;
+    _lf = null;
     _nodes.clear();
   }
 
@@ -1121,7 +1074,7 @@ public class ExtLFParser
 
 
 /* Line 875 of lalr1.java  */
-/* Line 1125 of "ExtLFParser.java"  */
+/* Line 1078 of "ExtLFParser.java"  */
 
 }
 

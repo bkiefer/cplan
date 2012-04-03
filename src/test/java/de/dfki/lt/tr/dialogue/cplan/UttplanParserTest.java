@@ -383,7 +383,15 @@ public class UttplanParserTest {
       "                 ^ <foo> baz -> # ^ <baz> foo, # ! <foo>. }}",
       "@d1:dvp( <a> b ^ <foo> bar )", "@d1:dvp( <a> b ^ <bar> foo )",
     },
+
+    // 52 check special edges
+    { ":special ^ <foo>(#foo: ^ ! <__TYPE> ^ ! <__PROP> ^ ! <__ID> )"+
+      "-> #foo ^ (a:b ^ c).",
+      "@d:special(<foo>(<bar>baz))",
+      "@d:special(<foo>(a:b ^ c ^ <bar>baz))"
+    },
   };
+
 
   private static String[][] matchTestPatternsNegative =
   {
@@ -499,6 +507,14 @@ public class UttplanParserTest {
       "@d1:dvp( <C> ( <A> ( :yes ) ^ <B> ( :yes ) ) )",
       "@d1:dvp( <C> ( <A> ( :yes ) ^ <B> ( :no ) ) )"
     },
+
+    // 16 check special edges
+    { ":special ^ <foo>(#foo: ^ ! <__TYPE> ^ ! <__PROP> ^ ! <__ID> )"+
+      "-> #foo ^ (a:b ^ c).",
+      "@d:special(<foo>(:b ^ <bar>baz))",
+      "@d:special(<foo>(:b ^ <bar>baz))"
+    },
+
   };
 
   private static String[][] otherPatterns =
@@ -600,6 +616,12 @@ public class UttplanParserTest {
       "@d1:dvp( <val>\"Another String\" )",
     },
 
+    // 14 check not multi-applied because of corefs
+    { ":content ^ ! <Subject> -> # ^ <Subject>(:person ^ I).",
+      "@x:b(<a>(<Cont>(a:content) ^ <Cont3>bar) ^ <Cont2>a:content)",
+      "@x:b(<a>(<Cont>(a:content ^ <Subject>(:person ^ I)) ^ <Cont3>bar) ^ <Cont2>a:content)",
+    },
+
     // 12 check buildin function wordcount : words
     /* There can be no newlines in the strings so this is disabled.
     // 13 check buildin function wordcount : lines
@@ -610,6 +632,8 @@ public class UttplanParserTest {
       "@d1:dvp( <val>\"Another String\" )",
     },
     */
+
+
 
   };
 

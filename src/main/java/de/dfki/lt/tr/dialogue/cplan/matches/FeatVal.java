@@ -50,10 +50,14 @@ public class FeatVal extends Match {
     if (_feature == -1) {
       sub =  "<" + _featureVar + "> " + _value;
     } else if (_feature == DagNode.TYPE_FEAT_ID) {
-      sub = _value.toStringBare();
-      sub = ":" + sub;
+      if (_value == null) {
+        sub = "<__TYPE>";
+      } else {
+        sub = _value.toStringBare();
+        sub = ":" + sub;
+      }
     } else if (_feature == DagNode.PROP_FEAT_ID) {
-      sub = _value == null ? "<null>" : _value.toStringBare();
+      sub = _value == null ? "<__PROP>" : _value.toStringBare();
       //if (sub.endsWith(":")) {
       //  sub = sub.substring(0, sub.length() - 1);
       //}

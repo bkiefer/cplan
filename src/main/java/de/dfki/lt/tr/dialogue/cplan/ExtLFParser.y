@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
 
- @SuppressWarnings({"fallthrough", "unused", "rawtypes", "unchecked"})
+@SuppressWarnings({"fallthrough", "unused"})
 }
 
 %language "Java"
@@ -18,72 +18,46 @@ import java.util.LinkedList;
 %define parser_class_name "ExtLFParser"
 
 %code {
-  private List<DagNode> _lfs;
+  private DagNode _lf;
 
   private HashMap<String, DagNode> _nodes = new HashMap<String, DagNode>();
 
-  private List<DagNode> listify(DagNode d) {
-    List<DagNode> result = new LinkedList<DagNode>();
-    result.add(d);
-    return result;
+  private DagNode newLF(String feature, String type) {
+    return new DagNode(feature, new DagNode(type));
   }
 
-  private List<DagNode> newLF(String feature, String type) {
-    return listify(new DagNode(feature, new DagNode(type)));
+  private DagNode newLF(String feature, DagNode value) {
+    return new DagNode(feature, value);
   }
 
-  private List<DagNode> newLF(String feature, List<DagNode> values) {
-    List<DagNode> result = new LinkedList<DagNode>();
-    for (DagNode value : values) {
-      result.add(new DagNode(feature, value));
-    }
-    return result;
+  private DagNode newLF(short feature, String type) {
+    return new DagNode(feature, new DagNode(type));
   }
 
-  private List<DagNode> newLF(short feature, String type) {
-    return listify(new DagNode(feature, new DagNode(type)));
-  }
-
-  private List<DagNode> getNewLF(String id) {
+  private DagNode getNewLF(String id) {
     DagNode lf = _nodes.get(id);
     if (lf == null) {
-      lf = newLF(DagNode.ID_FEAT_ID, id).get(0);
+      lf = newLF(DagNode.ID_FEAT_ID, id);
       _nodes.put(id, lf);
     }
-    return listify(lf);
+    return lf;
   }
 
-  /** unify two lists of dag nodes */
-  private List<DagNode> unify(List<DagNode> leftList, List<DagNode> rightList) {
-    List<DagNode> result = new LinkedList<DagNode>();
-    for (DagNode left : leftList) {
-      for (DagNode right : rightList) {
-        boolean unifies = left.add(right);
-        result.add(left.copyAndInvalidate());
-      }
-    }
-    return result;
-  }
-
-  private List<DagNode> disjunction(List<DagNode> left, List<DagNode> right) {
-    left.addAll(right);
+  /** unify two conjunctions */
+  private DagNode unify(DagNode left, DagNode right) {
+    left.add(right);
     return left;
-  }
-
-  private List<DagNode> setNominal(List<DagNode> dags) {
-    for (DagNode dag : dags) {
-      dag.setNominal();
-    }
-    return dags;
   }
 
   /** Transfer the result back to the caller of the parser */
   public List<DagNode> getResultLFs() {
-    return _lfs;
+    List<DagNode> result = new LinkedList<DagNode>();
+    result.add(_lf.copyAndInvalidate());
+    return result;
   }
 
   public void reset() {
-    _lfs = null;
+    _lf = null;
     _nodes.clear();
   }
 
@@ -102,7 +76,7 @@ import java.util.LinkedList;
 %token < String >  ARROW      262
 %token < String >  STRING     263
 
-%type < List > lf lfconj lfterm lfdisj
+%type < DagNode > lf lfconj lfterm
 
 %type < Object > start
 
@@ -110,51 +84,48 @@ import java.util.LinkedList;
 
 %%
 
-start : lf               { $$ = null; _lfs = $1; return YYACCEPT; }
+start : lf               { $$ = null; _lf = $1; return YYACCEPT; }
+      | error            { $$ = null; _lf = null; }
       ;
 
 // plain logical forms
 
 lf : '@' ID ':' ID '(' lfconj ')' {
-     $$ = unify(setNominal(getNewLF($2)),
+     $$ = unify(getNewLF($2).setNominal(),
                 unify(newLF(DagNode.TYPE_FEAT_ID, $4), $6));
    }
-   | '@' ID  '(' lfdisj ')' {
-     $$ = unify(setNominal(getNewLF($2)), $4);
+   | '@' ID  '(' lfconj ')' {
+     $$ = unify(getNewLF($2).setNominal(), $4);
    }
-   | '(' lfdisj ')'   { $$ = setNominal($2); }
+   | '(' lfconj ')'   { $$ = $2.setNominal(); }
    ;
-
-lfdisj : lfconj '|' lfdisj { $$ = disjunction($1, $3); }
-       | lfconj            { $$ = $1; }
-       ;
 
 lfconj : lfterm '^' lfconj { $$ = unify($1, $3); }
        | lfterm            { $$ = $1; }
        ;
 
-lfterm : '<' ID '>' '(' lfconj ')' { $$ = setNominal(newLF($2, $5)); }
-       | '<' ID '>' ID  { $$ = setNominal(
-                                 newLF($2, newLF(DagNode.PROP_FEAT_ID, $4)));
+lfterm : '<' ID '>' '(' lfconj ')' { $$ = newLF($2, $5).setNominal(); }
+       | '<' ID '>' ID  { $$ = newLF($2, newLF(DagNode.PROP_FEAT_ID, $4))
+                                    .setNominal();
                         }
-       | '<' ID '>' STRING { $$ = setNominal(
-                                    newLF($2, newLF(DagNode.PROP_FEAT_ID, $4)));
+       | '<' ID '>' STRING { $$ = newLF($2, newLF(DagNode.PROP_FEAT_ID, $4))
+                                    .setNominal();
                            }
        | '<' ID '>' ID ':' ID
-                        { $$ = setNominal(
-                                 newLF($2,
-                                       unify(setNominal(getNewLF($4)),
-                                             newLF(DagNode.TYPE_FEAT_ID, $6))));
+                        { $$ = newLF($2,
+                                     unify(getNewLF($4).setNominal(),
+                                           newLF(DagNode.TYPE_FEAT_ID, $6)))
+                            .setNominal();
                         }
        | '<' ID '>' ID ':'
-                        { $$ = setNominal(newLF($2, setNominal(getNewLF($4))));
+                        { $$ = newLF($2, getNewLF($4).setNominal())
+                            .setNominal();
                         }
-       | ID ':' ID      { $$ = unify(setNominal(getNewLF($1)),
+       | ID ':' ID      { $$ = unify(getNewLF($1).setNominal(),
                                      newLF(DagNode.TYPE_FEAT_ID, $3));
                         }
-       | ID ':'         { $$ = setNominal(getNewLF($1)); }
-       | ':' ID         { $$ = setNominal(newLF(DagNode.TYPE_FEAT_ID, $2)); }
+       | ID ':'         { $$ = getNewLF($1).setNominal(); }
+       | ':' ID         { $$ = newLF(DagNode.TYPE_FEAT_ID, $2).setNominal(); }
        | ID             { $$ = newLF(DagNode.PROP_FEAT_ID, $1); }
-       | '(' lfdisj ')' { $$ = $2; }
        ;
 

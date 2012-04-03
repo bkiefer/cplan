@@ -91,11 +91,12 @@ public class LFParserTest {
     }
   }
 
+  /*
   @Test
   public void testExtLfDisj() throws IOException {
     String testItem = "@d:dvp(\n" +
         "<SpeechAct>( greeting | closing | acknowledgementName | confirmName |\n"+
-        " provideQuestion | provideChoiceAnswersQuiz  | provideChoiceAnswersQuiz" +
+        " provideQuestion | provideChoiceAnswersQuiz | provideChoiceAnswersQuiz" +
         " | provideChoiceAnswersQuiz) ^\n" +
         "<currentGame>(unknown | quiz | imitation | dance) ^\n" +
         "<gameImitation>(unknown | first | notfirst) ^\n" +
@@ -116,12 +117,12 @@ public class LFParserTest {
         "<questionQuiz>unknown ^\n" +
         " <answerQuiz1>unknown ^\n" +
         " <answerQuiz2>unknown ^\n" +
-        " <answerQuiz3>unknownm ^\n" +
+        " <answerQuiz3>unknown ^\n" +
         " <answerQuiz4>unknown ^\n" +
-        "<correctAnswerQuiz>unknown | 1 | 2 | 3 | 4 | 5 ^\n" +
-        "<performanceQuestions>unknown | 1 | 2 ^\n" +
-        "<selectedAnswer>unknown | 1 | 2 | 3 | 4 | 5 ^\n" +
-        "<questionCount>unknown | 1 | 2 | 3)\n";
+        "<correctAnswerQuiz>(unknown | 1 | 2 | 3 | 4 | 5) ^\n" +
+        "<performanceQuestions>(unknown | 1 | 2) ^\n" +
+        "<selectedAnswer>(unknown | 1 | 2 | 3 | 4 | 5) ^\n" +
+        "<questionCount>(unknown | 1 | 2 | 3))\n";
     ExtLFParser lfparser = new ExtLFParser(new Lexer(new StringReader(testItem)));
     lfparser.errorVerbose = true;
     DagNode res = null;
@@ -129,5 +130,5 @@ public class LFParserTest {
     int lfs = lfparser.getResultLFs().size();
     assertEquals(80621568, lfs);
   }
-
+   */
 }

@@ -11,434 +11,370 @@ Grammar
     0 $accept: start $end
 
     1 start: lf
+    2      | error
 
-    2 lf: '@' ID ':' ID '(' lfconj ')'
-    3   | '@' ID '(' lfdisj ')'
-    4   | '(' lfdisj ')'
+    3 lf: '@' ID ':' ID '(' lfconj ')'
+    4   | '@' ID '(' lfconj ')'
+    5   | '(' lfconj ')'
 
-    5 lfdisj: lfconj '|' lfdisj
-    6       | lfconj
+    6 lfconj: lfterm '^' lfconj
+    7       | lfterm
 
-    7 lfconj: lfterm '^' lfconj
-    8       | lfterm
-
-    9 lfterm: '<' ID '>' '(' lfconj ')'
-   10       | '<' ID '>' ID
-   11       | '<' ID '>' STRING
-   12       | '<' ID '>' ID ':' ID
-   13       | '<' ID '>' ID ':'
-   14       | ID ':' ID
-   15       | ID ':'
-   16       | ':' ID
-   17       | ID
-   18       | '(' lfdisj ')'
+    8 lfterm: '<' ID '>' '(' lfconj ')'
+    9       | '<' ID '>' ID
+   10       | '<' ID '>' STRING
+   11       | '<' ID '>' ID ':' ID
+   12       | '<' ID '>' ID ':'
+   13       | ID ':' ID
+   14       | ID ':'
+   15       | ':' ID
+   16       | ID
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
-'(' (40) 2 3 4 9 18
-')' (41) 2 3 4 9 18
-':' (58) 2 12 13 14 15 16
-'<' (60) 9 10 11 12 13
-'>' (62) 9 10 11 12 13
-'@' (64) 2 3
-'^' (94) 7
-'|' (124) 5
-error (256)
-ID (258) 2 3 9 10 11 12 13 14 15 16 17
+'(' (40) 3 4 5 8
+')' (41) 3 4 5 8
+':' (58) 3 11 12 13 14 15
+'<' (60) 8 9 10 11 12
+'>' (62) 8 9 10 11 12
+'@' (64) 3 4
+'^' (94) 6
+error (256) 2
+ID (258) 3 4 8 9 10 11 12 13 14 15 16
 VAR (259)
 GVAR (260)
 COMPARISON (261)
 ARROW (262)
-STRING (263) 11
+STRING (263) 10
 
 
 Nonterminals, with rules where they appear
 
-$accept (17)
+$accept (16)
     on left: 0
-start (18)
-    on left: 1, on right: 0
-lf (19)
-    on left: 2 3 4, on right: 1
-lfdisj (20)
-    on left: 5 6, on right: 3 4 5 18
-lfconj (21)
-    on left: 7 8, on right: 2 5 6 7 9
-lfterm (22)
-    on left: 9 10 11 12 13 14 15 16 17 18, on right: 7 8
+start (17)
+    on left: 1 2, on right: 0
+lf (18)
+    on left: 3 4 5, on right: 1
+lfconj (19)
+    on left: 6 7, on right: 3 4 5 6 8
+lfterm (20)
+    on left: 8 9 10 11 12 13 14 15 16, on right: 6 7
 
 
 state 0
 
     0 $accept: . start $end
 
-    '@'  shift, and go to state 1
-    '('  shift, and go to state 2
+    error  shift, and go to state 1
+    '@'    shift, and go to state 2
+    '('    shift, and go to state 3
 
-    start  go to state 3
-    lf     go to state 4
+    start  go to state 4
+    lf     go to state 5
 
 
 state 1
 
-    2 lf: '@' . ID ':' ID '(' lfconj ')'
-    3   | '@' . ID '(' lfdisj ')'
+    2 start: error .
 
-    ID  shift, and go to state 5
+    $default  reduce using rule 2 (start)
 
 
 state 2
 
-    4 lf: '(' . lfdisj ')'
+    3 lf: '@' . ID ':' ID '(' lfconj ')'
+    4   | '@' . ID '(' lfconj ')'
 
-    ID   shift, and go to state 6
-    ':'  shift, and go to state 7
-    '('  shift, and go to state 8
-    '<'  shift, and go to state 9
-
-    lfdisj  go to state 10
-    lfconj  go to state 11
-    lfterm  go to state 12
+    ID  shift, and go to state 6
 
 
 state 3
 
-    0 $accept: start . $end
+    5 lf: '(' . lfconj ')'
 
-    $end  shift, and go to state 13
+    ID   shift, and go to state 7
+    ':'  shift, and go to state 8
+    '<'  shift, and go to state 9
+
+    lfconj  go to state 10
+    lfterm  go to state 11
 
 
 state 4
+
+    0 $accept: start . $end
+
+    $end  shift, and go to state 12
+
+
+state 5
 
     1 start: lf .
 
     $default  reduce using rule 1 (start)
 
 
-state 5
-
-    2 lf: '@' ID . ':' ID '(' lfconj ')'
-    3   | '@' ID . '(' lfdisj ')'
-
-    ':'  shift, and go to state 14
-    '('  shift, and go to state 15
-
-
 state 6
 
-   14 lfterm: ID . ':' ID
-   15       | ID . ':'
-   17       | ID .
+    3 lf: '@' ID . ':' ID '(' lfconj ')'
+    4   | '@' ID . '(' lfconj ')'
 
-    ':'  shift, and go to state 16
-
-    $default  reduce using rule 17 (lfterm)
+    ':'  shift, and go to state 13
+    '('  shift, and go to state 14
 
 
 state 7
 
-   16 lfterm: ':' . ID
+   13 lfterm: ID . ':' ID
+   14       | ID . ':'
+   16       | ID .
 
-    ID  shift, and go to state 17
+    ':'  shift, and go to state 15
+
+    $default  reduce using rule 16 (lfterm)
 
 
 state 8
 
-   18 lfterm: '(' . lfdisj ')'
+   15 lfterm: ':' . ID
 
-    ID   shift, and go to state 6
-    ':'  shift, and go to state 7
-    '('  shift, and go to state 8
-    '<'  shift, and go to state 9
-
-    lfdisj  go to state 18
-    lfconj  go to state 11
-    lfterm  go to state 12
+    ID  shift, and go to state 16
 
 
 state 9
 
-    9 lfterm: '<' . ID '>' '(' lfconj ')'
-   10       | '<' . ID '>' ID
-   11       | '<' . ID '>' STRING
-   12       | '<' . ID '>' ID ':' ID
-   13       | '<' . ID '>' ID ':'
+    8 lfterm: '<' . ID '>' '(' lfconj ')'
+    9       | '<' . ID '>' ID
+   10       | '<' . ID '>' STRING
+   11       | '<' . ID '>' ID ':' ID
+   12       | '<' . ID '>' ID ':'
 
-    ID  shift, and go to state 19
+    ID  shift, and go to state 17
 
 
 state 10
 
-    4 lf: '(' lfdisj . ')'
+    5 lf: '(' lfconj . ')'
 
-    ')'  shift, and go to state 20
+    ')'  shift, and go to state 18
 
 
 state 11
 
-    5 lfdisj: lfconj . '|' lfdisj
-    6       | lfconj .
+    6 lfconj: lfterm . '^' lfconj
+    7       | lfterm .
 
-    '|'  shift, and go to state 21
+    '^'  shift, and go to state 19
 
-    $default  reduce using rule 6 (lfdisj)
+    $default  reduce using rule 7 (lfconj)
 
 
 state 12
-
-    7 lfconj: lfterm . '^' lfconj
-    8       | lfterm .
-
-    '^'  shift, and go to state 22
-
-    $default  reduce using rule 8 (lfconj)
-
-
-state 13
 
     0 $accept: start $end .
 
     $default  accept
 
 
+state 13
+
+    3 lf: '@' ID ':' . ID '(' lfconj ')'
+
+    ID  shift, and go to state 20
+
+
 state 14
 
-    2 lf: '@' ID ':' . ID '(' lfconj ')'
+    4 lf: '@' ID '(' . lfconj ')'
 
-    ID  shift, and go to state 23
+    ID   shift, and go to state 7
+    ':'  shift, and go to state 8
+    '<'  shift, and go to state 9
+
+    lfconj  go to state 21
+    lfterm  go to state 11
 
 
 state 15
 
-    3 lf: '@' ID '(' . lfdisj ')'
+   13 lfterm: ID ':' . ID
+   14       | ID ':' .
 
-    ID   shift, and go to state 6
-    ':'  shift, and go to state 7
-    '('  shift, and go to state 8
-    '<'  shift, and go to state 9
+    ID  shift, and go to state 22
 
-    lfdisj  go to state 24
-    lfconj  go to state 11
-    lfterm  go to state 12
+    $default  reduce using rule 14 (lfterm)
 
 
 state 16
 
-   14 lfterm: ID ':' . ID
-   15       | ID ':' .
-
-    ID  shift, and go to state 25
+   15 lfterm: ':' ID .
 
     $default  reduce using rule 15 (lfterm)
 
 
 state 17
 
-   16 lfterm: ':' ID .
+    8 lfterm: '<' ID . '>' '(' lfconj ')'
+    9       | '<' ID . '>' ID
+   10       | '<' ID . '>' STRING
+   11       | '<' ID . '>' ID ':' ID
+   12       | '<' ID . '>' ID ':'
 
-    $default  reduce using rule 16 (lfterm)
+    '>'  shift, and go to state 23
 
 
 state 18
 
-   18 lfterm: '(' lfdisj . ')'
+    5 lf: '(' lfconj ')' .
 
-    ')'  shift, and go to state 26
+    $default  reduce using rule 5 (lf)
 
 
 state 19
 
-    9 lfterm: '<' ID . '>' '(' lfconj ')'
-   10       | '<' ID . '>' ID
-   11       | '<' ID . '>' STRING
-   12       | '<' ID . '>' ID ':' ID
-   13       | '<' ID . '>' ID ':'
+    6 lfconj: lfterm '^' . lfconj
 
-    '>'  shift, and go to state 27
+    ID   shift, and go to state 7
+    ':'  shift, and go to state 8
+    '<'  shift, and go to state 9
+
+    lfconj  go to state 24
+    lfterm  go to state 11
 
 
 state 20
 
-    4 lf: '(' lfdisj ')' .
+    3 lf: '@' ID ':' ID . '(' lfconj ')'
 
-    $default  reduce using rule 4 (lf)
+    '('  shift, and go to state 25
 
 
 state 21
 
-    5 lfdisj: lfconj '|' . lfdisj
+    4 lf: '@' ID '(' lfconj . ')'
 
-    ID   shift, and go to state 6
-    ':'  shift, and go to state 7
-    '('  shift, and go to state 8
-    '<'  shift, and go to state 9
-
-    lfdisj  go to state 28
-    lfconj  go to state 11
-    lfterm  go to state 12
+    ')'  shift, and go to state 26
 
 
 state 22
 
-    7 lfconj: lfterm '^' . lfconj
-
-    ID   shift, and go to state 6
-    ':'  shift, and go to state 7
-    '('  shift, and go to state 8
-    '<'  shift, and go to state 9
-
-    lfconj  go to state 29
-    lfterm  go to state 12
-
-
-state 23
-
-    2 lf: '@' ID ':' ID . '(' lfconj ')'
-
-    '('  shift, and go to state 30
-
-
-state 24
-
-    3 lf: '@' ID '(' lfdisj . ')'
-
-    ')'  shift, and go to state 31
-
-
-state 25
-
-   14 lfterm: ID ':' ID .
-
-    $default  reduce using rule 14 (lfterm)
-
-
-state 26
-
-   18 lfterm: '(' lfdisj ')' .
-
-    $default  reduce using rule 18 (lfterm)
-
-
-state 27
-
-    9 lfterm: '<' ID '>' . '(' lfconj ')'
-   10       | '<' ID '>' . ID
-   11       | '<' ID '>' . STRING
-   12       | '<' ID '>' . ID ':' ID
-   13       | '<' ID '>' . ID ':'
-
-    ID      shift, and go to state 32
-    STRING  shift, and go to state 33
-    '('     shift, and go to state 34
-
-
-state 28
-
-    5 lfdisj: lfconj '|' lfdisj .
-
-    $default  reduce using rule 5 (lfdisj)
-
-
-state 29
-
-    7 lfconj: lfterm '^' lfconj .
-
-    $default  reduce using rule 7 (lfconj)
-
-
-state 30
-
-    2 lf: '@' ID ':' ID '(' . lfconj ')'
-
-    ID   shift, and go to state 6
-    ':'  shift, and go to state 7
-    '('  shift, and go to state 8
-    '<'  shift, and go to state 9
-
-    lfconj  go to state 35
-    lfterm  go to state 12
-
-
-state 31
-
-    3 lf: '@' ID '(' lfdisj ')' .
-
-    $default  reduce using rule 3 (lf)
-
-
-state 32
-
-   10 lfterm: '<' ID '>' ID .
-   12       | '<' ID '>' ID . ':' ID
-   13       | '<' ID '>' ID . ':'
-
-    ':'  shift, and go to state 36
-
-    $default  reduce using rule 10 (lfterm)
-
-
-state 33
-
-   11 lfterm: '<' ID '>' STRING .
-
-    $default  reduce using rule 11 (lfterm)
-
-
-state 34
-
-    9 lfterm: '<' ID '>' '(' . lfconj ')'
-
-    ID   shift, and go to state 6
-    ':'  shift, and go to state 7
-    '('  shift, and go to state 8
-    '<'  shift, and go to state 9
-
-    lfconj  go to state 37
-    lfterm  go to state 12
-
-
-state 35
-
-    2 lf: '@' ID ':' ID '(' lfconj . ')'
-
-    ')'  shift, and go to state 38
-
-
-state 36
-
-   12 lfterm: '<' ID '>' ID ':' . ID
-   13       | '<' ID '>' ID ':' .
-
-    ID  shift, and go to state 39
+   13 lfterm: ID ':' ID .
 
     $default  reduce using rule 13 (lfterm)
 
 
-state 37
+state 23
 
-    9 lfterm: '<' ID '>' '(' lfconj . ')'
+    8 lfterm: '<' ID '>' . '(' lfconj ')'
+    9       | '<' ID '>' . ID
+   10       | '<' ID '>' . STRING
+   11       | '<' ID '>' . ID ':' ID
+   12       | '<' ID '>' . ID ':'
 
-    ')'  shift, and go to state 40
+    ID      shift, and go to state 27
+    STRING  shift, and go to state 28
+    '('     shift, and go to state 29
 
 
-state 38
+state 24
 
-    2 lf: '@' ID ':' ID '(' lfconj ')' .
+    6 lfconj: lfterm '^' lfconj .
 
-    $default  reduce using rule 2 (lf)
+    $default  reduce using rule 6 (lfconj)
 
 
-state 39
+state 25
 
-   12 lfterm: '<' ID '>' ID ':' ID .
+    3 lf: '@' ID ':' ID '(' . lfconj ')'
+
+    ID   shift, and go to state 7
+    ':'  shift, and go to state 8
+    '<'  shift, and go to state 9
+
+    lfconj  go to state 30
+    lfterm  go to state 11
+
+
+state 26
+
+    4 lf: '@' ID '(' lfconj ')' .
+
+    $default  reduce using rule 4 (lf)
+
+
+state 27
+
+    9 lfterm: '<' ID '>' ID .
+   11       | '<' ID '>' ID . ':' ID
+   12       | '<' ID '>' ID . ':'
+
+    ':'  shift, and go to state 31
+
+    $default  reduce using rule 9 (lfterm)
+
+
+state 28
+
+   10 lfterm: '<' ID '>' STRING .
+
+    $default  reduce using rule 10 (lfterm)
+
+
+state 29
+
+    8 lfterm: '<' ID '>' '(' . lfconj ')'
+
+    ID   shift, and go to state 7
+    ':'  shift, and go to state 8
+    '<'  shift, and go to state 9
+
+    lfconj  go to state 32
+    lfterm  go to state 11
+
+
+state 30
+
+    3 lf: '@' ID ':' ID '(' lfconj . ')'
+
+    ')'  shift, and go to state 33
+
+
+state 31
+
+   11 lfterm: '<' ID '>' ID ':' . ID
+   12       | '<' ID '>' ID ':' .
+
+    ID  shift, and go to state 34
 
     $default  reduce using rule 12 (lfterm)
 
 
-state 40
+state 32
 
-    9 lfterm: '<' ID '>' '(' lfconj ')' .
+    8 lfterm: '<' ID '>' '(' lfconj . ')'
 
-    $default  reduce using rule 9 (lfterm)
+    ')'  shift, and go to state 35
+
+
+state 33
+
+    3 lf: '@' ID ':' ID '(' lfconj ')' .
+
+    $default  reduce using rule 3 (lf)
+
+
+state 34
+
+   11 lfterm: '<' ID '>' ID ':' ID .
+
+    $default  reduce using rule 11 (lfterm)
+
+
+state 35
+
+    8 lfterm: '<' ID '>' '(' lfconj ')' .
+
+    $default  reduce using rule 8 (lfterm)
