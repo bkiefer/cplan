@@ -131,8 +131,8 @@ public class BatchTest {
       boolean good = parser.parse();
       Position pos = l.getStartPos();
       if (!good) {
-        logger.warn("Stop reading batch file, wrong LF at " + pos);
-        break;
+        logger.warn("Skip wrong LF at " + pos);
+        continue;
       }
       Set<String> answers = new HashSet<String>();
       do {
