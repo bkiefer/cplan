@@ -59,6 +59,12 @@ public class ParallelProcessor implements Processor {
       bindings.restoreLocalBindings(_bindings);
       _rule.executeActions(root, _applicationPoint, bindings);
     }
+
+    @Override
+    public String toString() {
+      return _rule.toString() + "\n"
+          + _applicationPoint + "\n" + _bindings + "\n";
+    }
   }
 
   /** This method applies the rules in a pseudo-parallel way to all nodes in the
@@ -95,16 +101,17 @@ public class ParallelProcessor implements Processor {
           iterators.pop();
         }
       }
-      // don't match against nodes without edges
-      DagEdge applyEdge;
-      if (nextEdge != null
-          && ! (applyEdge = path.lastElement()).getValue().edgesAreEmpty()
-          && ! visited.containsKey(applyEdge.getValue())) {
-        // apply rules to the node under path in the modified structure
-        visited.put(applyEdge.getValue(), applyEdge.getValue());
-        for (Rule rule : _rules) {
-          if (rule.matches(lfEdge, applyEdge, bindings)) {
-            result.add(new RuleAction(rule, path, bindings));
+      if (nextEdge != null) {
+        assert(nextEdge == path.lastElement());
+        // don't match against nodes without edges
+        DagNode applyNode = nextEdge.getValue().dereference();
+        if (! (applyNode.edgesAreEmpty() || visited.containsKey(applyNode))) {
+          // apply rules to the node under path in the modified structure
+          visited.put(applyNode, applyNode);
+          for (Rule rule : _rules) {
+            if (rule.matches(lfEdge, nextEdge, bindings)) {
+              result.add(new RuleAction(rule, path, bindings));
+            }
           }
         }
         iterators.push(nextEdge.getValue().getEdgeIterator());

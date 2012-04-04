@@ -390,6 +390,18 @@ public class UttplanParserTest {
       "@d:special(<foo>(<bar>baz))",
       "@d:special(<foo>(a:b ^ c ^ <bar>baz))"
     },
+
+    // 53 test type replacement
+    { ":foo ^ <Feat> (:#prop ^ :prop) -> #prop = replace.",
+      "@f:foo(<Feat>(:prop))",
+      "@f:foo(<Feat>(:replace))",
+    },
+
+    // 54 test prop replacement
+    { ":foo ^ <Feat> (#prop ^ prop) -> #prop = replace.",
+      "@f:foo(<Feat>prop)",
+      "@f:foo(<Feat>replace)",
+    },
   };
 
 
@@ -622,6 +634,17 @@ public class UttplanParserTest {
       "@x:b(<a>(<Cont>(a:content ^ <Subject>(:person ^ I)) ^ <Cont3>bar) ^ <Cont2>a:content)",
     },
 
+    // 15 check ominous double subject error (missing node.dereference())
+    { ":dvp ^ !<Content><__TYPE> ^ <Type>(#type:perception) -> # ^ <Content>#type:.\n" +
+        ":dvp ^ <Content>(#c1:perception ^ <__TYPE> ^ !<Actor>) ^ <Actor>#a1: ->\n" +
+        "#c1 ^ <Actor>#a1:.\n"  +
+        ":perception ^ !<Subject> ^ <Actor>#a1: -> # ^ <Subject>#a1:.",
+        "@d1:dvp(<Type>(nom1:perception ^ see) ^ <Actor>(nom3:person))",
+        "@d1:dvp(<Type>(nom1:perception ^ see) ^ <Actor>(nom3:person) ^" +
+        "        <Content>(nom1:perception ^ <Actor>(nom3:person) ^" +
+        "                  <Subject>(nom3:person)))",
+    }
+
     // 12 check buildin function wordcount : words
     /* There can be no newlines in the strings so this is disabled.
     // 13 check buildin function wordcount : lines
@@ -632,8 +655,6 @@ public class UttplanParserTest {
       "@d1:dvp( <val>\"Another String\" )",
     },
     */
-
-
 
   };
 
@@ -900,6 +921,7 @@ public class UttplanParserTest {
 
   @Test public void testRecSpecial() throws IOException {
     int i = -1;
+    // DagNode.useDebugPrinter();
     String[] pattern = (i >=0 ? otherPatterns[i] : null);
     _print = true;
     if (pattern != null)

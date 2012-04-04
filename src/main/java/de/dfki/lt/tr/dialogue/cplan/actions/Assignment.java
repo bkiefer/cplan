@@ -10,6 +10,8 @@ import de.dfki.lt.tr.dialogue.cplan.VarDagNode;
 
 public class Assignment extends Action {
 
+  private static final Logger logger = Logger.getLogger("UtterancePlanner");
+
   public Assignment(VarDagNode lval, DagNode dagNode) {
     super(lval, dagNode);
   }
@@ -28,7 +30,26 @@ public class Assignment extends Action {
       Logger.getLogger("UtterancePlanner").error(uex);
       return false;
     }
-    root.setValue(toAssign);
+    if (root.getFeature() == DagNode.PROP_FEAT_ID) {
+      DagNode prop = toAssign.getValue(DagNode.PROP_FEAT_ID);
+      if (prop == null) {
+        logger.warn("Trying to set proposition to non-atomic value, ignoring");
+      } else {
+        root.setValue(prop);
+      }
+    } else if (root.getFeature() == DagNode.TYPE_FEAT_ID) {
+      DagNode type = toAssign.getValue(DagNode.TYPE_FEAT_ID);
+      if (type == null) {
+        type = toAssign.getValue(DagNode.PROP_FEAT_ID);
+      }
+      if (type == null) {
+        logger.warn("Trying to set type to non-atomic value, ignoring");
+      } else {
+        root.setValue(type);
+      }
+    } else {
+      root.setValue(toAssign);
+    }
     return true;
   }
 

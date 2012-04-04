@@ -2,19 +2,19 @@
 /* A Bison parser, made by GNU Bison 2.4.1.  */
 
 /* Skeleton implementation for Bison LALR(1) parsers in Java
-   
+
       Copyright (C) 2007, 2008 Free Software Foundation, Inc.
-   
+
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
-   
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
@@ -27,7 +27,7 @@
    special exception, which will cause the skeleton and the resulting
    Bison output files to be licensed under the GNU General Public
    License without this special exception.
-   
+
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
@@ -89,14 +89,14 @@ public class ExtLFParser
 
 
 
-  
+
 
   /**
    * Communication interface between the scanner and the Bison-generated
    * parser <tt>ExtLFParser</tt>.
    */
   public interface Lexer {
-    
+
 
     /**
      * Method to retrieve the semantic value of the last scanned token.
@@ -106,7 +106,7 @@ public class ExtLFParser
     /**
      * Entry point for the scanner.  Returns the token identifier corresponding
      * to the next token and prepares to return the semantic value
-     * of the token. 
+     * of the token.
      * @return the token identifier corresponding to the next token. */
     int yylex () throws java.io.IOException;
 
@@ -114,15 +114,15 @@ public class ExtLFParser
      * Entry point for error reporting.  Emits an error
      * in a user-defined way.
      *
-     * 
+     *
      * @param s The string for the error message.  */
      void yyerror (String s);
   }
 
   /** The object doing lexical analysis for us.  */
   private Lexer yylexer;
-  
-  
+
+
 
 
 
@@ -132,7 +132,7 @@ public class ExtLFParser
    */
   public ExtLFParser (Lexer yylexer) {
     this.yylexer = yylexer;
-    
+
   }
 
   private java.io.PrintStream yyDebugStream = System.err;
@@ -171,7 +171,7 @@ public class ExtLFParser
     yylexer.yyerror (s);
   }
 
-  
+
 
   protected final void yycdebug (String s) {
     if (yydebug > 0)
@@ -180,21 +180,21 @@ public class ExtLFParser
 
   private final class YYStack {
     private int[] stateStack = new int[16];
-    
+
     private Object[] valueStack = new Object[16];
 
     public int size = 16;
     public int height = -1;
-    
+
     public final void push (int state, Object value    	   	      	    ) {
       height++;
-      if (size == height) 
+      if (size == height)
         {
 	  int[] newStateStack = new int[size * 2];
 	  System.arraycopy (stateStack, 0, newStateStack, 0, height);
 	  stateStack = newStateStack;
-	  
-	  
+
+
 	  Object[] newValueStack = new Object[size * 2];
 	  System.arraycopy (valueStack, 0, newValueStack, 0, height);
 	  valueStack = newValueStack;
@@ -203,7 +203,7 @@ public class ExtLFParser
 	}
 
       stateStack[height] = state;
-      
+
       valueStack[height] = value;
     }
 
@@ -215,7 +215,7 @@ public class ExtLFParser
       // Avoid memory leaks... garbage collection is a white lie!
       if (num > 0) {
 	java.util.Arrays.fill (valueStack, height - num + 1, height, null);
-        
+
       }
       height -= num;
     }
@@ -232,7 +232,7 @@ public class ExtLFParser
     public void print (java.io.PrintStream out)
     {
       out.print ("Stack now");
-      
+
       for (int i = 0; i < height; i++)
         {
 	  out.print (' ');
@@ -279,14 +279,14 @@ public class ExtLFParser
     return yyerrstatus_ == 0;
   }
 
-  private int yyaction (int yyn, YYStack yystack, int yylen) 
+  private int yyaction (int yyn, YYStack yystack, int yylen)
   {
     Object yyval;
-    
+
 
     /* If YYLEN is nonzero, implement the default value of the action:
        `$$ = $1'.  Otherwise, use the top of the stack.
-    
+
        Otherwise, the following line sets YYVAL to garbage.
        This behavior is undocumented and Bison
        users should not rely upon it.  */
@@ -294,32 +294,32 @@ public class ExtLFParser
       yyval = yystack.valueAt (yylen - 1);
     else
       yyval = yystack.valueAt (0);
-    
+
     yy_reduce_print (yyn, yystack);
 
     switch (yyn)
       {
 	  case 2:
   if (yyn == 2)
-    
+
 /* Line 353 of lalr1.java  */
 /* Line 87 of "ExtLFParser.y"  */
     { yyval = null; _lf = (( DagNode )(yystack.valueAt (1-(1)))); return YYACCEPT; };
   break;
-    
+
 
   case 3:
   if (yyn == 3)
-    
+
 /* Line 353 of lalr1.java  */
 /* Line 88 of "ExtLFParser.y"  */
     { yyval = null; _lf = null; };
   break;
-    
+
 
   case 4:
   if (yyn == 4)
-    
+
 /* Line 353 of lalr1.java  */
 /* Line 93 of "ExtLFParser.y"  */
     {
@@ -327,80 +327,80 @@ public class ExtLFParser
                 unify(newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (7-(4))))), (( DagNode )(yystack.valueAt (7-(6))))));
    };
   break;
-    
+
 
   case 5:
   if (yyn == 5)
-    
+
 /* Line 353 of lalr1.java  */
 /* Line 97 of "ExtLFParser.y"  */
     {
      yyval = unify(getNewLF((( String )(yystack.valueAt (5-(2))))).setNominal(), (( DagNode )(yystack.valueAt (5-(4)))));
    };
   break;
-    
+
 
   case 6:
   if (yyn == 6)
-    
+
 /* Line 353 of lalr1.java  */
 /* Line 100 of "ExtLFParser.y"  */
     { yyval = (( DagNode )(yystack.valueAt (3-(2)))).setNominal(); };
   break;
-    
+
 
   case 7:
   if (yyn == 7)
-    
+
 /* Line 353 of lalr1.java  */
 /* Line 103 of "ExtLFParser.y"  */
     { yyval = unify((( DagNode )(yystack.valueAt (3-(1)))), (( DagNode )(yystack.valueAt (3-(3))))); };
   break;
-    
+
 
   case 8:
   if (yyn == 8)
-    
+
 /* Line 353 of lalr1.java  */
 /* Line 104 of "ExtLFParser.y"  */
-    { yyval = (( DagNode )(yystack.valueAt (1-(1)))); };
+    { yyval = (yystack.valueAt (1-(1))); };
   break;
-    
+
 
   case 9:
   if (yyn == 9)
-    
+
 /* Line 353 of lalr1.java  */
 /* Line 107 of "ExtLFParser.y"  */
     { yyval = newLF((( String )(yystack.valueAt (6-(2)))), (( DagNode )(yystack.valueAt (6-(5))))).setNominal(); };
   break;
-    
+
 
   case 10:
   if (yyn == 10)
-    
+
 /* Line 353 of lalr1.java  */
 /* Line 108 of "ExtLFParser.y"  */
     { yyval = newLF((( String )(yystack.valueAt (4-(2)))), newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (4-(4))))))
                                     .setNominal();
                         };
   break;
-    
+
 
   case 11:
   if (yyn == 11)
-    
+
 /* Line 353 of lalr1.java  */
 /* Line 111 of "ExtLFParser.y"  */
     { yyval = newLF((( String )(yystack.valueAt (4-(2)))), newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (4-(4))))))
                                     .setNominal();
                            };
   break;
-    
+
 
   case 12:
   if (yyn == 12)
-    
+
 /* Line 353 of lalr1.java  */
 /* Line 115 of "ExtLFParser.y"  */
     { yyval = newLF((( String )(yystack.valueAt (6-(2)))),
@@ -409,56 +409,56 @@ public class ExtLFParser
                             .setNominal();
                         };
   break;
-    
+
 
   case 13:
   if (yyn == 13)
-    
+
 /* Line 353 of lalr1.java  */
 /* Line 121 of "ExtLFParser.y"  */
     { yyval = newLF((( String )(yystack.valueAt (5-(2)))), getNewLF((( String )(yystack.valueAt (5-(4))))).setNominal())
                             .setNominal();
                         };
   break;
-    
+
 
   case 14:
   if (yyn == 14)
-    
+
 /* Line 353 of lalr1.java  */
 /* Line 124 of "ExtLFParser.y"  */
     { yyval = unify(getNewLF((( String )(yystack.valueAt (3-(1))))).setNominal(),
                                      newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (3-(3))))));
                         };
   break;
-    
+
 
   case 15:
   if (yyn == 15)
-    
+
 /* Line 353 of lalr1.java  */
 /* Line 127 of "ExtLFParser.y"  */
     { yyval = getNewLF((( String )(yystack.valueAt (2-(1))))).setNominal(); };
   break;
-    
+
 
   case 16:
   if (yyn == 16)
-    
+
 /* Line 353 of lalr1.java  */
 /* Line 128 of "ExtLFParser.y"  */
     { yyval = newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (2-(2))))).setNominal(); };
   break;
-    
+
 
   case 17:
   if (yyn == 17)
-    
+
 /* Line 353 of lalr1.java  */
 /* Line 129 of "ExtLFParser.y"  */
     { yyval = newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (1-(1))))); };
   break;
-    
+
 
 
 
@@ -555,7 +555,7 @@ public class ExtLFParser
 
     /* Error handling.  */
     int yynerrs_ = 0;
-    
+
 
     /// Semantic value of the lookahead.
     Object yylval = null;
@@ -579,11 +579,11 @@ public class ExtLFParser
         yycdebug ("Entering state " + yystate + "\n");
         if (yydebug > 0)
           yystack.print (yyDebugStream);
-    
+
         /* Accept?  */
         if (yystate == yyfinal_)
           return true;
-    
+
         /* Take a decision.  First try without lookahead.  */
         yyn = yypact_[yystate];
         if (yyn == yypact_ninf_)
@@ -591,16 +591,16 @@ public class ExtLFParser
             label = YYDEFAULT;
 	    break;
           }
-    
+
         /* Read a lookahead token.  */
         if (yychar == yyempty_)
           {
 	    yycdebug ("Reading a token: ");
 	    yychar = yylex ();
-            
+
             yylval = yylexer.getLVal ();
           }
-    
+
         /* Convert token to internal form.  */
         if (yychar <= EOF)
           {
@@ -613,13 +613,13 @@ public class ExtLFParser
 	    yy_symbol_print ("Next token is", yytoken,
 	    		     yylval);
           }
-    
+
         /* If the proper action on seeing token YYTOKEN is to reduce or to
            detect an error, take that action.  */
         yyn += yytoken;
         if (yyn < 0 || yylast_ < yyn || yycheck_[yyn] != yytoken)
           label = YYDEFAULT;
-    
+
         /* <= 0 means reduce or error.  */
         else if ((yyn = yytable_[yyn]) <= 0)
           {
@@ -631,27 +631,27 @@ public class ExtLFParser
 	        label = YYREDUCE;
 	      }
           }
-    
+
         else
           {
             /* Shift the lookahead token.  */
 	    yy_symbol_print ("Shifting", yytoken,
 	    		     yylval);
-    
+
             /* Discard the token being shifted.  */
             yychar = yyempty_;
-    
+
             /* Count tokens shifted since error; after three, turn off error
                status.  */
             if (yyerrstatus_ > 0)
               --yyerrstatus_;
-    
+
             yystate = yyn;
             yystack.push (yystate, yylval);
             label = YYNEWSTATE;
           }
         break;
-    
+
       /*-----------------------------------------------------------.
       | yydefault -- do the default action for the current state.  |
       `-----------------------------------------------------------*/
@@ -662,7 +662,7 @@ public class ExtLFParser
         else
           label = YYREDUCE;
         break;
-    
+
       /*-----------------------------.
       | yyreduce -- Do a reduction.  |
       `-----------------------------*/
@@ -671,7 +671,7 @@ public class ExtLFParser
         label = yyaction (yyn, yystack, yylen);
 	yystate = yystack.stateAt (0);
         break;
-    
+
       /*------------------------------------.
       | yyerrlab -- here on detecting error |
       `------------------------------------*/
@@ -682,13 +682,13 @@ public class ExtLFParser
 	    ++yynerrs_;
 	    yyerror (yysyntax_error (yystate, yytoken));
           }
-    
-        
+
+
         if (yyerrstatus_ == 3)
           {
 	    /* If just tried and failed to reuse lookahead token after an
 	     error, discard it.  */
-    
+
 	    if (yychar <= EOF)
 	      {
 	      /* Return failure if at end of input.  */
@@ -698,18 +698,18 @@ public class ExtLFParser
 	    else
 	      yychar = yyempty_;
           }
-    
+
         /* Else will try to reuse lookahead token after shifting the error
            token.  */
         label = YYERRLAB1;
         break;
-    
+
       /*---------------------------------------------------.
       | errorlab -- error raised explicitly by YYERROR.  |
       `---------------------------------------------------*/
       case YYERROR:
-    
-        
+
+
         /* Do not reclaim the symbols of the rule which action triggered
            this YYERROR.  */
         yystack.pop (yylen);
@@ -717,13 +717,13 @@ public class ExtLFParser
         yystate = yystack.stateAt (0);
         label = YYERRLAB1;
         break;
-    
+
       /*-------------------------------------------------------------.
       | yyerrlab1 -- common code for both syntax error and YYERROR.  |
       `-------------------------------------------------------------*/
       case YYERRLAB1:
         yyerrstatus_ = 3;	/* Each real token shifted decrements this.  */
-    
+
         for (;;)
           {
 	    yyn = yypact_[yystate];
@@ -737,33 +737,33 @@ public class ExtLFParser
 		      break;
 	          }
 	      }
-    
+
 	    /* Pop the current state because it cannot handle the error token.  */
 	    if (yystack.height == 1)
 	      return false;
-    
-	    
+
+
 	    yystack.pop ();
 	    yystate = yystack.stateAt (0);
 	    if (yydebug > 0)
 	      yystack.print (yyDebugStream);
           }
-    
-	
+
+
 
         /* Shift the error token.  */
         yy_symbol_print ("Shifting", yystos_[yyn],
 			 yylval);
-    
+
         yystate = yyn;
 	yystack.push (yyn, yylval);
         label = YYNEWSTATE;
         break;
-    
+
         /* Accept.  */
       case YYACCEPT:
         return true;
-    
+
         /* Abort.  */
       case YYABORT:
         return false;
@@ -1055,7 +1055,9 @@ public class ExtLFParser
   /** Transfer the result back to the caller of the parser */
   public List<DagNode> getResultLFs() {
     List<DagNode> result = new LinkedList<DagNode>();
-    result.add(_lf.copyAndInvalidate());
+    if (_lf != null) {
+      result.add(_lf.copyAndInvalidate());
+    }
     return result;
   }
 
