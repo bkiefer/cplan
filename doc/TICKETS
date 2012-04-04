@@ -2,23 +2,27 @@
 
 **** SOON ****
 
+- Better error message when ID contains illegal character
+  --> Console:1:709: syntax error, unexpected $undefined, expecting ')'
+  Have to find a good example for that
+
 - Warning about unclear feature status should point to problem with information
   contained in the warning
 
 - Error in ext lf parser: coreferences not properly treated
-
-- batch disjunctive normal form
+  - batch disjunctive normal form
 
 - rules that are only applied once (syntax, execution)
-
-- syntax error in batch file should not break the whole process
 
 - pretty printing for LF's (and rules) so selected inputs from batch window
   are readable
 
+- progress bar / activity indicator for batch tests (slow generator)
+
 - #var variables on RHS which do not occur on LHS should be a syntax error
 
-- Copying of structures (and substructures) into a new window
+- Copying of structures (and substructures) into a new window / a text
+  representation to the clipboard
 
 - Applying a selected structure to a selected rule to see matching problems
   or effects of application
@@ -54,4 +58,6 @@ Today:
 + test if rules meant to be applied on substructures really work: OK
 + generate all sentences for canned text with a large batch run
 + batch window does not refresh on batch rerun
++ syntax error in batch file should not break the whole process
+
 
