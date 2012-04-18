@@ -5,8 +5,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -114,6 +116,50 @@ public class BatchTest {
 
   public boolean totalSuccess() {
     return _bad.isEmpty();
+  }
+
+  public static String showSet(Set<String> strings) {
+    if (strings.isEmpty())
+      return "[]";
+    Iterator<String> it = strings.iterator();
+    StringBuilder sb = new StringBuilder();
+    String first = it.next();
+    if (it.hasNext()) {
+      sb.append("[ ").append(first);
+      while (it.hasNext()) {
+        sb.append(" | ").append(it.next());
+      }
+      sb.append(" ]");
+      return sb.toString();
+    }
+    return first;
+  }
+
+  @SuppressWarnings({ "rawtypes", "unchecked" })
+  public void save(Writer out) throws IOException {
+    String nl = System.getProperty("line.separator");
+    String sep = "|";
+    List[] resitems = { _good, _bad };
+    out.write("// Status|Input|Answers|OutputLF|OutputGeneration"+nl);
+    for (List items : resitems) {
+      for (ResultItem res : (List<ResultItem>)items) {
+        // write test item slots
+        TestItem testitem = getItem(res.testItemIndex);
+        // write result item slots
+        out.write(res.itemStatus.toString());
+        out.write(sep);
+        out.write(testitem.lf.toString());
+        out.write(sep);
+        out.write(showSet(testitem.answers));
+        out.write(sep);
+        out.write(res.outputLf.toString());
+        out.write(sep);
+        out.write(res.realized);
+        out.write(nl);
+        out.flush();
+      }
+    }
+    out.close();
   }
 
   public void init(File batchFile) throws IOException {

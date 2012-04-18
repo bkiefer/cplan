@@ -99,7 +99,7 @@ public class CcgUtterancePlanner extends UtterancePlanner {
         dagLf = content.getValue();
       }
       LF lf = DagToLF.convertToLF(dagLf);
-      System.out.println(lf);
+      // System.out.println(lf);
       Edge resEdge = _realizer.realize(lf);
       result = resEdge.getSign().getOrthography();
     }
