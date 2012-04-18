@@ -113,8 +113,8 @@ public class ParallelProcessor implements Processor {
               result.add(new RuleAction(rule, path, bindings));
             }
           }
+          iterators.push(applyNode.getEdgeIterator());
         }
-        iterators.push(nextEdge.getValue().getEdgeIterator());
         path.push(null);
       }
     }
