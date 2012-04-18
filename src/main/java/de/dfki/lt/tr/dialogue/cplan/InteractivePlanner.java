@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -189,6 +190,8 @@ implements UPMainFrame.CloseAllListener {
   public void batchGenerate(String optionArg, File projectFile,
     File initialSentences)
   throws IOException {
+    final int MAX_EQUAL_REPEAT = 25;
+
     int repeat = 1;
     String fileName = optionArg;
     Pattern split = Pattern.compile("^(([0-9]*):)?(.*)$");
@@ -201,7 +204,7 @@ implements UPMainFrame.CloseAllListener {
           repeat = Integer.parseInt(repeatNo);
         }
         catch (NumberFormatException nfex) {
-          System.out.println("Not a number for batch: " +repeatNo);
+          logger.error("Not a number for batch: " +repeatNo);
           repeat = 1;
         }
       }
@@ -230,9 +233,10 @@ implements UPMainFrame.CloseAllListener {
       initSents.close();
     }
 
-    for (int r = 0; r < repeat; ++r) {
+    for (int r = 0, e = 0; r < repeat && e < MAX_EQUAL_REPEAT; ++r) {
       BatchTest bt = this.batchProcess(batchFile);
       this.logger.info(bt.percentageGood());
+      boolean newSents = false;
       for (int i = 0; i < bt.goodSize(); ++i) {
         BatchTest.ResultItem good = bt.getGood(i);
         String result =
@@ -240,9 +244,11 @@ implements UPMainFrame.CloseAllListener {
         result = spaceRegex.matcher(result).replaceAll(" ");
         if (! sents.contains(result)) {
           sents.add(result);
+          newSents = true;
           System.out.println(result);
         }
       }
+      e = (newSents ? 0 : e + 1);
       System.err.println(sents.size());
     }
   }
@@ -330,6 +336,7 @@ implements UPMainFrame.CloseAllListener {
           } else {
             ip.readProjectFile(new File(nonOptionArgs.get(0)));
             BatchTest bt = ip.batchProcess(batchFile);
+            bt.save(new PrintWriter(System.out));
             ip.logger.info(bt.percentageGood());
             ip.allClosed();
           }

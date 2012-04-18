@@ -130,7 +130,7 @@ public class ItemsTableWindow extends JDialog {
       case 1: return _bt.getItem(item.testItemIndex).lf;
       case 2: return item.outputLf;
       case 3: return item.realized;
-      case 4: return showSet(_bt.getItem(item.testItemIndex).answers);
+      case 4: return BatchTest.showSet(_bt.getItem(item.testItemIndex).answers);
       }
       assert(false); return null;
     }
@@ -202,24 +202,6 @@ public class ItemsTableWindow extends JDialog {
     _statusLine.setForeground(col);
     _statusLine.setText(msg);
   }
-
-  private static String showSet(Set<String> strings) {
-    if (strings.isEmpty())
-      return "[]";
-    Iterator<String> it = strings.iterator();
-    StringBuilder sb = new StringBuilder();
-    String first = it.next();
-    if (it.hasNext()) {
-      sb.append("[ ").append(first);
-      while (it.hasNext()) {
-        sb.append(" | ").append(it.next());
-      }
-      sb.append(" ]");
-      return sb.toString();
-    }
-    return first;
-  }
-
 
   private void rerun() {
     _model.run();
