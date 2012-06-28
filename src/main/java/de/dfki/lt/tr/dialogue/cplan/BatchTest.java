@@ -26,7 +26,7 @@ public class BatchTest {
 
   private static Logger logger = Logger.getLogger(BatchTest.class);
 
-  public enum Status { BAD , BADWARNING, WARNING , GOOD };
+  public enum Status { BAD , GOOD };
 
   /** A test item, consisting of:
    *  @field lf       a logical form: the input to the processing
@@ -50,22 +50,26 @@ public class BatchTest {
   }
 
   /** An item representing a failed test, consisting of:
-   *  @field testItemIndex  the number of the test item that failed
+   *  @field itemStatus     if this item failed or succeeded, with or without
+   *                        warning
+   *  @field testItemIndex  the number of the test item
    *  @field outputLf       the logical form resulting from processing
    *  @field realized       the string resulting from passing the ouput logical
    *                        form to the CCG realizer
    */
   public static class ResultItem {
     public Status itemStatus;
+    public boolean warning;
     public int testItemIndex;
     public DagNode outputLf;
     public String realized;
 
-    public ResultItem(int t, DagNode out, String r, Status s) {
+    public ResultItem(int t, DagNode out, String r, Status s, boolean w) {
       testItemIndex = t;
       outputLf = out;
       realized = r;
       itemStatus = s;
+      warning = w;
     }
   }
 
@@ -194,51 +198,53 @@ public class BatchTest {
     } while (!l.atEOF());
   }
 
+  public ResultItem runOneItem(TestItem item, int i) {
+    DagNode result = _planner.process(item.lf);
+    String generated = "";
+    StringWriter sw = new StringWriter();
+    Appender sentinel = new WriterAppender(new SimpleLayout(), sw);
+    Logger plannerLogger = Logger.getLogger("UtterancePlanner");
+    plannerLogger.addAppender(sentinel);
+    Status resultStatus = Status.GOOD;
+    boolean warnings = false;
+    try {
+      generated = _planner.doRealization(result);
+    }
+    catch (NullPointerException ex) {
+      generated = "**** FAILURE ****";
+      resultStatus = Status.BAD;
+    }
+    catch (PlanningException ex) {
+      generated = "**** PLANEXCEPTION ****";
+      resultStatus = Status.BAD;
+    }
+    finally {
+      try {
+        sw.close();
+      } catch (IOException e) { // will never happen
+      }
+      warnings = ! sw.toString().isEmpty();
+      plannerLogger.removeAppender(sentinel);
+    }
+    if (resultStatus == Status.GOOD &&
+        ! ((item.answers.contains("*") && ! generated.isEmpty())
+           || item.answers.contains(generated))) {
+      resultStatus = Status.BAD;
+    }
+
+    return new ResultItem(i, result, generated, resultStatus, warnings);
+  }
+
   public void run() {
     _bad.clear();
     _good.clear();
     int i = -1;
     for (TestItem item : _items) {
-      ++i;
-      DagNode result = _planner.process(item.lf);
-      String generated = "";
-      StringWriter sw = new StringWriter();
-      Appender sentinel = new WriterAppender(new SimpleLayout(), sw);
-      Logger plannerLogger = Logger.getLogger("UtterancePlanner");
-      plannerLogger.addAppender(sentinel);
-      Status resultStatus = Status.GOOD;
-      boolean warnings = false;
-      try {
-        generated = _planner.doRealization(result);
-      }
-      catch (NullPointerException ex) {
-        generated = "**** FAILURE ****";
-        resultStatus = Status.BAD;
-      }
-      catch (PlanningException ex) {
-        generated = "**** PLANEXCEPTION ****";
-        resultStatus = Status.BAD;
-      }
-      finally {
-        try {
-          sw.close();
-        } catch (IOException e) { // will never happen
-        }
-        warnings = ! sw.toString().isEmpty();
-        plannerLogger.removeAppender(sentinel);
-      }
-      if (resultStatus == Status.GOOD &&
-          ! ((item.answers.contains("*") && ! generated.isEmpty())
-             || item.answers.contains(generated))) {
-        resultStatus = Status.BAD;
-      }
-
-      if (resultStatus == Status.BAD) {
-        _bad.add(new ResultItem(i, result, generated,
-            warnings ? Status.BADWARNING : Status.BAD));
+      ResultItem res = runOneItem(item, ++i);
+      if (res.itemStatus == Status.BAD) {
+        _bad.add(res);
       } else {
-        _good.add(new ResultItem(i, result, generated,
-            warnings ? Status.WARNING : Status.GOOD));
+        _good.add(res);
       }
     }
   }
