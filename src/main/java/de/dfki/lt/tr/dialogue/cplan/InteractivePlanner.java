@@ -24,6 +24,8 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.SimpleLayout;
 
 import de.dfki.lt.j2emacs.J2Emacs;
+import de.dfki.lt.tr.dialogue.cplan.BatchTest.ResultItem;
+import de.dfki.lt.tr.dialogue.cplan.BatchTest.TestItem;
 import de.dfki.lt.tr.dialogue.cplan.functions.FunctionFactory;
 import de.dfki.lt.tr.dialogue.cplan.gui.LFModelAdapter;
 import de.dfki.lt.tr.dialogue.cplan.gui.UPMainFrame;
@@ -192,7 +194,7 @@ implements UPMainFrame.CloseAllListener {
   throws IOException {
     final int MAX_EQUAL_REPEAT = 25;
 
-    int repeat = 1;
+    int repeat = MAX_EQUAL_REPEAT;
     String fileName = optionArg;
     Pattern split = Pattern.compile("^(([0-9]*):)?(.*)$");
     Matcher m = split.matcher(optionArg);
@@ -205,7 +207,7 @@ implements UPMainFrame.CloseAllListener {
         }
         catch (NumberFormatException nfex) {
           logger.error("Not a number for batch: " +repeatNo);
-          repeat = 1;
+          repeat = MAX_EQUAL_REPEAT;
         }
       }
     }
@@ -215,13 +217,13 @@ implements UPMainFrame.CloseAllListener {
       return;
     }
 
-    Pattern punctRegex =
-        Pattern.compile("\\s*(?:[;:,.?]\\s*)*([;:,.?])");
+    Pattern punctRegex = Pattern.compile("\\s*(?:[;:,.?]\\s*)*([;:,.?])");
     Pattern spaceRegex = Pattern.compile("\\s+");
 
     this.readProjectFile(projectFile);
-    HashSet<String> sents = new HashSet<String>();
 
+    /*
+    HashSet<String> sents = new HashSet<String>();
     if (initialSentences != null) {
       BufferedReader initSents = new BufferedReader(
           new InputStreamReader(
@@ -232,23 +234,29 @@ implements UPMainFrame.CloseAllListener {
       }
       initSents.close();
     }
+    */
 
-    for (int r = 0, e = 0; r < repeat && e < MAX_EQUAL_REPEAT; ++r) {
-      BatchTest bt = this.batchProcess(batchFile);
-      this.logger.info(bt.percentageGood());
-      boolean newSents = false;
-      for (int i = 0; i < bt.goodSize(); ++i) {
-        BatchTest.ResultItem good = bt.getGood(i);
-        String result =
-            punctRegex.matcher(good.realized).replaceAll("$1");
-        result = spaceRegex.matcher(result).replaceAll(" ");
-        if (! sents.contains(result)) {
-          sents.add(result);
-          newSents = true;
-          System.out.println(result);
+    BatchTest bt = this.loadBatch(batchFile);
+    for (int i = 0; i < bt.itemSize(); ++i) {
+      TestItem item = bt.getItem(i);
+      HashSet<String> sents = new HashSet<String>();
+      System.out.println("### " + item.lf);
+      for (int e = 0; e < repeat; ++e) {
+        ResultItem res = bt.runOneItem(item, i);
+        //BatchTest bt = this.batchProcess(batchFile);
+        //this.logger.info(bt.percentageGood());
+        //for (int i = 0; i < bt.goodSize(); ++i) {
+        //BatchTest.ResultItem good = bt.getGood(i);
+        if (res.itemStatus == BatchTest.Status.GOOD) {
+          String result = punctRegex.matcher(res.realized).replaceAll("$1");
+          result = spaceRegex.matcher(result).replaceAll(" ");
+          if (! sents.contains(result)) {
+            sents.add(result);
+            e = -1; // new sentence: reset the repeat counter
+            System.out.println(result);
+          }
         }
       }
-      e = (newSents ? 0 : e + 1);
       System.err.println(sents.size());
     }
   }

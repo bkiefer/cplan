@@ -10,7 +10,7 @@
   contained in the warning
 
 - Error in ext lf parser: coreferences not properly treated
-  - batch disjunctive normal form
+  - batch disjunctive normal form (COMPLICATED / POSTPONED)
 
 - rules that are only applied once (syntax, execution)
 
@@ -25,7 +25,7 @@
   representation to the clipboard
 
 - Applying a selected structure to a selected rule to see matching problems
-  or effects of application
+  or effects of application --> display of failure!
 
 - j2emacs does not work properly on Windows/cygwin
   --> packaging a lean binary distribution & make bundle available for
@@ -33,6 +33,17 @@
 
 - history does not work properly
 - and not properly saved in project file
+
+
+-
+
+- maybe more parsing-like behaviour to be able to generate alternatives to
+  choose from with additional external features (dialogue state / history)??
+  - fuzzy / robust interpretation
+
+- Reverse rules (Dialogue act recognition as reverse operation of generation)
+
+- Learn rules
 
 Today:
 
@@ -60,4 +71,21 @@ Today:
 + batch window does not refresh on batch rerun
 + syntax error in batch file should not break the whole process
 
+*** DISCUSSIONS ***
+
+arguments / modifiers to the cplanner process rather in input structure, or
+by access using plugins / to background memory
+
+a) as part of input LF
+   - flexible
+   - no additional machinery
+   - easier (?) to test
+   - to keep it compact, knowledge about arguments must be duplicated
+     (in planner, and somewhere else)
+b) as request to a background process
+   - needs appropriate plugin(s)
+   - less transparent / harder to debug(?)
+   - needs proper stub to be able to debug without running the whole system
+     => needs proper modularization
+   - non-cascaded processing would maybe require this
 
