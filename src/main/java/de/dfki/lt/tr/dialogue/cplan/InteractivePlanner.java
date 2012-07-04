@@ -3,6 +3,7 @@ package de.dfki.lt.tr.dialogue.cplan;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -25,7 +26,7 @@ import org.apache.log4j.SimpleLayout;
 
 import de.dfki.lt.j2emacs.J2Emacs;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest.ResultItem;
-import de.dfki.lt.tr.dialogue.cplan.BatchTest.TestItem;
+import de.dfki.lt.tr.dialogue.cplan.BatchTest.RealizationTestItem;
 import de.dfki.lt.tr.dialogue.cplan.functions.FunctionFactory;
 import de.dfki.lt.tr.dialogue.cplan.gui.LFModelAdapter;
 import de.dfki.lt.tr.dialogue.cplan.gui.UPMainFrame;
@@ -236,13 +237,13 @@ implements UPMainFrame.CloseAllListener {
     }
     */
 
-    BatchTest bt = this.loadBatch(batchFile);
+    BatchTest bt = this.loadBatch(batchFile, true);
     for (int i = 0; i < bt.itemSize(); ++i) {
-      TestItem item = bt.getItem(i);
+      RealizationTestItem item = (RealizationTestItem) bt.getItem(i);
       HashSet<String> sents = new HashSet<String>();
       System.out.println("### " + item.lf);
       for (int e = 0; e < repeat; ++e) {
-        ResultItem res = bt.runOneItem(item, i);
+        ResultItem res = bt.realizeOneItem(item, i);
         //BatchTest bt = this.batchProcess(batchFile);
         //this.logger.info(bt.percentageGood());
         //for (int i = 0; i < bt.goodSize(); ++i) {
@@ -264,7 +265,9 @@ implements UPMainFrame.CloseAllListener {
 
   private static void usage(String msg) {
     String[] usage = {
-        "Usage: UPDebugger [-[bB]<atch> inputfile] [-c<ompileonly>] [-d<ebugdags>]",
+        "Usage: UPDebugger [-[rR]<ealize batch> inputfile]",
+        "                  [-[p]<arse batch> inputfile]",
+        "                  [-c<ompileonly>] [-d<ebugdags>]",
         "                  [-g<ui>] [-t<race>={1,2,3}] [-e<macs>]",
         "                  <projectfile>",
         "      -t : bit 1: trace match, bit 2 : trace modification"
@@ -286,7 +289,7 @@ implements UPMainFrame.CloseAllListener {
           new ConsoleAppender(new SimpleLayout(), "System.err"));
     }
 
-    OptionParser parser = new OptionParser("B:b:cdgt:e::r:");
+    OptionParser parser = new OptionParser("R:r:p:cdgt:e::A:");
     OptionSet options = null;
     try {
       options = parser.parse(args);
@@ -296,11 +299,11 @@ implements UPMainFrame.CloseAllListener {
       System.exit(1);
     }
 
-    if (! options.has("r")) {
-      usage("root directory must be specified");
+    if (! options.has("A")) {
+      usage("application directory must be specified");
       System.exit(1);
     }
-    File rootDir = new File((String) options.valueOf("r"));
+    File rootDir = new File((String) options.valueOf("A"));
 
     List<String> nonOptionArgs = options.nonOptionArguments();
 
@@ -308,11 +311,11 @@ implements UPMainFrame.CloseAllListener {
 
     char what = 'i';
     // x and T are only for test purposes
-    String[] actionOptions = { "B", "b", "c", "g" };
+    String[] actionOptions = { "R", "r", "p", "c", "g" };
     for (String action : actionOptions) {
       if (options.has(action)) {
         if (what != 'i')
-          usage("Only one of -B, -b, -c or -g allowed.") ;
+          usage("Only one of -R, -r, -p, -c or -g allowed.") ;
         what = action.charAt(0);
         optionArg = (String) options.valueOf(action);
       }
@@ -320,7 +323,7 @@ implements UPMainFrame.CloseAllListener {
 
     InteractivePlanner ip = new InteractivePlanner();
     if (ip.setRootDir(rootDir)) {
-      usage("argument of -r is not the root directory:" + rootDir);
+      usage("argument of -A is not the root directory:" + rootDir);
     }
 
     if (options.has("e")) {
@@ -333,7 +336,7 @@ implements UPMainFrame.CloseAllListener {
       DagNode.usePrettyPrinter();
     }
     switch (what) {
-    case 'b':
+    case 'r':
       try {
         if (nonOptionArgs.size() == 0) {
           usage("No project file specified");
@@ -343,8 +346,14 @@ implements UPMainFrame.CloseAllListener {
             usage("Batch input file not found:" + batchFile);
           } else {
             ip.readProjectFile(new File(nonOptionArgs.get(0)));
-            BatchTest bt = ip.batchProcess(batchFile);
-            bt.save(new PrintWriter(System.out));
+            BatchTest bt = ip.batchProcess(batchFile, true);
+            try {
+              File batchSave =
+                  new File(batchFile.getParent(), batchFile.getName() + ".out");
+              bt.save(new FileWriter(batchSave));
+            } catch (IOException ioex) {
+              bt.save(new PrintWriter(System.out));
+            }
             ip.logger.info(bt.percentageGood());
             ip.allClosed();
           }
@@ -354,7 +363,7 @@ implements UPMainFrame.CloseAllListener {
         ip.logger.error("Problem during batch processing: " +  ex);
       }
       break;
-    case 'B':
+    case 'R':
       try {
         if (nonOptionArgs.size() == 0) {
           usage("No project file specified");
@@ -366,6 +375,33 @@ implements UPMainFrame.CloseAllListener {
           ip.batchGenerate(optionArg, new File(nonOptionArgs.get(0)),
               initialSentences);
           ip.allClosed();
+        }
+      }
+      catch (IOException ex) {
+        ip.logger.error("Problem during batch processing: " +  ex);
+      }
+      break;
+    case 'p':
+      try {
+        if (nonOptionArgs.size() == 0) {
+          usage("No project file specified");
+        } else {
+          File batchFile = new File(optionArg);
+          if (! batchFile.exists()) {
+            usage("Batch input file not found:" + batchFile);
+          } else {
+            ip.readProjectFile(new File(nonOptionArgs.get(0)));
+            BatchTest bt = ip.batchProcess(batchFile, false);
+            try {
+              File batchSave =
+                  new File(batchFile.getParent(), batchFile.getName() + ".out");
+              bt.save(new FileWriter(batchSave));
+            } catch (IOException ioex) {
+              bt.save(new PrintWriter(System.out));
+            }
+            ip.logger.info(bt.percentageGood());
+            ip.allClosed();
+          }
         }
       }
       catch (IOException ex) {

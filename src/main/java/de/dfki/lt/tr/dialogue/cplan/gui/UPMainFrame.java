@@ -67,7 +67,8 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
   private static final int CLEAR_BTN = STOP_BTN + 1;
   private static final int REALIZE_BTN = CLEAR_BTN + 1;
   private static final int PARSE_BTN = REALIZE_BTN + 1;
-  private static final int BATCH_BTN = PARSE_BTN + 1;
+  private static final int BATCH_REALIZE_BTN = PARSE_BTN + 1;
+  private static final int BATCH_PARSE_BTN = BATCH_REALIZE_BTN + 1;
 
 
   /* specs describing the buttons in the tool bar */
@@ -101,8 +102,11 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
     {"Parse", "insert-text", "Analyze Sentence", "Parse",
       new Runnable() { public void run() { parseInput(); } }
     },
-    {"Batch", "batch", "Batch process", "Batch",
-      new Runnable() { public void run() { batchProcess(); } }
+    {"Batch realization", "batch", "Batch realize", "Batch realize",
+      new Runnable() { public void run() { batchProcess(true); } }
+    },
+    {"Batch parse", "batch", "Batch parse", "Batch parse",
+      new Runnable() { public void run() { batchProcess(false); } }
     }
     };
     return results;
@@ -451,7 +455,8 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
     **/
     _actionButtons.get(REALIZE_BTN).setEnabled(runnable);
     _actionButtons.get(PARSE_BTN).setEnabled(runnable);
-    _actionButtons.get(BATCH_BTN).setEnabled(runnable);
+    _actionButtons.get(BATCH_REALIZE_BTN).setEnabled(runnable);
+    _actionButtons.get(BATCH_PARSE_BTN).setEnabled(runnable);
   }
 
   /** Call this method when the processing of new input starts */
@@ -585,11 +590,16 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
 
   private class BatchProcessor implements FileProcessor {
     public BatchTest bt = null;
+    public boolean realizationTest = true;
+
+    public BatchProcessor(boolean realize) {
+      realizationTest = realize;
+    }
 
     @Override
     public boolean processFile(File toProcess) {
       try {
-        bt = _planner.batchProcess(toProcess);
+        bt = _planner.batchProcess(toProcess, realizationTest);
       } catch (IOException e) {
         return false;
       }
@@ -597,20 +607,19 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
     }
   }
 
-  private void batchProcess() {
+  private void batchProcess(boolean realize) {
     // select and process batch file
-    BatchProcessor bp = new BatchProcessor();
+    BatchProcessor bp = new BatchProcessor(realize);
     openFileDialog(bp);
     if (bp.bt == null)
       return;
     if (bp.bt.totalSuccess()) {
       setStatusLine("All Test Items passed", Color.GREEN);
-    } else {
-      // show the failing items in a list window
-      //openItemsWindow(bp.bt);
-      @SuppressWarnings("unused")
-      ItemsTableWindow tw = new ItemsTableWindow(this, bp.bt, true, true);
     }
+    // show the failing items in a list window
+    //openItemsWindow(bp.bt);
+    @SuppressWarnings("unused")
+    ItemsTableWindow tw = new ItemsTableWindow(this, bp.bt, true, true);
   }
 
 

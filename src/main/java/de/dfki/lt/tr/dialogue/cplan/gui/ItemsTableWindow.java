@@ -8,8 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -32,6 +30,8 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import de.dfki.lt.tr.dialogue.cplan.BatchTest;
+import de.dfki.lt.tr.dialogue.cplan.BatchTest.ParsingTestItem;
+import de.dfki.lt.tr.dialogue.cplan.BatchTest.RealizationTestItem;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest.ResultItem;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest.TestItem;
 
@@ -127,10 +127,10 @@ public class ItemsTableWindow extends JDialog {
       ResultItem item = getItem(rowIndex);
       switch (columnIndex) {
       case 0: return item.itemStatus.name().substring(0, 1);
-      case 1: return _bt.getItem(item.testItemIndex).lf;
+      case 1: return _bt.getItem(item.testItemIndex).input();
       case 2: return item.outputLf;
       case 3: return item.realized;
-      case 4: return BatchTest.showSet(_bt.getItem(item.testItemIndex).answers);
+      case 4: return BatchTest.showSet(_bt.getItem(item.testItemIndex).output());
       }
       assert(false); return null;
     }
@@ -155,7 +155,7 @@ public class ItemsTableWindow extends JDialog {
      *  @see BatchTest.run()
      */
     public void run() {
-      _bt.run();
+      _bt.runBatch();
       fireTableDataChanged();
     }
 
@@ -218,7 +218,7 @@ public class ItemsTableWindow extends JDialog {
 
   /** transfer the data in the selected row to the main panel
    *
-   *  This is the decicated mouse click handler for the batch display.
+   *  This is the dedicated mouse click handler for the batch display.
    */
   class SharedListSelectionHandler implements ListSelectionListener {
 
@@ -233,9 +233,13 @@ public class ItemsTableWindow extends JDialog {
       row = _itemsDisplay.convertRowIndexToModel(row);
       ResultItem item = _model.getItem(row);
       testItem = _model.getTestItem(item.testItemIndex);
-      parent().setOutput(item.outputLf);
-      parent().setInput(testItem.lf);
       parent().showPosition(testItem.position);
+      parent().setOutput(item.outputLf);
+      if (testItem instanceof RealizationTestItem) {
+        parent().setInput(((RealizationTestItem) testItem).lf);
+      } else {
+        parent().setInput(((ParsingTestItem) testItem).input);
+      }
     }
   }
 
