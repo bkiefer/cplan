@@ -144,16 +144,18 @@ public class CcgUtterancePlanner extends UtterancePlanner {
   }
 
   /* Load a batch test file for further processing */
-  public BatchTest loadBatch(File batchFile) throws IOException {
-    BatchTest bt = new BatchTest(this);
+  public BatchTest loadBatch(File batchFile, boolean realizationTest)
+      throws IOException {
+    BatchTest bt = new BatchTest(this, realizationTest);
     bt.init(batchFile);
     return bt;
   }
 
   /** Run a batch planning + generation test */
-  public BatchTest batchProcess(File batchFile) throws IOException {
-    BatchTest bt = loadBatch(batchFile);
-    bt.run();
+  public BatchTest batchProcess(File batchFile, boolean realizationTest)
+      throws IOException {
+    BatchTest bt = loadBatch(batchFile, realizationTest);
+    bt.runBatch();
     return bt;
   }
 

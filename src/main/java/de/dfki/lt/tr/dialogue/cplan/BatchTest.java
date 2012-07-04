@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
@@ -28,6 +29,22 @@ public class BatchTest {
 
   public enum Status { BAD , GOOD };
 
+  private boolean _realizationTest = true;
+
+  private static final DagNode ASTERISK = new DagNode("*");
+
+  public static abstract class TestItem {
+    public Position position;
+
+    public abstract void write(Writer out, ResultItem res, String sep, String nl)
+        throws IOException;
+
+    public abstract Object input();
+
+    public abstract Set<?> output();
+  }
+
+
   /** A test item, consisting of:
    *  @field lf       a logical form: the input to the processing
    *  @field answers  a set of strings: the possible answers. If "*" is in the
@@ -35,18 +52,79 @@ public class BatchTest {
    *                  could be realized.
    *  @field position the location in the batch file where the test item was
    *                  defined
-   *
    */
-  public static class TestItem {
+  public static class RealizationTestItem extends TestItem {
     public DagNode lf;
     public Set<String> answers;
-    public Position position;
 
-    public TestItem(DagNode d, Set<String> a, Position l) {
+    public RealizationTestItem(DagNode d, Set<String> a, Position l) {
       lf = d;
       answers = a;
       position = l;
     }
+
+    @Override
+    public void write(Writer out, ResultItem res, String sep, String nl)
+        throws IOException {
+      // write result item slots
+      out.write(res.itemStatus.toString());
+      out.write(sep);
+      out.write(lf.toString());
+      out.write(sep);
+      out.write(showSet(answers));
+      out.write(sep);
+      out.write(res.outputLf.toString());
+      out.write(sep);
+      out.write(res.realized);
+      out.write(nl);
+    }
+
+    @Override
+    public Object input() { return lf; }
+
+    @Override
+    public Set<?> output() { return answers; }
+  }
+
+  /** A test item, consisting of:
+   *  @field input    a sentence to parse
+   *  @field results  a set of DagNodes representing possible semantics results.
+   *                  If "*" is in the set, the test will be successful if the
+   *                  string was parseable
+   *  @field position the location in the batch file where the test item was
+   *                  defined
+   */
+  public static class ParsingTestItem extends TestItem {
+    public String input;
+    public Set<DagNode> results;
+
+    public ParsingTestItem(String i, Set<DagNode> r, Position l) {
+      input = i;
+      results = r;
+      position = l;
+    }
+
+    @Override
+    public void write(Writer out, ResultItem res, String sep, String nl)
+        throws IOException {
+      // write result item slots
+      out.write(res.itemStatus.toString());
+      out.write(sep);
+      out.write(input);
+      out.write(sep);
+      out.write(showSet(results));
+      out.write(sep);
+      out.write(res.outputLf.toString());
+      out.write(sep);
+      out.write(res.realized);
+      out.write(nl);
+    }
+
+    @Override
+    public Object input() { return input; }
+
+    @Override
+    public Set<?> output() { return results; }
   }
 
   /** An item representing a failed test, consisting of:
@@ -63,13 +141,16 @@ public class BatchTest {
     public int testItemIndex;
     public DagNode outputLf;
     public String realized;
+    public boolean realizationResult;
 
-    public ResultItem(int t, DagNode out, String r, Status s, boolean w) {
+    public ResultItem(int t, DagNode out, String r, Status s,
+      boolean w, boolean real) {
       testItemIndex = t;
       outputLf = out;
       realized = r;
       itemStatus = s;
       warning = w;
+      realizationResult = real;
     }
   }
 
@@ -84,8 +165,9 @@ public class BatchTest {
   private List<ResultItem> _bad = new ArrayList<ResultItem>();
   private List<ResultItem> _good = new ArrayList<ResultItem>();
 
-  public BatchTest(CcgUtterancePlanner planner) {
+  public BatchTest(CcgUtterancePlanner planner, boolean realizationTest) {
     _planner = planner;
+    _realizationTest = realizationTest;
   }
 
   public int itemSize() {
@@ -122,12 +204,12 @@ public class BatchTest {
     return _bad.isEmpty();
   }
 
-  public static String showSet(Set<String> strings) {
+  public static String showSet(Set<?> strings) {
     if (strings.isEmpty())
       return "[]";
-    Iterator<String> it = strings.iterator();
+    Iterator<?> it = strings.iterator();
     StringBuilder sb = new StringBuilder();
-    String first = it.next();
+    Object first = it.next();
     if (it.hasNext()) {
       sb.append("[ ").append(first);
       while (it.hasNext()) {
@@ -136,7 +218,7 @@ public class BatchTest {
       sb.append(" ]");
       return sb.toString();
     }
-    return first;
+    return first.toString();
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -149,17 +231,7 @@ public class BatchTest {
       for (ResultItem res : (List<ResultItem>)items) {
         // write test item slots
         TestItem testitem = getItem(res.testItemIndex);
-        // write result item slots
-        out.write(res.itemStatus.toString());
-        out.write(sep);
-        out.write(testitem.lf.toString());
-        out.write(sep);
-        out.write(showSet(testitem.answers));
-        out.write(sep);
-        out.write(res.outputLf.toString());
-        out.write(sep);
-        out.write(res.realized);
-        out.write(nl);
+        testitem.write(out, res, sep, nl);
         out.flush();
       }
     }
@@ -171,34 +243,72 @@ public class BatchTest {
     reload();
   }
 
+  void readNextRealizationItem(Reader in, Lexer l, ExtLFParser parser)
+      throws IOException {
+    parser.reset();
+    boolean good = parser.parse();
+    Position pos = l.getStartPos();
+    if (!good) {
+      logger.warn("Skip wrong LF at " + pos);
+      return;
+    }
+    Set<String> answers = new HashSet<String>();
+    do {
+      String nextSentence = l.readLine();
+      if (nextSentence.isEmpty())
+        break;
+      answers.add(nextSentence);
+    } while (true);
+    List<DagNode> nextLfs = parser.getResultLFs();
+    for (DagNode nextLf : nextLfs) {
+      _items.add(new RealizationTestItem(nextLf, answers, pos));
+    }
+  }
+
+  void readNextParsingItem(Reader in, Lexer l, ExtLFParser parser)
+      throws IOException {
+    Position pos = l.getStartPos();
+    String nextSentence = l.readLine();
+    while (nextSentence.isEmpty() && !l.atEOF()) {
+      l.getStartPos();
+      nextSentence = l.readLine();
+    }
+    Set<DagNode> answers = new CopyOnWriteArraySet<DagNode>();
+
+    if (l.peek() == '*') {
+      answers.add(ASTERISK);
+      l.readLine();
+    } else {
+      while (l.peek() == '@') {
+        parser.reset();
+        Position lpos = l.getStartPos();
+        boolean good = parser.parse();
+        if (!good) {
+          logger.warn("Skip wrong LF at " + lpos);
+          break;
+        } else {
+          answers.addAll(parser.getResultLFs());
+        }
+      }
+    }
+    _items.add(new ParsingTestItem(nextSentence, answers, pos));
+  }
+
   public void reload() throws IOException {
     _items.clear();
     Reader in = new FileReader(_batchFile);
     Lexer l = new Lexer(_batchFile.getCanonicalPath(), in);
     ExtLFParser parser = new ExtLFParser(l);
     do {
-      parser.reset();
-      boolean good = parser.parse();
-      Position pos = l.getStartPos();
-      if (!good) {
-        logger.warn("Skip wrong LF at " + pos);
-        continue;
-      }
-      Set<String> answers = new HashSet<String>();
-      do {
-        String nextSentence = l.readLine();
-        if (nextSentence.isEmpty())
-          break;
-        answers.add(nextSentence);
-      } while (true);
-      List<DagNode> nextLfs = parser.getResultLFs();
-      for (DagNode nextLf : nextLfs) {
-        _items.add(new TestItem(nextLf, answers, pos));
+      if (_realizationTest) {
+        readNextRealizationItem(in, l, parser);
+      } else {
+        readNextParsingItem(in, l, parser);
       }
     } while (!l.atEOF());
   }
 
-  public ResultItem runOneItem(TestItem item, int i) {
+  public ResultItem realizeOneItem(RealizationTestItem item, int i) {
     DagNode result = _planner.process(item.lf);
     String generated = "";
     StringWriter sw = new StringWriter();
@@ -232,15 +342,57 @@ public class BatchTest {
       resultStatus = Status.BAD;
     }
 
-    return new ResultItem(i, result, generated, resultStatus, warnings);
+    return new ResultItem(i, result, generated, resultStatus, warnings,
+        _realizationTest);
   }
 
-  public void run() {
+  public ResultItem parseOneItem(ParsingTestItem item, int i) {
+    String generated = "";
+    StringWriter sw = new StringWriter();
+    Appender sentinel = new WriterAppender(new SimpleLayout(), sw);
+    Logger plannerLogger = Logger.getLogger("UtterancePlanner");
+    plannerLogger.addAppender(sentinel);
+    Status resultStatus = Status.GOOD;
+    boolean warnings = false;
+    DagNode result = null;
+    try {
+      result = _planner.analyze(item.input);
+    }
+    catch (NullPointerException ex) {
+      generated = "**** FAILURE ****";
+      resultStatus = Status.BAD;
+    }
+    catch (PlanningException ex) {
+      generated = "**** PLANEXCEPTION ****";
+      resultStatus = Status.BAD;
+    }
+    finally {
+      try {
+        sw.close();
+      } catch (IOException e) { // will never happen
+      }
+      warnings = ! sw.toString().isEmpty();
+      plannerLogger.removeAppender(sentinel);
+    }
+    if (resultStatus == Status.GOOD &&
+        ! ((item.results.contains("*") && ! generated.isEmpty())
+           || item.results.contains(result))) {
+      resultStatus = Status.BAD;
+    }
+
+    return new ResultItem(i, result, item.input, resultStatus, warnings,
+        _realizationTest);
+  }
+
+  public void runBatch() {
     _bad.clear();
     _good.clear();
-    int i = -1;
+    int i = 0;
     for (TestItem item : _items) {
-      ResultItem res = runOneItem(item, ++i);
+      ResultItem res = (_realizationTest
+          ? realizeOneItem((RealizationTestItem)item, i)
+          : parseOneItem((ParsingTestItem)item, i));
+      ++i;
       if (res.itemStatus == Status.BAD) {
         _bad.add(res);
       } else {
