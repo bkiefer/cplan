@@ -191,6 +191,11 @@ implements RuleParser.Lexer, LFParser.Lexer, ExtLFParser.Lexer  {
     return sb.toString();
   }
 
+  public int peek() throws IOException {
+    skipws();
+    return _nextChar;
+  }
+
   public boolean atEOF() {
     return _nextChar == RuleParser.EOF;
   }
