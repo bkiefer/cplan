@@ -46,7 +46,7 @@ public class UtterancePlanner {
   private List<Object[]> _ruleSections;
 
   /** The current project file */
-  private File _projectFile;
+  protected File _projectFile;
 
   /** some settings, like location of the history file and the CCG grammar */
   protected HashMap<String, String> _settings;
