@@ -1,11 +1,8 @@
 package de.dfki.lt.tr.dialogue.cplan;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -25,8 +22,8 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.SimpleLayout;
 
 import de.dfki.lt.j2emacs.J2Emacs;
-import de.dfki.lt.tr.dialogue.cplan.BatchTest.ResultItem;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest.RealizationTestItem;
+import de.dfki.lt.tr.dialogue.cplan.BatchTest.ResultItem;
 import de.dfki.lt.tr.dialogue.cplan.functions.FunctionFactory;
 import de.dfki.lt.tr.dialogue.cplan.gui.LFModelAdapter;
 import de.dfki.lt.tr.dialogue.cplan.gui.UPMainFrame;

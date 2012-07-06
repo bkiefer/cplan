@@ -28,11 +28,13 @@ import de.dfki.lt.loot.gui.adapters.ModelAdapter;
 import de.dfki.lt.loot.gui.util.FileProcessor;
 import de.dfki.lt.tr.dialogue.cplan.BasicRule;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest;
+import de.dfki.lt.tr.dialogue.cplan.CcgUtterancePlanner;
 import de.dfki.lt.tr.dialogue.cplan.CollectEventsTracer;
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
 import de.dfki.lt.tr.dialogue.cplan.InteractivePlanner;
 import de.dfki.lt.tr.dialogue.cplan.LoggingTracer;
 import de.dfki.lt.tr.dialogue.cplan.PlanningException;
+import de.dfki.lt.tr.dialogue.cplan.ProgressListener;
 import de.dfki.lt.tr.dialogue.cplan.RuleTracer;
 import de.dfki.lt.tr.dialogue.cplan.SuspendableTracer;
 import de.dfki.lt.tr.dialogue.cplan.TraceEvent;
@@ -191,7 +193,10 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
   private CollectEventsTracer _tracer = null;
 
   private DagNode _input, _output;
+  // thread for running single requests
   private Thread _processingThread;
+  // thread for running a batch test
+  private Thread _batchThread;
 
   private int _processorState;
   private static final int STOPPED = 0;
@@ -591,15 +596,17 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
   private class BatchProcessor implements FileProcessor {
     public BatchTest bt = null;
     public boolean realizationTest = true;
+    private CcgUtterancePlanner _planner;
 
-    public BatchProcessor(boolean realize) {
+    public BatchProcessor(CcgUtterancePlanner planner, boolean realize) {
       realizationTest = realize;
+      _planner = planner;
     }
 
     @Override
     public boolean processFile(File toProcess) {
       try {
-        bt = _planner.batchProcess(toProcess, realizationTest);
+        bt = _planner.loadBatch(toProcess, realizationTest);
       } catch (IOException e) {
         return false;
       }
@@ -608,18 +615,61 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
   }
 
   private void batchProcess(boolean realize) {
+    if (_batchThread != null) {
+      setStatusLine("Batch already running", Color.RED);
+      return;
+    }
+    CcgUtterancePlanner batchPlanner;
+    try {
+      batchPlanner = new CcgUtterancePlanner(_planner);
+    } catch (IOException ioex) {
+      Logger.getLogger("UtterancePlanner")
+      .error("Can not initialize new processor for batch processing");
+      return;
+    }
+
     // select and process batch file
-    BatchProcessor bp = new BatchProcessor(realize);
+    final BatchProcessor bp = new BatchProcessor(batchPlanner, realize);
     openFileDialog(bp);
     if (bp.bt == null)
       return;
-    if (bp.bt.totalSuccess()) {
-      setStatusLine("All Test Items passed", Color.GREEN);
-    }
-    // show the failing items in a list window
-    //openItemsWindow(bp.bt);
-    @SuppressWarnings("unused")
-    ItemsTableWindow tw = new ItemsTableWindow(this, bp.bt, true, true);
+
+    showProgressBar();
+    bp.bt.setProgressListener(new ProgressListener() {
+      public void setMaximum(int max) {
+        _progressBar.setMaximum(max);
+        _progressBar.setValue(0);
+      }
+
+      public void progress(int value) {
+        _progressBar.setValue(value);
+      }
+    });
+
+    _batchThread = new Thread(
+        new Runnable() {
+          public void run() {
+            try {
+              bp.bt.runBatch();
+            }
+            catch (PlanningException ex) {
+              setStatusLine(ex.getMessage(), Color.ORANGE);
+            }
+            finally {
+              hideProgressBar();
+              if (bp.bt.totalSuccess()) {
+                setStatusLine("All Test Items passed", Color.GREEN);
+              }
+              // show the failing items in a list window
+              //openItemsWindow(bp.bt);
+              @SuppressWarnings("unused")
+              ItemsTableWindow tw =
+              new ItemsTableWindow(UPMainFrame.this, bp.bt, true, true);
+              _batchThread = null;
+            }
+          }
+        } );
+    _batchThread.start();
   }
 
 
