@@ -42,6 +42,10 @@ public class BatchTest {
     public abstract Object input();
 
     public abstract Set<?> output();
+
+    protected String toString(DagNode dag) {
+      return dag == null ? "null" : dag.toString();
+    }
   }
 
 
@@ -69,11 +73,11 @@ public class BatchTest {
       // write result item slots
       out.write(res.itemStatus.toString());
       out.write(sep);
-      out.write(lf.toString());
+      out.write(toString(lf));
       out.write(sep);
       out.write(showSet(answers));
       out.write(sep);
-      out.write(res.outputLf.toString());
+      out.write(toString(res.outputLf));
       out.write(sep);
       out.write(res.realized);
       out.write(nl);
@@ -114,7 +118,7 @@ public class BatchTest {
       out.write(sep);
       out.write(showSet(results));
       out.write(sep);
-      out.write(res.outputLf.toString());
+      out.write(toString(res.outputLf));
       out.write(sep);
       out.write(res.realized);
       out.write(nl);
@@ -160,6 +164,8 @@ public class BatchTest {
   /** The file to read test items from */
   private File _batchFile;
 
+  private ProgressListener _progressListener;
+
   private List<TestItem> _items = new ArrayList<TestItem>();
 
   private List<ResultItem> _bad = new ArrayList<ResultItem>();
@@ -168,6 +174,11 @@ public class BatchTest {
   public BatchTest(CcgUtterancePlanner planner, boolean realizationTest) {
     _planner = planner;
     _realizationTest = realizationTest;
+  }
+
+  public void setProgressListener(ProgressListener l) {
+    _progressListener = l;
+    _progressListener.setMaximum(itemSize());
   }
 
   public int itemSize() {
@@ -273,6 +284,9 @@ public class BatchTest {
       l.getStartPos();
       nextSentence = l.readLine();
     }
+    if (nextSentence.isEmpty() && l.atEOF()) {
+      return;
+    }
     Set<DagNode> answers = new CopyOnWriteArraySet<DagNode>();
 
     if (l.peek() == '*') {
@@ -342,6 +356,10 @@ public class BatchTest {
       resultStatus = Status.BAD;
     }
 
+    if (_progressListener != null) {
+      _progressListener.progress(i);
+    }
+
     return new ResultItem(i, result, generated, resultStatus, warnings,
         _realizationTest);
   }
@@ -373,11 +391,23 @@ public class BatchTest {
       }
       warnings = ! sw.toString().isEmpty();
       plannerLogger.removeAppender(sentinel);
+    }	//
+    if (result == null) {
+      resultStatus = Status.BAD;
+    } else {
+      DagEdge prop = result.getEdge(DagNode.PROP_FEAT_ID);
+      if (prop != null
+          && prop.getValue().getTypeName().equals("No parse for sentence")) {
+        resultStatus = Status.BAD;
+      }
     }
     if (resultStatus == Status.GOOD &&
-        ! ((item.results.contains("*") && ! generated.isEmpty())
-           || item.results.contains(result))) {
+        ! (item.results.contains(ASTERISK) || item.results.contains(result))) {
       resultStatus = Status.BAD;
+    }
+
+    if (_progressListener != null) {
+      _progressListener.progress(i);
     }
 
     return new ResultItem(i, result, item.input, resultStatus, warnings,
@@ -389,9 +419,9 @@ public class BatchTest {
     _good.clear();
     int i = 0;
     for (TestItem item : _items) {
-      ResultItem res = (_realizationTest
+      ResultItem res = _realizationTest
           ? realizeOneItem((RealizationTestItem)item, i)
-          : parseOneItem((ParsingTestItem)item, i));
+          : parseOneItem((ParsingTestItem)item, i);
       ++i;
       if (res.itemStatus == Status.BAD) {
         _bad.add(res);

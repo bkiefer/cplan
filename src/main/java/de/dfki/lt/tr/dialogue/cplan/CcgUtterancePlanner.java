@@ -32,6 +32,14 @@ public class CcgUtterancePlanner extends UtterancePlanner {
   /** A CCG parser instance, if a grammar has been loaded */
   private Parser _parser = null;
 
+  public CcgUtterancePlanner() { super(); }
+
+  public CcgUtterancePlanner(CcgUtterancePlanner toClone)
+      throws FileNotFoundException, IOException {
+    super();
+    readProjectFile(toClone._projectFile);
+  }
+
   private void readCCGGrammar(File grammarFile) throws IOException {
     if (_lastGrammarLocation == null ||
         ! _lastGrammarLocation.equals(grammarFile)) {
@@ -155,6 +163,26 @@ public class CcgUtterancePlanner extends UtterancePlanner {
   public BatchTest batchProcess(File batchFile, boolean realizationTest)
       throws IOException {
     BatchTest bt = loadBatch(batchFile, realizationTest);
+    bt.setProgressListener(new ProgressListener() {
+      private int _lastPercentage = 0;
+      private int _max;
+      private static final int step = 10;
+
+      @Override
+      public void setMaximum(int max) {
+        _max = max;
+        logger.info(_lastPercentage + "% processed");
+      }
+
+      @Override
+      public void progress(int count) {
+        int newPercentage = (int) ((100.0 * count) / _max);
+        if (newPercentage >= _lastPercentage + step) {
+          _lastPercentage = newPercentage;
+          logger.info(_lastPercentage + "% processed");
+        }
+      }
+    });
     bt.runBatch();
     return bt;
   }
