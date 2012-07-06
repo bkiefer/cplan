@@ -636,14 +636,10 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
 
     showProgressBar();
     bp.bt.setProgressListener(new ProgressListener() {
-      public void setMaximum(int max) {
-        _progressBar.setMaximum(max);
-        _progressBar.setValue(0);
-      }
-
-      public void progress(int value) {
-        _progressBar.setValue(value);
-      }
+      private de.dfki.lt.loot.gui.util.ProgressListener pl =
+          getProgressBarListener();
+      public void setMaximum(int max) { pl.setMaximum(max); }
+      public void progress(int value) { pl.progress(value); }
     });
 
     _batchThread = new Thread(
