@@ -194,12 +194,12 @@ implements UPMainFrame.CloseAllListener {
 
     int repeat = MAX_EQUAL_REPEAT;
     String fileName = optionArg;
-    Pattern split = Pattern.compile("^(([0-9]*):)?(.*)$");
+    Pattern split = Pattern.compile("^(([0-9]+):)?(.*)$");
     Matcher m = split.matcher(optionArg);
     if (m.matches()) {
       fileName = m.group(3);
       String repeatNo = m.group(2);
-      if (! repeatNo.isEmpty()) {
+      if (repeatNo != null && ! repeatNo.isEmpty()) {
         try {
           repeat = Integer.parseInt(repeatNo);
         }
