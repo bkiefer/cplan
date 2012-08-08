@@ -1246,8 +1246,8 @@ public class UttplanParserTest {
 
     // Example 18
     { "", // no rule, to test grammars in file
-      "@e:enc(<enc> iso-8859-15 ^ <val> \"äÖìâé\")",
-      "@e:enc(<enc> iso-8859-15 ^ <val> \"äÖìâé\" ^ <right> true)"
+      "@e:enc(<enc> iso-8859-15 ^ <val> \"äÖìâé\" ^ <val2> \"\")",
+      "@e:enc(<enc> iso-8859-15 ^ <val> \"äÖìâé\" ^ <val2> \"\" ^ <right> true)"
     },
   };
 

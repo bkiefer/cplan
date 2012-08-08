@@ -26,7 +26,7 @@ public class LFDagPrinter extends DagPrinter {
   String getTypeString(String typeName) {
     if (typeName.indexOf('"') >= 0) {
       typeName = "\"" + typeName.replaceAll("\"", "\\\\\"") + "\"";
-    } else if (nonIdChars.matcher(typeName).find()) {
+    } else if (typeName.isEmpty() || nonIdChars.matcher(typeName).find()) {
       typeName =  "\"" + typeName + "\"";
     }
     return typeName;
