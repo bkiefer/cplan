@@ -467,7 +467,6 @@ public class DagNode {
   /** Will always return true. Otherwise, the whole system breaks, because
    *  already applied changes could not be rolled back.
    */
-  @SuppressWarnings("null")
   public boolean add(DagNode arg) {
     DagNode in1 = this.dereference();
     DagNode in2 = arg.dereference();
@@ -878,7 +877,6 @@ public class DagNode {
    *  @return false if a local failure has been detected that makes it
    *                impossible that this and in2 are equal, true otherwise.
    */
-  @SuppressWarnings("null")
   private boolean equalsRecMulti(DagNode dag2,
       IdentityHashMap<DagNode, IdentityHashMap<DagNode, Boolean>> eqClasses) {
     DagNode in1 = this.dereference();
@@ -1194,7 +1192,6 @@ public class DagNode {
     return RESTRICT.values()[getType()];
   }
 
-  @SuppressWarnings("null")
   public void restrict(DagNode restrictor) {
     RESTRICT restrictType = restrictor.getRestrictorType();
     // don't touch anything beyond this node
