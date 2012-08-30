@@ -29,6 +29,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import de.dfki.lt.loot.gui.MainFrame.RunnableAction;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest.ParsingTestItem;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest.RealizationTestItem;
@@ -47,8 +48,8 @@ public class ItemsTableWindow extends JDialog {
    * *************************************************************************/
 
   /* specs describing the buttons in the tool bar */
-  protected Object[][] actionSpecs() {
-    Object [][] results = {
+  protected RunnableAction[] actionSpecs() {
+    Object [][] specs = {
         {"Reload", "edit-redo", "Reload Batch File", "Reload",
           new Runnable() { public void run() { reload(); } } },
         {"Rerun", "gnome-run", "Rerun Batch", "Rerun",
@@ -56,6 +57,12 @@ public class ItemsTableWindow extends JDialog {
         {"Close", "window-close", "Close Batch Window", "Close",
           new Runnable() { public void run() { close(); } } },
     };
+    RunnableAction[] results = new RunnableAction[specs.length];
+    int i = 0;
+    for(Object[] spec : specs){
+      results[i++] = new RunnableAction((String) spec[0], (String) spec[1],
+          (String) spec[2], (String) spec[3], null, (Runnable) spec[4]);
+    }
     return results;
   }
 

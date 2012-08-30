@@ -3,7 +3,6 @@ package de.dfki.lt.tr.dialogue.cplan.gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +15,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
-import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.text.BadLocationException;
 
 import org.apache.log4j.Logger;
@@ -25,7 +24,9 @@ import de.dfki.lt.loot.gui.DrawingPanel;
 import de.dfki.lt.loot.gui.MainFrame;
 import de.dfki.lt.loot.gui.adapters.EmptyModelAdapter;
 import de.dfki.lt.loot.gui.adapters.ModelAdapter;
+import de.dfki.lt.loot.gui.util.FileAssociation;
 import de.dfki.lt.loot.gui.util.FileProcessor;
+import de.dfki.lt.loot.gui.util.FileProcessorAdapter;
 import de.dfki.lt.tr.dialogue.cplan.BasicRule;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest;
 import de.dfki.lt.tr.dialogue.cplan.CcgUtterancePlanner;
@@ -49,8 +50,45 @@ import de.dfki.lt.tr.dialogue.cplan.util.Position;
  * @version
  */
 @SuppressWarnings("serial")
-public class UPMainFrame extends MainFrame implements FileProcessor {
-
+public class UPMainFrame extends MainFrame {
+  
+  /** FileProcessor for project files
+   */
+  private class ProjectFileProcessor extends FileProcessorAdapter {
+    /** Set the project file to the given file and load its contents */
+    @Override
+    public boolean processFile(File projectFile) {
+      if (projectFile == null) {
+        _projectFile = null;
+        _currentDir = new File(".");
+      }
+      else {
+        setTitle("Reading project file: " + projectFile);
+        _projectFile = projectFile;
+        _currentDir = _projectFile.getAbsoluteFile().getParentFile();
+        readProjectFile();
+        _recentFiles.add(projectFile.getPath());
+        try {
+          File historyFile = _planner.getHistoryFile();
+          if (historyFile == null) {
+            historyFile = _currentDir;
+          }
+          _history.load(historyFile);
+          setStatusLine("rule files reloaded");
+        }
+        catch (IOException ioex) {
+          setStatusLine("Problem reading history file: "
+              + ioex.getLocalizedMessage(), Color.RED);
+        }
+      }
+      /** Enable/Disable reload rules, process, start trace
+       *  depending on existence of rule file
+       */
+      updateButtonStates();
+      return (projectFile == null || _projectFile != null);
+    }
+  }
+  
   /** Objects that listen to the change of the processor's run state */
   private List<RunStateListener> _runStateListeners =
     new ArrayList<RunStateListener>();
@@ -72,11 +110,12 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
   private static final int BATCH_REALIZE_BTN = PARSE_BTN + 1;
   private static final int BATCH_PARSE_BTN = BATCH_REALIZE_BTN + 1;
 
+  private RunnableAction[] _actions = null;
 
   /* specs describing the buttons in the tool bar */
   @Override
-  protected Object[][] actionSpecs() {
-    Object [][] results = {
+  protected RunnableAction[] actionSpecs() {
+    Object [][] specs = {
     {"Load", "edit-redo", "Reload Rules", "Reload Rules",
       new Runnable() { public void run() { reloadCurrentProject(); } } },
     {"Process", "gnome-run", "Process Input", "Process",
@@ -111,41 +150,32 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
       new Runnable() { public void run() { batchProcess(false); } }
     }
     };
-    return results;
+    _actions = new RunnableAction[specs.length];
+    int i = 0;
+    for(Object[] spec : specs){
+      _actions[i++] = new RunnableAction((String) spec[0], (String) spec[1],
+          (String) spec[2], (String) spec[3], null, (Runnable) spec[4]);
+    }
+    return _actions;
   }
 
   @Override
-  protected Object[][] menuSpecs() {
-    Object [][] results = {
-      { "New",
-        KeyStroke.getKeyStroke(Character.valueOf('n'), InputEvent.ALT_DOWN_MASK),
-        new Runnable() { public void run() { newFrame(); } }
-      },
-      {"Open", KeyEvent.VK_O,
-        new Runnable() {
-          public void run() { openFileDialog(UPMainFrame.this); }
-        }
-      },
-      {"Close",
-        KeyStroke.getKeyStroke(Character.valueOf('w'),
-          InputEvent.META_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
-        new Runnable() { public void run() { close(); } }
-      },
-      { null },
-      { "Recent Files", null, null },
-      { null },
-      { "Load History", null,
-        new Runnable() { public void run() { loadHistory(); } } },
-      { "Save History", null,
-        new Runnable() { public void run() { saveHistory(); } } },
-      { "Clear History", null,
-        new Runnable() { public void run() { _history.clear(); } } },
-      { null },
-      {"Exit",
-        KeyStroke.getKeyStroke(Character.valueOf('a'),
-            InputEvent.ALT_DOWN_MASK),
-        new Runnable() { public void run() { closeAll(); } }
-      }
+  protected MyMenu[] menuSpecs(RunnableAction[] actions) {
+    Object[] specs = {
+      newAction(),
+      new RunnableAction(
+          "Open", "document-open", "Open", "Open File",
+          KeyStroke.getKeyStroke((char)KeyEvent.VK_O),
+          new Runnable() { public void run() {
+            openFileDialog(_projectFileProcessor);
+          } }),
+      closeAction(),
+      null,
+      recentFiles(),
+      null,
+      loadHistoryAction(), saveHistoryAction(), clearHistoryAction(),
+      null,
+      exitAction(),
       /*
       {"Select Font", null,
          new Runnable() {
@@ -157,7 +187,11 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
       }
       */
     };
-    return results;
+    MyMenu[] menuBarSpecs = {
+        new MyMenu("File", KeyEvent.VK_F, specs),
+    };
+
+    return menuBarSpecs;
   }
 
 
@@ -181,6 +215,8 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
    * fields for processing elements beyond the GUI
    * *************************************************************************/
 
+  private FileProcessor _projectFileProcessor = new ProjectFileProcessor();
+  
   /** This contains the selected rules file and current directory. */
   //private File _currentDir = null;
   private File _projectFile = null;
@@ -234,7 +270,12 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
     updateButtonStates();
     _displayPane.setDividerLocation(.5);
     setTitle(title);
-    processFile(ruleFile == null ? null : new File(ruleFile));
+    try {
+      _projectFileProcessor.processFile(ruleFile == null ? null : new File(ruleFile));
+    } catch (IOException e) {
+      Logger.getLogger("UtterancePlanner")
+      .error("Problem reading project file" + e);
+    }
 
     setProcessorStopped();
     addRunStateListener(new RunStateListener() {
@@ -277,7 +318,7 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
   @Override
   protected void newFrame() {
     UPMainFrame newMf = new UPMainFrame("Empty Planner");
-    newMf.openFileDialog(this);
+    newMf.openFileDialog(newMf._projectFileProcessor);
   }
 
   /** Wipe the input area clean */
@@ -346,43 +387,7 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
     updateButtonStates();
   }
 
-  /** Set the project file to the given file and load its contents */
-  @Override
-  public boolean processFile(File projectFile) {
-    if (projectFile == null) {
-      _projectFile = null;
-      _currentDir = new File(".");
-    }
-    else {
-      setTitle("Reading project file: " + projectFile);
-      _projectFile = projectFile;
-      _currentDir = _projectFile.getAbsoluteFile().getParentFile();
-      readProjectFile();
-      _recentFiles.add(projectFile.getPath());
-      try {
-        File historyFile = _planner.getHistoryFile();
-        if (historyFile == null) {
-          historyFile = _currentDir;
-        }
-        _history.load(historyFile);
-        setStatusLine("rule files reloaded");
-      }
-      catch (IOException ioex) {
-        setStatusLine("Problem reading history file: "
-            + ioex.getLocalizedMessage(), Color.RED);
-      }
-    }
-    /** Enable/Disable reload rules, process, start trace
-     *  depending on existence of rule file
-     */
-    updateButtonStates();
-    return (projectFile == null || _projectFile != null);
-  }
 
-  @Override
-  protected FileNameExtensionFilter getFileFilter() {
-    return null;
-  }
 
   // *************************************************************************
   // processing state, signalling and executing methods
@@ -612,6 +617,14 @@ public class UPMainFrame extends MainFrame implements FileProcessor {
       }
       return true;
     }
+
+    @Override
+    public FileAssociation getAssociation(String extension) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public FileFilter getFileFilter() { return null; }
   }
 
   private void batchProcess(boolean realize) {

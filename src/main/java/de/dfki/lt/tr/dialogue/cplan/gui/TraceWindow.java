@@ -33,6 +33,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
 
 import de.dfki.lt.loot.gui.DrawingPanel;
+import de.dfki.lt.loot.gui.MainFrame.RunnableAction;
 import de.dfki.lt.loot.gui.adapters.EmptyModelAdapter;
 import de.dfki.lt.loot.gui.adapters.ModelAdapter;
 import de.dfki.lt.tr.dialogue.cplan.Bindings;
@@ -306,8 +307,14 @@ implements UPMainFrame.RunStateListener {
 
   private JToolBar makeButtons() {
     _actionButtons = new ArrayList<JButton>();
+    RunnableAction[] actions = new RunnableAction[actionSpecs.length];
+    int i = 0;
+    for (Object[] spec : actionSpecs) {
+      actions[i++] = new RunnableAction((String) spec[0], (String) spec[1],
+          (String) spec[2], (String) spec[3], null, (Runnable) spec[4]);
+    }
     JToolBar toolbar =
-      parent().newToolBar(actionSpecs, "Trace Buttons", _actionButtons);
+        parent().newToolBar(actions, "Trace Buttons", _actionButtons);
     toolbar.setFloatable(false);
     return toolbar;
   }
