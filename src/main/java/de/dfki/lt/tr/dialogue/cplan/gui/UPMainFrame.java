@@ -163,12 +163,7 @@ public class UPMainFrame extends MainFrame {
   protected MyMenu[] menuSpecs(RunnableAction[] actions) {
     Object[] specs = {
       newAction(),
-      new RunnableAction(
-          "Open", "document-open", "Open", "Open File",
-          KeyStroke.getKeyStroke((char)KeyEvent.VK_O),
-          new Runnable() { public void run() {
-            openFileDialog(_projectFileProcessor);
-          } }),
+      openAction(),
       closeAction(),
       null,
       recentFiles(),
@@ -215,8 +210,6 @@ public class UPMainFrame extends MainFrame {
    * fields for processing elements beyond the GUI
    * *************************************************************************/
 
-  private FileProcessor _projectFileProcessor = new ProjectFileProcessor();
-  
   /** This contains the selected rules file and current directory. */
   //private File _currentDir = null;
   private File _projectFile = null;
@@ -249,6 +242,7 @@ public class UPMainFrame extends MainFrame {
   }
 
   public UPMainFrame(String title, InteractivePlanner ip, String ruleFile) {
+    _fileProcessor = new ProjectFileProcessor();
     _planner = ip;
 
     int historySize = 0;
@@ -271,7 +265,7 @@ public class UPMainFrame extends MainFrame {
     _displayPane.setDividerLocation(.5);
     setTitle(title);
     try {
-      _projectFileProcessor.processFile(ruleFile == null ? null : new File(ruleFile));
+      _fileProcessor.processFile(ruleFile == null ? null : new File(ruleFile));
     } catch (IOException e) {
       Logger.getLogger("UtterancePlanner")
       .error("Problem reading project file" + e);
@@ -316,9 +310,10 @@ public class UPMainFrame extends MainFrame {
 
   /** Create a new frame for a possibly different project */
   @Override
-  protected void newFrame() {
+  protected MainFrame newFrame() {
     UPMainFrame newMf = new UPMainFrame("Empty Planner");
-    newMf.openFileDialog(newMf._projectFileProcessor);
+    newMf.openFileDialog(newMf._fileProcessor);
+    return newMf;
   }
 
   /** Wipe the input area clean */

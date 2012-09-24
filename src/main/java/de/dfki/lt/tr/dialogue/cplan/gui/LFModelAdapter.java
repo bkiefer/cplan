@@ -23,7 +23,7 @@ public class LFModelAdapter extends ModelAdapter {
   }
 
   private class EdgeAdapterIterator implements MapAdapterIterator {
-    Pair<String, Object> _current;
+    Pair<Object, Object> _current;
     private Iterator<? extends DagEdge> _iterator;
 
     /** precondition: _iterator != null */
@@ -33,7 +33,7 @@ public class LFModelAdapter extends ModelAdapter {
         DagEdge edge = _iterator.next();
         if (_excludedFeatures == null ||
             Arrays.binarySearch(_excludedFeatures, edge.getFeature()) < 0)
-          _current = new Pair<String, Object>(edge.getName(), edge.getValue());
+          _current = new Pair<Object, Object>(edge.getName(), edge.getValue());
       }
     }
 
@@ -47,8 +47,8 @@ public class LFModelAdapter extends ModelAdapter {
 
     public boolean hasNext() { return _current != null; }
 
-    public Pair<String, Object> next() {
-      Pair<String, Object> result = _current;
+    public Pair<Object, Object> next() {
+      Pair<Object, Object> result = _current;
       advance();
       return result;
     }
