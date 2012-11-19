@@ -333,7 +333,7 @@ implements UPMainFrame.CloseAllListener {
       DagNode.usePrettyPrinter();
     }
     switch (what) {
-    case 'r':
+    case 'r': // Run a batch planning + generation test
       try {
         if (nonOptionArgs.size() == 0) {
           usage("No project file specified");
@@ -360,7 +360,7 @@ implements UPMainFrame.CloseAllListener {
         ip.logger.error("Problem during batch processing: " +  ex);
       }
       break;
-    case 'R':
+    case 'R': // batch generate sentences from the given parameters
       try {
         if (nonOptionArgs.size() == 0) {
           usage("No project file specified");
