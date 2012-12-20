@@ -180,7 +180,7 @@ implements UPMainFrame.CloseAllListener {
     if (_j2e == null) return;
     try {
       File f = new File(p.msg).getCanonicalFile();
-      _j2e.startEmacs(f, p.line, p.column, "");
+      _j2e.visitFilePosition(f, p.line, p.column, "");
     }
     catch (IOException ioex) {
       Logger.getRootLogger().warn(ioex);

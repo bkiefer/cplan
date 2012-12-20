@@ -314,7 +314,7 @@ several they are listed in a pop-up where you can select one to edit."
 ;; * PORT - port to connect to
 (defun j2e-startup (appname hostname port)
   (setq j2e-application appname)
-  (message (concat "Starting " j2e-application " process"))
+  (message "Starting %s process (%s:%s)" j2e-application hostname port)
   (j2e-create-menu)
   (j2e-keymap)
   (save-excursion
@@ -430,6 +430,15 @@ several they are listed in a pop-up where you can select one to edit."
   (setq j2e-file-name partial-file)
   (add-hook 'after-save-hook 'j2e-after-save nil t))
 
+;; helps on Linux, what about MacOS, Windows?
+(defadvice raise-frame (after make-it-work (&optional frame) activate)
+  "Work around some bug? in raise-frame/Emacs/GTK/Metacity/something.
+   Katsumi Yamaoka <yamaoka@jpl.org> posted this in
+   http://article.gmane.org/gmane.emacs.devel:39702"
+  (call-process
+   "wmctrl" nil nil nil "-i" "-R"
+   (frame-parameter (or frame (selected-frame)) 'outer-window-id)))
+
 ;; Sent by J2E when we should visit a file.
 ;; Arguments are:
 ;; * DIRECTORY    - base directory of project
@@ -441,15 +450,24 @@ several they are listed in a pop-up where you can select one to edit."
 	 (obuf (get-file-buffer file)))
     (cond (obuf (switch-to-buffer obuf)
 		(push-mark))
-	  (t (set-buffer (if (string= state "disabled")
-			     (find-file-read-only file)
-			   (find-file file))))))
-  (setq j2e-minor-mode t)
-  (setq j2e-process j2e-current-process)
-  (setq j2e-file-name partial-file)
-  (add-hook 'after-save-hook 'j2e-after-save nil t)
-  (goto-line line)
-  (forward-char column))
+	  (t (setq obuf (if (string= state "disabled")
+                            (find-file-read-only file)
+                          (find-file file)))))
+    ;; (message "visit %s %d %d (%s)" file line column obuf)
+    (setq j2e-minor-mode t)
+    (setq j2e-process j2e-current-process)
+    (setq j2e-file-name partial-file)
+    (add-hook 'after-save-hook 'j2e-after-save nil t)
+    (goto-line line)
+    (forward-char column)
+    ;; too bad this requires the preceding hack on GTK
+    (let* ((window (get-buffer-window obuf t))
+           (frame (if window
+                      (window-frame window)
+                    (progn (message "No window") nil))))
+      (cond (frame (raise-frame frame))
+            (t (message "No Frame"))))
+    ))
 
 ;; This command is sent by J2E when a buffer we have should be put into
 ;; J2E mode.  It actually sends a list of (possibly relative) filenames
