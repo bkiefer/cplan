@@ -2,6 +2,17 @@
 
 **** SOON ****
 
+- Change design of trace window: information overload, present information
+  on demand, like variable bindings, rule, etc., maybe in a different (pop up)
+  window
+
+- "Search" in trace window: for first presence/absence of some configuration,
+  which could be marked in the input/output window.
+
+- Make available: List of features | types | feature/value pairs _or_ values,
+  given a specific feature
+  the list of rules where a specific feat | type | f/v occurs
+
 - Better error message when ID contains illegal character
   --> Console:1:709: syntax error, unexpected $undefined, expecting ')'
   Have to find a good example for that
@@ -17,8 +28,6 @@
 - pretty printing for LF's (and rules) so selected inputs from batch window
   are readable
 
-- progress bar / activity indicator for batch tests (slow generator)
-
 - #var variables on RHS which do not occur on LHS should be a syntax error
 
 - Copying of structures (and substructures) into a new window / a text
@@ -33,9 +42,6 @@
 
 - history does not work properly
 - and not properly saved in project file
-
-
--
 
 - maybe more parsing-like behaviour to be able to generate alternatives to
   choose from with additional external features (dialogue state / history)??
@@ -70,6 +76,8 @@ Today:
 + generate all sentences for canned text with a large batch run
 + batch window does not refresh on batch rerun
 + syntax error in batch file should not break the whole process
++ progress bar / activity indicator for batch tests (slow generator)
++ j2emacs pops to front when file is shown (tested in gtk/linux)
 
 *** DISCUSSIONS ***
 
