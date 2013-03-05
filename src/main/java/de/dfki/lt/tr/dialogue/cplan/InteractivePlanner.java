@@ -262,7 +262,8 @@ implements UPMainFrame.CloseAllListener {
 
   private static void usage(String msg) {
     String[] usage = {
-        "Usage: UPDebugger [-[rR]<ealize batch> inputfile]",
+        "Usage: UPDebugger [-[r]<ealize batch> inputfile]",
+        "                  [-[R]<realize sentences> [iterationcount:]inputfile [initialsentences]] ",
         "                  [-[p]<arse batch> inputfile]",
         "                  [-c<ompileonly>] [-d<ebugdags>]",
         "                  [-g<ui>] [-t<race>={1,2,3}] [-e<macs>]",
