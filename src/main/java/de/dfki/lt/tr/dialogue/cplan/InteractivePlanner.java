@@ -34,9 +34,15 @@ implements UPMainFrame.CloseAllListener {
 
   /** The root directory that contains resources in its etc/ subdirectory */
   private File _rootDir;
+  
+  /** The user's home directory */
+  private File _homeDir;
+  
+  /** The name of this application */
+  public static String appName = "cplanner";
 
   /** The buffer name for the file output in case of a connection to Emacs */
-  private String _compilationBufferName = "*cplanner*";
+  private String _compilationBufferName = "*" + appName + "*";
   /** An Emacs connector */
   private J2Emacs _j2e = null;
 
@@ -49,11 +55,12 @@ implements UPMainFrame.CloseAllListener {
   }
 
   public File getPreferencesFile() {
-    File prefs = new File(_rootDir, ".cplanner");
+    File prefs = new File(_homeDir, "." + appName);
     return prefs;
   }
 
   private boolean setRootDir(File file) {
+    _homeDir = new File(System.getProperty("user.home"));
     _rootDir = file;
     if (! _rootDir.isDirectory() || ! getResourcesDir().isDirectory()) {
       _rootDir = null;
@@ -275,7 +282,7 @@ implements UPMainFrame.CloseAllListener {
     System.exit(1);
   }
 
-  @SuppressWarnings({ "unchecked", "null" })
+  @SuppressWarnings("unchecked")
   public static void main(String[] args) {
     Logger uplogger = Logger.getLogger("UtterancePlanner");
     Enumeration<Appender> apps = uplogger.getAllAppenders();
@@ -297,11 +304,10 @@ implements UPMainFrame.CloseAllListener {
       System.exit(1);
     }
 
-    if (! options.has("A")) {
-      usage("application directory must be specified");
+    if (System.getProperty("app.dir") == null) {
+      usage("application directory must be specified in app.dir property");
       System.exit(1);
     }
-    File rootDir = new File((String) options.valueOf("A"));
 
     List<String> nonOptionArgs = options.nonOptionArguments();
 
@@ -320,8 +326,9 @@ implements UPMainFrame.CloseAllListener {
     }
 
     InteractivePlanner ip = new InteractivePlanner();
-    if (ip.setRootDir(rootDir)) {
-      usage("argument of -A is not the root directory:" + rootDir);
+    if (ip.setRootDir(new File(System.getProperty("app.dir")))) {
+      usage("property value of app.dir is not the root directory:"
+          + System.getProperty("app.dir"));
     }
 
     if (options.has("e")) {

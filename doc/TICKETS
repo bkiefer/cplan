@@ -36,6 +36,9 @@
 - Applying a selected structure to a selected rule to see matching problems
   or effects of application --> display of failure!
 
+- "Integrate" j2emacs with dataviz?? or have another project/module that does
+  it, in the spirit of an IDE??
+
 - j2emacs does not work properly on Windows/cygwin
   --> packaging a lean binary distribution & make bundle available for
       TNO (mail of 25. Nov '11)

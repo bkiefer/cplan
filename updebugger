@@ -2,10 +2,14 @@
 #set -x
 # java start script version 1.0
 
+MAINCLASS=de.dfki.lt.tr.dialogue.cplan.InteractivePlanner
+# if DEBUG is set and non-empty, remote debugging is enabled
+# if BINARY is set and non-empty, the compilation step is skipped
+#BINARY=true
+
 here="`pwd`"
 cd "`dirname $0`"
 APP_HOME="`pwd`"
-#BINARY=true
 if test -z "$BINARY" -a -d src ; then
     ant all > /dev/null 2>&1
 fi
@@ -106,5 +110,5 @@ APP_HOME=`dozify_path $APP_HOME`
 if test -n "$L4JSETUP" ; then
     JAVA_OPTS="$JAVA_OPTS -Dlog4j.configuration=file:${L4JSETUP}"
 fi
-MAINCLASS=de.dfki.lt.tr.dialogue.cplan.InteractivePlanner
-eval "$JAVA_BIN" "$JAVA_OPTS" $MAINCLASS -A "'$APP_HOME'" $* || echo "$usage"
+eval "$JAVA_BIN" "$JAVA_OPTS" -Dapp.dir="$APP_HOME" $MAINCLASS $* \
+  || echo "$usage"
