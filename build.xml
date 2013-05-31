@@ -16,6 +16,14 @@
       <param name="target" value="${target}"/>
       <param name="dir" value="../cplan-ccg"/>
     </antcall>
+    <antcall target="subant">
+      <param name="target" value="${target}"/>
+      <param name="dir" value="../../java/dataviz"/>
+    </antcall>
+    <antcall target="subant">
+      <param name="target" value="${target}"/>
+      <param name="dir" value="../../java/j2emacs"/>
+    </antcall>
   </target>
 
 </project>
