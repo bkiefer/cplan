@@ -18,11 +18,11 @@
     </antcall>
     <antcall target="subant">
       <param name="target" value="${target}"/>
-      <param name="dir" value="../../java/dataviz"/>
+      <param name="dir" value="../dataviz"/>
     </antcall>
     <antcall target="subant">
       <param name="target" value="${target}"/>
-      <param name="dir" value="../../java/j2emacs"/>
+      <param name="dir" value="../j2emacs"/>
     </antcall>
   </target>
 
