@@ -29,7 +29,7 @@ fi
 
 if test -z "$CYGWIN" ; then
     if test -n "$JAVA_HOME" ; then
-        "$JAVA_HOME"/bin/java -version 2>&1 | grep -q "version \"*1\.[56]" ||
+        "$JAVA_HOME"/bin/java -version 2>&1 | grep -q "version \"*1\.[567]" ||
         unset JAVA_HOME JAVA_BINDIR JAVA_ROOT JDK_HOME JRE_HOME
     fi
     CPSEP=':'
@@ -44,7 +44,7 @@ if test -z "$CYGWIN" -a -z "$JAVA_HOME" ; then
     for path in `type -all java`; do
         JAVA_HOME=`echo "${path##java is}" | sed 's|.* \(/.*\)/bin/java|\1|'`
          if test -n "$JAVA_HOME" &&
-            $JAVA_HOME/bin/java -version 2>&1 | grep -q "version \"*1\.[56]" ; then
+            $JAVA_HOME/bin/java -version 2>&1 | grep -q "version \"*1\.[567]" ; then
             export JAVA_HOME
             break
         else
