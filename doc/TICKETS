@@ -5,6 +5,38 @@
   rule: nicely formatted!
 - put "random" into sequential mode to really find all sentences
 - find features / types functionality
+
+FIX BAD DETECTION OF RULE ERROR FOR THIS RULE:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// 1,  w/ total, count =/= total
+:dvp ^ <SpeechAct>provide
+^ ( <Content>(<About>performanceSession) | ( <Content>(<About>performance) ^ <Context>(<Asker>robot)) )
+^ <Content>( <Noun>#n ^ <Verb>#v  ^ <ScopeRef>#sr: ^ <TotalRef>#tr:
+            ^ <TotalCount>(#t^!1^!one) ^ <Performance>(#p ^ (1|one)))
+^ <Control>(#ctrl:control ^ !<InsertPerformance>)
+->
+###today = #sr,
+###overall = #tr,
+
+###part1 = concatenate(#n, "außerhalb von "),
+
+###parta = random(" richtig ", " korrekt "),
+###fina = random( "war ", " ist"),
+###part2a = concatenate(###fina, ###parta),
+
+###partb = " geraten ",
+###finb = " wurde ",
+###part2b = concatenate(###finb, ###partb),
+
+###part2 = random(###part2a, ###part2a, ###part2a, ###part2b),
+
+###opt1 =  concatenate(###overall, "ein", ###part1, #t, ###part2, ###today),
+###opt2 = concatenate(###overall, ###today, "Du hast ", #v, "eine", ###parta, #n, "außerhalb von ", #t),
+# ^ :canned ^ <stringOutput>random(###opt1,###opt2) ^ <SpeechModus>indicative.
+#ctrl ^ <InsertPerformance>done.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 **** SOON ****
 
 - Change design of trace window: information overload, present information
