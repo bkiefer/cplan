@@ -1,5 +1,10 @@
 **** NOW *****
-
+- generate button does run, too,
+- batch window not modal, can reload test file
+- trace window: only result, optionally input / variables / rule
+  rule: nicely formatted!
+- put "random" into sequential mode to really find all sentences
+- find features / types functionality
 **** SOON ****
 
 - Change design of trace window: information overload, present information
