@@ -22,6 +22,7 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.SimpleLayout;
 
 import de.dfki.lt.j2emacs.J2Emacs;
+import de.dfki.lt.tr.dialogue.cplan.BatchTest.BatchType;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest.RealizationTestItem;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest.ResultItem;
 import de.dfki.lt.tr.dialogue.cplan.functions.FunctionFactory;
@@ -34,10 +35,10 @@ implements UPMainFrame.CloseAllListener {
 
   /** The root directory that contains resources in its etc/ subdirectory */
   private File _rootDir;
-  
+
   /** The user's home directory */
   private File _homeDir;
-  
+
   /** The name of this application */
   public static String appName = "cplanner";
 
@@ -241,7 +242,7 @@ implements UPMainFrame.CloseAllListener {
     }
     */
 
-    BatchTest bt = this.loadBatch(batchFile, true);
+    BatchTest bt = this.loadBatch(batchFile, BatchType.GENERATION);
     for (int i = 0; i < bt.itemSize(); ++i) {
       RealizationTestItem item = (RealizationTestItem) bt.getItem(i);
       HashSet<String> sents = new HashSet<String>();
@@ -294,7 +295,7 @@ implements UPMainFrame.CloseAllListener {
           new ConsoleAppender(new SimpleLayout(), "System.err"));
     }
 
-    OptionParser parser = new OptionParser("R:r:p:cdgt:e::A:");
+    OptionParser parser = new OptionParser("R:r:p:P:cdgt:e::A:");
     OptionSet options = null;
     try {
       options = parser.parse(args);
@@ -315,11 +316,11 @@ implements UPMainFrame.CloseAllListener {
 
     char what = 'i';
     // x and T are only for test purposes
-    String[] actionOptions = { "R", "r", "p", "c", "g" };
+    String[] actionOptions = { "R", "r", "p", "P", "c", "g" };
     for (String action : actionOptions) {
       if (options.has(action)) {
         if (what != 'i')
-          usage("Only one of -R, -r, -p, -c or -g allowed.") ;
+          usage("Only one of -R, -r, -p, -P, -c or -g allowed.") ;
         what = action.charAt(0);
         optionArg = (String) options.valueOf(action);
       }
@@ -351,7 +352,7 @@ implements UPMainFrame.CloseAllListener {
             usage("Batch input file not found:" + batchFile);
           } else {
             ip.readProjectFile(new File(nonOptionArgs.get(0)));
-            BatchTest bt = ip.batchProcess(batchFile, true);
+            BatchTest bt = ip.batchProcess(batchFile, BatchType.PARSING);
             try {
               File batchSave =
                   new File(batchFile.getParent(), batchFile.getName() + ".out");
@@ -396,7 +397,35 @@ implements UPMainFrame.CloseAllListener {
             usage("Batch input file not found:" + batchFile);
           } else {
             ip.readProjectFile(new File(nonOptionArgs.get(0)));
-            BatchTest bt = ip.batchProcess(batchFile, false);
+            BatchTest bt = ip.batchProcess(batchFile, BatchType.GENERATION);
+            try {
+              File batchSave =
+                  new File(batchFile.getParent(), batchFile.getName() + ".out");
+              bt.save(new FileWriter(batchSave));
+            } catch (IOException ioex) {
+              bt.save(new PrintWriter(System.out));
+            }
+            ip.logger.info(bt.percentageGood());
+            ip.allClosed();
+          }
+        }
+      }
+      catch (IOException ex) {
+        ip.logger.error("Problem during batch processing: " +  ex);
+      }
+      break;
+    case 'P':
+      // do a "planning" batch test
+      try {
+        if (nonOptionArgs.size() == 0) {
+          usage("No project file specified");
+        } else {
+          File batchFile = new File(optionArg);
+          if (! batchFile.exists()) {
+            usage("Batch input file not found:" + batchFile);
+          } else {
+            ip.readProjectFile(new File(nonOptionArgs.get(0)));
+            BatchTest bt = ip.batchProcess(batchFile, BatchType.PLANNING);
             try {
               File batchSave =
                   new File(batchFile.getParent(), batchFile.getName() + ".out");

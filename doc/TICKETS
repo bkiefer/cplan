@@ -6,6 +6,35 @@
 - put "random" into sequential mode to really find all sentences
 - find features / types functionality
 
+- plugin_directory config is not described in documentation
+
+- make clear that Rules section names MUST start with "Rules"
+
+// Setting type in current node does not work like this:
+:apology -> # ! <__TYPE>, # ^ <__TYPE>apologize.
+// but:
+:apology -> # ! <__TYPE>, # ^ :apologize.
+
+- neither batch nor trace window block the others
+
+- Re-run batch and trace painlessly: batch processor should be that of the
+  related main window, such that reload of grammar has effect on new batch run,
+  which means the processor must be shielded against double use in threads
+  i.e. the "process" function must be synchronized.
+
+- batch against LFs
+
+- Only batch double click raises emacs window, otherwise, no navigation in
+  batch window possible
+
+- does the batch use the new grammar version after reload? or should reload
+  also reload the grammar?
+
+- batch plan does not use the main window properly: double click has strange
+  effect
+
+- using negation with nested rule contexts dies with NullPointerException
+
 FIX BAD DETECTION OF RULE ERROR FOR THIS RULE:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // 1,  w/ total, count =/= total
@@ -35,7 +64,6 @@ FIX BAD DETECTION OF RULE ERROR FOR THIS RULE:
 # ^ :canned ^ <stringOutput>random(###opt1,###opt2) ^ <SpeechModus>indicative.
 #ctrl ^ <InsertPerformance>done.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 **** SOON ****
 

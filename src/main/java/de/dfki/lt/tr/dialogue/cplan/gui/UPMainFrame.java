@@ -29,6 +29,7 @@ import de.dfki.lt.loot.gui.util.FileProcessor;
 import de.dfki.lt.loot.gui.util.FileProcessorAdapter;
 import de.dfki.lt.tr.dialogue.cplan.BasicRule;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest;
+import de.dfki.lt.tr.dialogue.cplan.BatchTest.BatchType;
 import de.dfki.lt.tr.dialogue.cplan.CcgUtterancePlanner;
 import de.dfki.lt.tr.dialogue.cplan.CollectEventsTracer;
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
@@ -51,7 +52,7 @@ import de.dfki.lt.tr.dialogue.cplan.util.Position;
  */
 @SuppressWarnings("serial")
 public class UPMainFrame extends MainFrame {
-  
+
   /** FileProcessor for project files
    */
   private class ProjectFileProcessor extends FileProcessorAdapter {
@@ -88,7 +89,7 @@ public class UPMainFrame extends MainFrame {
       return (projectFile == null || _projectFile != null);
     }
   }
-  
+
   /** Objects that listen to the change of the processor's run state */
   private List<RunStateListener> _runStateListeners =
     new ArrayList<RunStateListener>();
@@ -109,6 +110,7 @@ public class UPMainFrame extends MainFrame {
   private static final int PARSE_BTN = REALIZE_BTN + 1;
   private static final int BATCH_REALIZE_BTN = PARSE_BTN + 1;
   private static final int BATCH_PARSE_BTN = BATCH_REALIZE_BTN + 1;
+  private static final int BATCH_PLAN_BTN = BATCH_PARSE_BTN + 1;
 
   private RunnableAction[] _actions = null;
 
@@ -144,10 +146,13 @@ public class UPMainFrame extends MainFrame {
       new Runnable() { public void run() { parseInput(); } }
     },
     {"Batch realization", "batch", "Batch realize", "Batch realize",
-      new Runnable() { public void run() { batchProcess(true); } }
+      new Runnable() { public void run() { batchProcess(BatchType.GENERATION);}}
     },
     {"Batch parse", "batch", "Batch parse", "Batch parse",
-      new Runnable() { public void run() { batchProcess(false); } }
+      new Runnable() { public void run() { batchProcess(BatchType.PARSING);}}
+    },
+    {"Batch plan", "batch", "Batch plan", "Batch plan",
+      new Runnable() { public void run() { batchProcess(BatchType.PLANNING);}}
     }
     };
     _actions = new RunnableAction[specs.length];
@@ -462,6 +467,7 @@ public class UPMainFrame extends MainFrame {
     _actionButtons.get(PARSE_BTN).setEnabled(runnable);
     _actionButtons.get(BATCH_REALIZE_BTN).setEnabled(runnable);
     _actionButtons.get(BATCH_PARSE_BTN).setEnabled(runnable);
+    _actionButtons.get(BATCH_PLAN_BTN).setEnabled(runnable);
   }
 
   /** Call this method when the processing of new input starts */
@@ -595,10 +601,10 @@ public class UPMainFrame extends MainFrame {
 
   private class BatchProcessor implements FileProcessor {
     public BatchTest bt = null;
-    public boolean realizationTest = true;
+    public BatchType realizationTest;
     private CcgUtterancePlanner _planner;
 
-    public BatchProcessor(CcgUtterancePlanner planner, boolean realize) {
+    public BatchProcessor(CcgUtterancePlanner planner, BatchType realize) {
       realizationTest = realize;
       _planner = planner;
     }
@@ -622,7 +628,7 @@ public class UPMainFrame extends MainFrame {
     public FileFilter getFileFilter() { return null; }
   }
 
-  private void batchProcess(boolean realize) {
+  private void batchProcess(BatchType realize) {
     if (_batchThread != null) {
       setStatusLine("Batch already running", Color.RED);
       return;
