@@ -152,7 +152,7 @@ public class CcgUtterancePlanner extends UtterancePlanner {
   }
 
   /* Load a batch test file for further processing */
-  public BatchTest loadBatch(File batchFile, boolean realizationTest)
+  public BatchTest loadBatch(File batchFile, BatchTest.BatchType realizationTest)
       throws IOException {
     BatchTest bt = new BatchTest(this, realizationTest);
     bt.init(batchFile);
@@ -160,7 +160,8 @@ public class CcgUtterancePlanner extends UtterancePlanner {
   }
 
   /** Run a batch planning + generation test */
-  public BatchTest batchProcess(File batchFile, boolean realizationTest)
+  public BatchTest batchProcess(File batchFile,
+      BatchTest.BatchType realizationTest)
       throws IOException {
     BatchTest bt = loadBatch(batchFile, realizationTest);
     bt.setProgressListener(new ProgressListener() {

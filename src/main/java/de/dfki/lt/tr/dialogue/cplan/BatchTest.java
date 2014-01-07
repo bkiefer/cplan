@@ -29,7 +29,9 @@ public class BatchTest {
 
   public enum Status { BAD , GOOD };
 
-  private boolean _realizationTest = true;
+  public enum BatchType { GENERATION, PARSING, PLANNING };
+
+  private BatchType _realizationTest = BatchType.GENERATION;
 
   private static final DagNode ASTERISK = new DagNode("*");
 
@@ -131,6 +133,49 @@ public class BatchTest {
     public Set<?> output() { return results; }
   }
 
+  /** A test item, consisting of:
+   *  @field lf       a logical form: the input to the processing
+   *  @field answers  a set of strings: the possible answers. If "*" is in the
+   *                  set, the test will be successful if a non-empty string
+   *                  could be realized.
+   *  @field position the location in the batch file where the test item was
+   *                  defined
+   */
+  public static class PlanningTestItem extends TestItem {
+    public DagNode lf;
+    public Set<DagNode> answers;
+
+    public PlanningTestItem(DagNode d, DagNode a, Position l) {
+      lf = d;
+      answers = new CopyOnWriteArraySet<DagNode>();
+      answers.add(a);
+      position = l;
+    }
+
+    @Override
+    public void write(Writer out, ResultItem res, String sep, String nl)
+        throws IOException {
+      // write result item slots
+      out.write(res.itemStatus.toString());
+      out.write(sep);
+      out.write(toString(lf));
+      out.write(sep);
+      out.write(showSet(answers));
+      out.write(sep);
+      out.write(toString(res.outputLf));
+      out.write(sep);
+      out.write(res.realized);
+      out.write(nl);
+    }
+
+    @Override
+    public Object input() { return lf; }
+
+    @Override
+    public Set<?> output() { return answers; }
+  }
+
+
   /** An item representing a failed test, consisting of:
    *  @field itemStatus     if this item failed or succeeded, with or without
    *                        warning
@@ -145,10 +190,10 @@ public class BatchTest {
     public int testItemIndex;
     public DagNode outputLf;
     public String realized;
-    public boolean realizationResult;
+    public BatchType realizationResult;
 
     public ResultItem(int t, DagNode out, String r, Status s,
-      boolean w, boolean real) {
+      boolean w, BatchType real) {
       testItemIndex = t;
       outputLf = out;
       realized = r;
@@ -171,7 +216,7 @@ public class BatchTest {
   private List<ResultItem> _bad = new ArrayList<ResultItem>();
   private List<ResultItem> _good = new ArrayList<ResultItem>();
 
-  public BatchTest(CcgUtterancePlanner planner, boolean realizationTest) {
+  public BatchTest(CcgUtterancePlanner planner, BatchType realizationTest) {
     _planner = planner;
     _realizationTest = realizationTest;
   }
@@ -308,19 +353,42 @@ public class BatchTest {
     _items.add(new ParsingTestItem(nextSentence, answers, pos));
   }
 
+  void readNextPlanningItem(Reader in, Lexer l, ExtLFParser parser)
+      throws IOException {
+    parser.reset();
+    boolean good = parser.parse();
+    Position pos = l.getStartPos();
+    if (!good) {
+      logger.warn("Skip wrong LF at " + pos);
+      return;
+    }
+    List<DagNode> nextLfs = parser.getResultLFs();
+    pos = l.getStartPos();
+    good = parser.parse();
+    if (!good) {
+      logger.warn("Skip wrong LF at " + pos);
+      return;
+    }
+    List<DagNode> answerLfs = parser.getResultLFs();
+    for (DagNode nextLf : nextLfs)
+      for (DagNode answerLf : answerLfs)
+        _items.add(new PlanningTestItem(nextLf, answerLf, pos));
+  }
+
   public void reload() throws IOException {
     _items.clear();
     Reader in = new FileReader(_batchFile);
     Lexer l = new Lexer(_batchFile.getCanonicalPath(), in);
     ExtLFParser parser = new ExtLFParser(l);
     do {
-      if (_realizationTest) {
-        readNextRealizationItem(in, l, parser);
-      } else {
-        readNextParsingItem(in, l, parser);
+      switch (_realizationTest) {
+      case GENERATION: readNextRealizationItem(in, l, parser); break;
+      case PARSING:    readNextParsingItem(in, l, parser); break;
+      case PLANNING:   readNextPlanningItem(in, l, parser); break;
       }
     } while (!l.atEOF());
   }
+
 
   public ResultItem realizeOneItem(RealizationTestItem item, int i) {
     DagNode result = _planner.process(item.lf);
@@ -365,8 +433,8 @@ public class BatchTest {
   }
 
   public ResultItem parseOneItem(ParsingTestItem item, int i) {
-    String generated = "";
     StringWriter sw = new StringWriter();
+    String generated = "";
     Appender sentinel = new WriterAppender(new SimpleLayout(), sw);
     Logger plannerLogger = Logger.getLogger("UtterancePlanner");
     plannerLogger.addAppender(sentinel);
@@ -414,14 +482,58 @@ public class BatchTest {
         _realizationTest);
   }
 
+  public ResultItem planOneItem(PlanningTestItem item, int i) {
+    String generated = "";
+    StringWriter sw = new StringWriter();
+    Appender sentinel = new WriterAppender(new SimpleLayout(), sw);
+    Logger plannerLogger = Logger.getLogger("UtterancePlanner");
+    plannerLogger.addAppender(sentinel);
+    Status resultStatus = Status.GOOD;
+    boolean warnings = false;
+    DagNode result = null;
+    try {
+      result = _planner.process(item.lf);
+    }
+    catch (NullPointerException ex) {
+      generated = "**** FAILURE ****";
+      resultStatus = Status.BAD;
+    }
+    catch (PlanningException ex) {
+      generated = "**** PLANEXCEPTION ****";
+      resultStatus = Status.BAD;
+    }
+    finally {
+      try {
+        sw.close();
+      } catch (IOException e) { // will never happen
+      }
+      warnings = ! sw.toString().isEmpty();
+      plannerLogger.removeAppender(sentinel);
+    } //
+    if (result == null || ! item.answers.iterator().next().equals(result)) {
+      resultStatus = Status.BAD;
+    }
+
+    if (_progressListener != null) {
+      _progressListener.progress(i);
+    }
+
+    return new ResultItem(i, result, generated, resultStatus, warnings,
+        _realizationTest);
+  }
+
+
   public void runBatch() {
     _bad.clear();
     _good.clear();
     int i = 0;
     for (TestItem item : _items) {
-      ResultItem res = _realizationTest
-          ? realizeOneItem((RealizationTestItem)item, i)
-          : parseOneItem((ParsingTestItem)item, i);
+      ResultItem res = null;
+      switch(_realizationTest) {
+      case GENERATION: res = realizeOneItem((RealizationTestItem)item, i); break;
+      case PARSING: res = parseOneItem((ParsingTestItem)item, i); break;
+      case PLANNING: res = planOneItem((PlanningTestItem)item, i); break;
+      }
       ++i;
       if (res.itemStatus == Status.BAD) {
         _bad.add(res);
