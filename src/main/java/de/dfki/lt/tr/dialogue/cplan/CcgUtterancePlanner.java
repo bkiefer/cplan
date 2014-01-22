@@ -1,8 +1,12 @@
 package de.dfki.lt.tr.dialogue.cplan;
 
+import static de.dfki.lt.tr.dialogue.cplan.Constants.SECTION_SETTINGS;
+import static de.dfki.lt.tr.dialogue.cplan.CcgPlannerConstants.KEY_CCG_GRAMMAR;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import opennlp.ccg.grammar.Grammar;
@@ -15,6 +19,7 @@ import opennlp.ccg.realize.Realizer;
 import opennlp.ccg.synsem.Category;
 import opennlp.ccg.synsem.LF;
 import opennlp.ccg.synsem.Sign;
+import de.dfki.lt.tr.dialogue.cplan.util.PairList;
 
 public class CcgUtterancePlanner extends UtterancePlanner {
 
@@ -56,6 +61,28 @@ public class CcgUtterancePlanner extends UtterancePlanner {
     }
   }
 
+  protected void finishProject(
+      File projectFile,
+      PairList<String, PairList<String, String>> project,
+      HashMap<String, String> settings,
+      PairList<String, List<File>> ruleSections)
+          throws FileNotFoundException, IOException {
+    PairList<String, String> localSettings = project.find(SECTION_SETTINGS);
+    if (localSettings != null) {
+      String grammarFile = localSettings.find(KEY_CCG_GRAMMAR);
+      if (grammarFile != null) {
+        settings.put(KEY_CCG_GRAMMAR, grammarFile);
+        File ccgPath = resolvePath(projectFile, grammarFile);
+        readCCGGrammar(ccgPath);
+        if (_grammar != null) {
+          _realizer = new Realizer(_grammar);
+          _parser = new Parser(_grammar);
+        }
+      }
+    }
+    super.finishProject(projectFile, project, settings, ruleSections);
+  }
+
   /** Read the project file for this content planner. In addition to the super
    *  class' method, read the specified CCG grammar, if any.
    *
@@ -67,9 +94,9 @@ public class CcgUtterancePlanner extends UtterancePlanner {
     // reset global status
     _grammar = null;
     super.readProjectFile(projectFile);
-
-    if (_settings.containsKey("ccg_grammar")) {
-      File ccgPath = resolveProjectFile(_settings.get("ccg_grammar"));
+    String grammarFile = _settings.get(KEY_CCG_GRAMMAR);
+    if (grammarFile != null) {
+      File ccgPath = resolvePath(projectFile, grammarFile);
       readCCGGrammar(ccgPath);
       if (_grammar != null) {
         _realizer = new Realizer(_grammar);
