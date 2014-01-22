@@ -68,7 +68,7 @@ public class UPMainFrame extends MainFrame {
         _projectFile = projectFile;
         _currentDir = _projectFile.getAbsoluteFile().getParentFile();
         readProjectFile();
-        _recentFiles.add(projectFile.getPath());
+        _preferences.recentFiles().add(projectFile.getAbsolutePath());
         try {
           File historyFile = _planner.getHistoryFile();
           if (historyFile == null) {
@@ -260,12 +260,12 @@ public class UPMainFrame extends MainFrame {
       .warn("specified history size is not a number");
     }
     _history = new de.dfki.lt.loot.gui.util.InputHistory(historySize);
-    loadPreferences();
+
     _preferredSize = new Dimension(800, 500);
+    initFrame();
     setTracing();
     startEmacs();
     _toolBarName = "Content Planner Tools";
-    initFrame();
     updateButtonStates();
     _displayPane.setDividerLocation(.5);
     setTitle(title);
@@ -738,7 +738,7 @@ public class UPMainFrame extends MainFrame {
 
   private void setTracing() {
     int traceFlags = 0;
-    if (_preferences != null && _preferences.containsKey("tracing")) {
+    if (_preferences != null && _preferences.contains("tracing")) {
       String trace =  _preferences.get("tracing");
       if (trace.startsWith("all")) {
         traceFlags = 3;
@@ -758,7 +758,7 @@ public class UPMainFrame extends MainFrame {
     // check if it has been started with the -e flag
     if (! _planner.isEmacsAlive()) {
       if (_preferences == null
-          || ! _preferences.containsKey("emacs")
+          || ! _preferences.contains("emacs")
           || _preferences.get("emacs").equals("yes")) {
         _planner.startEmacsConnection(null);
       } else {

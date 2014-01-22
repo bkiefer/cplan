@@ -60,13 +60,14 @@ implements UPMainFrame.CloseAllListener {
     return prefs;
   }
 
-  private boolean setRootDir(File file) {
+  public boolean setRootDir(File file) {
     _homeDir = new File(System.getProperty("user.home"));
     _rootDir = file;
     if (! _rootDir.isDirectory() || ! getResourcesDir().isDirectory()) {
       _rootDir = null;
       return true;
     }
+    //  TODO: ?? this is depending on the project ??
     File pluginDirectory = new File(getResourcesDir(), "plugins");
     if (pluginDirectory.isDirectory()) {
       FunctionFactory.registerPlugins(pluginDirectory, this);
