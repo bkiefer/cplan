@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 
 /** Small class for reading files similar to Windows .ini. Checks that
  *  no key/value pair is outside of any section, treats line comments starting
@@ -14,7 +13,7 @@ import java.util.LinkedHashMap;
 public class IniFileReader {
 
   private interface MyHandler extends IniFileHandler {
-    public LinkedHashMap<String, LinkedHashMap<String, String>> getResult();
+    public PairList<String, PairList<String, String>> getResult();
   }
 
   /** This provides a minimalistic interface for those who don't want to bother
@@ -25,22 +24,22 @@ public class IniFileReader {
    *  pairs of the section data.
    */
   public static
-  LinkedHashMap<String, LinkedHashMap<String, String>> readIniFile(File f)
+  PairList<String, PairList<String, String>> readIniFile(File f)
   throws FileNotFoundException, IOException {
     IniFileHandler handler = new MyHandler() {
-      private LinkedHashMap<String, LinkedHashMap<String, String>> _result =
-        new LinkedHashMap<String, LinkedHashMap<String, String>>();
+      private PairList<String, PairList<String, String>> _result =
+          new PairList<String, PairList<String, String>>();
 
-      private LinkedHashMap<String, String> _currentSection = null;
+      private PairList<String, String> _currentSection = null;
 
       @Override
-      public LinkedHashMap<String, LinkedHashMap<String, String>> getResult() {
+      public PairList<String, PairList<String, String>> getResult() {
         return _result;
       }
 
       @Override
       public void keyValuePair(String key, String value) {
-        _currentSection.put(key, value);
+        _currentSection.add(key, value);
       }
 
       @Override
@@ -50,8 +49,8 @@ public class IniFileReader {
 
       @Override
       public void sectionStart(String name) {
-        _currentSection = new LinkedHashMap<String, String>();
-        _result.put(name, _currentSection);
+        _currentSection = new PairList<String, String>();
+        _result.add(name, _currentSection);
       }
     };
 
@@ -81,6 +80,7 @@ public class IniFileReader {
       if (! nextLine.isEmpty()) {
         if (nextLine.charAt(0) == '[') { // begin of section
           String sectionName = nextLine.substring(1, nextLine.lastIndexOf(']'));
+          sectionName = sectionName.trim();
           if (currentSection != null) {
             h.sectionEnd(currentSection);
           }

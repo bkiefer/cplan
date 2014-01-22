@@ -13,4 +13,6 @@ public interface Processor {
    */
   public abstract DagNode applyRules(DagNode lf, Bindings bindings);
 
+  public abstract Iterable<Rule> getRules();
+
 }
