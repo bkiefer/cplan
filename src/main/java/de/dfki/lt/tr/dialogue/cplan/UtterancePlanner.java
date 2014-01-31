@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -332,12 +334,48 @@ public class UtterancePlanner {
     _interrupted = true;
   }
 
+  private static final Pattern
+  lfSchema = Pattern.compile("([^ ]+) *\\( *([^ ,)]*) *(.*)\\)"),
+  keyArg = Pattern.compile(" *, *([^ =]*) *= *(\"(?:\\\\\"|[^\"])*\"|[^,) ]*)");
+
+  /** Parse things like
+   *  `provide(information, name="John \"F\" Doe", age=47, hair = red)'
+   *  and return the result as a dag, where 'provide' becomes the root level
+   *  type, 'information' the root level prop and the key-value pairs
+   *  become feature-atom pairs
+   *
+   * @param dialogueAct
+   * @return a dag representation of the schema LF
+   */
+  public DagNode schemaLfStringToDag(String dialogueAct) {
+    Matcher m = lfSchema.matcher(dialogueAct);
+    if (!m.matches()) return null;
+    StringBuffer sb = new StringBuffer();
+    sb.append("@raw:").append(m.group(1)) // type
+    .append('(').append(m.group(2));    // prop
+    String args = m.group(3);
+    Matcher a = keyArg.matcher(args);
+    while (a.find()) {
+      a.appendReplacement(sb, " ^ <$1>$2");
+    }
+    a.appendTail(sb).append(')');
+    DagNode result = parseLfString(sb.toString());
+    return result;
+  }
+
+
   /** Convert the given input string, which contains a (partial) logical form,
    *  into an internal data structure for processing.
    */
   public DagNode parseLfString(String input) {
+    input = input.trim();
     if (input.isEmpty())
       return null;
+    if (input.charAt(0) != '@') {
+      // assume this is raw mode input
+      DagNode res = schemaLfStringToDag(input);
+      if (res != null) return res;
+    }
     StringReader sr = new StringReader(input);
     _lfParser.reset("Console", sr);
     try {
