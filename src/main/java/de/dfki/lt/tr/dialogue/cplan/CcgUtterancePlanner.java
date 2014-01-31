@@ -94,6 +94,7 @@ public class CcgUtterancePlanner extends UtterancePlanner {
     // reset global status
     _grammar = null;
     super.readProjectFile(projectFile);
+    /*
     String grammarFile = _settings.get(KEY_CCG_GRAMMAR);
     if (grammarFile != null) {
       File ccgPath = resolvePath(projectFile, grammarFile);
@@ -103,6 +104,7 @@ public class CcgUtterancePlanner extends UtterancePlanner {
         _parser = new Parser(_grammar);
       }
     }
+    */
   }
 
   /** Return true if this utterance planner has a valid grammar, and should
