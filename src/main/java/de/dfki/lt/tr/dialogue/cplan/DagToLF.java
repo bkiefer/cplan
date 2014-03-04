@@ -10,9 +10,9 @@ import opennlp.ccg.realize.Realizer;
 import opennlp.ccg.synsem.LF;
 
 import org.apache.log4j.Logger;
-import org.jdom.DocType;
-import org.jdom.Document;
-import org.jdom.Element;
+import org.jdom2.DocType;
+import org.jdom2.Document;
+import org.jdom2.Element;
 
 public class DagToLF {
 
@@ -228,7 +228,7 @@ public class DagToLF {
 			// now we supposedly have a complete structure
 			lf1 = lf1.addContent(sat);
 			root1 = doc.getRootElement().addContent(lf1);
-			Element targetElt = new Element("target");
+			Element targetElt = new org.jdom2.Element("target");
 			targetElt = targetElt.setText("*** dummy target***");
 			root1 = root1.addContent(targetElt);
 			// call ccg.Realizer with XML-document to extract the contained LF and
