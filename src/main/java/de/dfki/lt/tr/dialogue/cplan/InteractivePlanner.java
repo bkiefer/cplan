@@ -148,14 +148,20 @@ implements UPMainFrame.CloseAllListener {
     @Override public void execute(String... args) { _mf.reloadCurrentProject(); }
   }
 
-  void startGui(String projectFile) {
-    UPMainFrame mf =
-      new UPMainFrame("ContentPlanner (no rules loaded)", this, projectFile);
-    mf.registerCloseAllListener(this);
-    if (_j2e != null) {
-      _j2e.registerAction("reload", new LoadProjectAction(mf));
-      _j2e.registerAction("file_changed", new LoadProjectAction(mf));
-    }
+  void startGui(final String projectFile) {
+    //Schedule a job for the event-dispatching thread:
+    //creating and showing this application's GUI.
+    javax.swing.SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        UPMainFrame mf = new UPMainFrame("ContentPlanner (no rules loaded)",
+            InteractivePlanner.this, projectFile);
+        mf.registerCloseAllListener(InteractivePlanner.this);
+        if (_j2e != null) {
+          _j2e.registerAction("reload", new LoadProjectAction(mf));
+          _j2e.registerAction("file_changed", new LoadProjectAction(mf));
+        }
+      }
+    });
   }
 
   public void allClosed() {
