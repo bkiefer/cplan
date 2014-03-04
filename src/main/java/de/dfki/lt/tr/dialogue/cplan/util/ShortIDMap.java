@@ -1,6 +1,6 @@
 package de.dfki.lt.tr.dialogue.cplan.util;
 
-import gnu.trove.TObjectShortHashMap;
+import gnu.trove.map.hash.TObjectShortHashMap;
 
 
 /** map things from and to integer IDs. Since we need both directions, this

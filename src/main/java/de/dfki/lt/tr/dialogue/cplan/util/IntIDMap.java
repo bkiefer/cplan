@@ -1,6 +1,6 @@
 package de.dfki.lt.tr.dialogue.cplan.util;
 
-import gnu.trove.TObjectIntHashMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
 
 
 /** map things from and to integer IDs. Since we need both directions, this
@@ -34,7 +34,7 @@ public class IntIDMap<THING> extends IDMap<THING> {
   }
 
   public int[] getIds() {
-    return type2Number.getValues();
+    return type2Number.values();
   }
 
   @Override

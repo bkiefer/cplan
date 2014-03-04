@@ -4,7 +4,7 @@
 	<classpathentry kind="src" output="cplan-core/target/test-classes" path="src/test/java"/>
 	<classpathentry kind="lib" path="lib/java/junit.jar"/>
 	<classpathentry kind="lib" path="lib/java/log4j-1.2.jar"/>
-	<classpathentry kind="lib" path="lib/java/trove.jar"/>
+	<classpathentry kind="lib" path="lib/java/trove-3.0.3.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="target/classes"/>
