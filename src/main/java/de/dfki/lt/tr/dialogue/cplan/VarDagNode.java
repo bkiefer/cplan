@@ -27,7 +27,6 @@ public class VarDagNode extends SpecialDagNode {
   /** Return the binding associated with this variable, if there is any. This
    *  method is only to be used to determine the lval of an \c Action
    */
-  @SuppressWarnings("null")
   public DagEdge getLvalBinding(DagEdge input, Bindings bindings) {
     // varName "#" is reserved and always bound to the current node
     DagEdge current = bindings.getBinding(_varName, getType());
