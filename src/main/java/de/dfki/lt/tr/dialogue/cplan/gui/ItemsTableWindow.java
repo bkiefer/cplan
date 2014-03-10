@@ -15,7 +15,8 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
+//import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -36,12 +37,14 @@ import de.dfki.lt.tr.dialogue.cplan.BatchTest.RealizationTestItem;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest.ResultItem;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest.TestItem;
 
-public class ItemsTableWindow extends JDialog {
+public class ItemsTableWindow extends JFrame {
   private static final long serialVersionUID = 1L;
 
   private ItemsTableModel _model;
 
   private boolean _showGood, _showBad;
+
+  private UPMainFrame _parent;
 
   /* *************************************************************************
    * Button and Menu specifications
@@ -297,7 +300,8 @@ public class ItemsTableWindow extends JDialog {
   }
 
   private UPMainFrame parent() {
-    return (UPMainFrame) getOwner();
+    return //(UPMainFrame) getOwner();
+        _parent;
   }
 
   /* **********************************************************************
@@ -306,7 +310,9 @@ public class ItemsTableWindow extends JDialog {
 
   public ItemsTableWindow(UPMainFrame parent, BatchTest bt,
     boolean bad, boolean good) {
-    super(parent, "Batch Test Items", false);
+    //super(parent, "Batch Test Items", false);
+    super("Batch Test Items");
+    _parent = parent;
     _showBad = bad; _showGood = good;
     initPanel(bt);
     setStatusLine(_model.percentageGood());

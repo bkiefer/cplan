@@ -19,7 +19,8 @@ import java.util.SortedMap;
 import javax.swing.BoundedRangeModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
+//import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -41,12 +42,16 @@ import de.dfki.lt.tr.dialogue.cplan.DagEdge;
 import de.dfki.lt.tr.dialogue.cplan.TraceEvent;
 import de.dfki.lt.tr.dialogue.cplan.util.ListRangeModel;
 
-public class TraceWindow extends JDialog
+public class TraceWindow extends JFrame
 implements UPMainFrame.RunStateListener {
   private static final long serialVersionUID = 1L;
 
+  private static boolean DO_MODAL = false;
+
   /** Action Buttons */
   private ArrayList<JButton> _actionButtons;
+
+  private UPMainFrame parent;
 
   /** LF displays for the match feature structure, the input and output to the
    *  current action */
@@ -95,15 +100,15 @@ implements UPMainFrame.RunStateListener {
     @Override
     public void windowClosed(WindowEvent we) {
       assert(we.getWindow() == TraceWindow.this);
-      UPMainFrame parent = parent();
-      parent.removeRunStateListener(TraceWindow.this);
-      if (parent.isSuspended()) {
-        parent.continueProcessing();
+      UPMainFrame myParent = parent();
+      myParent.removeRunStateListener(TraceWindow.this);
+      if (myParent.isSuspended()) {
+        myParent.continueProcessing();
       }
-      if (parent.isRunning()) {
-        parent.stopProcessing();
+      if (myParent.isRunning()) {
+        myParent.stopProcessing();
       }
-      parent.getGlassPane().setVisible(false);
+      myParent.getGlassPane().setVisible(false);
     }
   }
 
@@ -204,25 +209,28 @@ implements UPMainFrame.RunStateListener {
    *         the layout of the Match/Globals/In/Out sub-panels
    */
   @SuppressWarnings("serial")
-  public TraceWindow(UPMainFrame parent, ListRangeModel<TraceEvent> events,
+  public TraceWindow(UPMainFrame myParent, ListRangeModel<TraceEvent> events,
     int arrangement) {
-    super(parent, "Trace Window", false);
+    super("Trace Window");
+    parent = myParent;
+    //super(parent, "Trace Window", false);
     if (arrangement < TABBED_VERTICAL || arrangement > FOUR_QUADRANTS) {
       throw new IllegalArgumentException("Unknown arrangement: " + arrangement);
     }
-    JComponent myGp = new JComponent() {
-      @Override
-      protected void paintComponent(Graphics g) {
-        // translucent gray
-        g.setColor(new Color((190F/255),(190F/255),(190F/255),.4F));
-        //g.setColor(Color.RED);
-        Rectangle r = getBounds();
-        g.fillRect(r.x, r.y, r.width, r.height);
-      }
-    };
-    parent.setGlassPane(myGp);
-    myGp.setVisible(true);
-
+    if (DO_MODAL) {
+      JComponent myGp = new JComponent() {
+        @Override
+        protected void paintComponent(Graphics g) {
+          // translucent gray
+          g.setColor(new Color((190F/255),(190F/255),(190F/255),.4F));
+          //g.setColor(Color.RED);
+          Rectangle r = getBounds();
+          g.fillRect(r.x, r.y, r.width, r.height);
+        }
+      };
+      parent.setGlassPane(myGp);
+      myGp.setVisible(true);
+    }
     _events = events;
     _current = events;
     initPanel(arrangement);
@@ -296,7 +304,8 @@ implements UPMainFrame.RunStateListener {
   };
 
   private UPMainFrame parent() {
-    return (UPMainFrame) getOwner();
+    return //(UPMainFrame) getOwner();
+        parent;
   }
 
   /** a method to close a frame from within the program */
