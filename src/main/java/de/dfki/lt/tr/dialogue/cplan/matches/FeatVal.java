@@ -96,7 +96,8 @@ public class FeatVal extends Match {
 
   @Override
   public Match deepCopy() {
-    FeatVal newMatch = new FeatVal(_feature, _value.deepCopy());
+    FeatVal newMatch = new FeatVal(_feature,
+        _value == null ? null : _value.deepCopy());
     return copy(newMatch);
   }
 }
