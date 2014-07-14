@@ -134,7 +134,7 @@ implements RuleParser.Lexer, LFParser.Lexer, ExtLFParser.Lexer  {
     // line comment
     if (_nextChar == '/') {
       int currline = _line;
-      while (currline == _line && _nextChar != RuleParser.EOF) {
+      while (currline == _line && _nextChar != RuleParser.Lexer.EOF) {
         readNext();
       }
       return;
@@ -148,7 +148,7 @@ implements RuleParser.Lexer, LFParser.Lexer, ExtLFParser.Lexer  {
           readNext();
           return;
         }
-        while (_nextChar != RuleParser.EOF && _nextChar != '*') {
+        while (_nextChar != RuleParser.Lexer.EOF && _nextChar != '*') {
           readNext();
         }
       }
@@ -171,7 +171,7 @@ implements RuleParser.Lexer, LFParser.Lexer, ExtLFParser.Lexer  {
   private void readNext() throws IOException {
     _nextChar = _in.read(); ++_column;
     switch (_nextChar) {
-    case -1: _nextChar = RuleParser.EOF; break;
+    case -1: _nextChar = RuleParser.Lexer.EOF; break;
     case '\n': _column = 0; ++_line; // fall through is intended
     case ' ':
     case '\t':
@@ -184,7 +184,7 @@ implements RuleParser.Lexer, LFParser.Lexer, ExtLFParser.Lexer  {
     StringBuilder sb = new StringBuilder();
     int currentLine = _line;
     skipws();
-    while (_nextChar != RuleParser.EOF && _line == currentLine) {
+    while (_nextChar != RuleParser.Lexer.EOF && _line == currentLine) {
       sb.append((char) _nextChar);
       readNext();
     }
@@ -197,7 +197,7 @@ implements RuleParser.Lexer, LFParser.Lexer, ExtLFParser.Lexer  {
   }
 
   public boolean atEOF() {
-    return _nextChar == RuleParser.EOF;
+    return _nextChar == RuleParser.Lexer.EOF;
   }
 
   /*
@@ -233,7 +233,7 @@ implements RuleParser.Lexer, LFParser.Lexer, ExtLFParser.Lexer  {
     skipws();
     _startPos = getCurrentPosition();
     switch (_nextChar) {
-    case RuleParser.EOF:
+    case RuleParser.Lexer.EOF:
     case '(':
     case ')':
     case '^':
@@ -260,26 +260,26 @@ implements RuleParser.Lexer, LFParser.Lexer, ExtLFParser.Lexer  {
         if (_nextChar == '\\') {
           readNext();
         }
-        if (_nextChar == RuleParser.EOF) {
+        if (_nextChar == RuleParser.Lexer.EOF) {
           yyerror("unexpected end of input in string");
-          return RuleParser.EOF;
+          return RuleParser.Lexer.EOF;
         }
         sb.append((char) _nextChar);
         readNext();
       }
       readNext();
       _lval = sb.toString();
-      return RuleParser.STRING;
+      return RuleParser.Lexer.STRING;
     }
     case '#': {
-      int what = RuleParser.VAR;
+      int what = RuleParser.Lexer.VAR;
       readNext();
       if (_nextChar == '#') {
-        what = RuleParser.GVAR;
+        what = RuleParser.Lexer.GVAR;
         readNext();
       }
       if (_nextChar == '#') {
-        what = RuleParser.RVAR;
+        what = RuleParser.Lexer.RVAR;
         readNext();
       }
       StringBuffer sb = new StringBuffer();
@@ -299,10 +299,10 @@ implements RuleParser.Lexer, LFParser.Lexer, ExtLFParser.Lexer  {
       readNext();
       if (_nextChar != '>') {
         yyerror("unexpected character, expected '>': '" + (char)_nextChar +"'");
-        return RuleParser.EOF;
+        return RuleParser.Lexer.EOF;
       }
       readNext();
-      return RuleParser.ARROW;
+      return RuleParser.Lexer.ARROW;
     }
 
     StringBuffer sb = new StringBuffer();
@@ -317,7 +317,7 @@ implements RuleParser.Lexer, LFParser.Lexer, ExtLFParser.Lexer  {
       yyerror("Empty identifier, possibly illegal character");
       readNext();
     }
-    return RuleParser.ID;
+    return RuleParser.Lexer.ID;
   }
 
   public Object getLVal () {

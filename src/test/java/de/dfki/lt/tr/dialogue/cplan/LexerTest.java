@@ -18,11 +18,11 @@ public class LexerTest {
     "@<##VAR_0< ! \";lkja-> <sfdy \\\" ;lka^sd|jfl \\alsd\\\\fja\"";
 
   private static int[] test1Tokens = {
-    RuleParser.ID, '>', ':', RuleParser.VAR, RuleParser.ARROW,
-    '<', RuleParser.ID, '>', '(', RuleParser.ID, ':',
-    RuleParser.ID, ')',
-    RuleParser.ID, '^', '|', RuleParser.ID, '#', '@',
-    '<', RuleParser.GVAR, '<', '!', RuleParser.STRING
+    RuleParser.Lexer.ID, '>', ':', RuleParser.Lexer.VAR, RuleParser.Lexer.ARROW,
+    '<', RuleParser.Lexer.ID, '>', '(', RuleParser.Lexer.ID, ':',
+    RuleParser.Lexer.ID, ')',
+    RuleParser.Lexer.ID, '^', '|', RuleParser.Lexer.ID, '#', '@',
+    '<', RuleParser.Lexer.GVAR, '<', '!', RuleParser.Lexer.STRING
   };
 
   private static String[] test1Lvals = {
@@ -37,7 +37,7 @@ public class LexerTest {
     Lexer yylex = new Lexer(new StringReader(testString1));
     int token = yylex.yylex();
     int i = 0;
-    while (token != RuleParser.EOF) {
+    while (token != RuleParser.Lexer.EOF) {
       if (PRINT)
         System.out.println(yylex.getTokenName(token) + " : " + yylex.getLVal());
       assertEquals(token, test1Tokens[i]);

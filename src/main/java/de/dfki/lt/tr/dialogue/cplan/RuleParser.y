@@ -21,13 +21,19 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
 
 %define public
 
-%define parser_class_name "RuleParser"
+%define parser_class_name {RuleParser}
+
+%define parse.error verbose
 
 %code {
   private List _rules;
 
   public List<Rule> getRules() {
     return (List<Rule>) _rules;
+  }
+
+  public de.dfki.lt.tr.dialogue.cplan.Lexer getLexer() {
+    return (de.dfki.lt.tr.dialogue.cplan.Lexer)yylexer;
   }
 
   public void reset() {
@@ -107,18 +113,18 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
 
   private class Op {
     char _op;
-    LinkedList<BasicRule> _rules;
+    LinkedList<BasicRule> _opRules;
 
     Op(char op, LinkedList<BasicRule> rules) {
       _op = op;
-      _rules = rules;
+      _opRules = rules;
     }
 
     public LinkedList<BasicRule> apply(Match m) {
       if (_op == '^') {
-        return addConjunction(m, _rules);
+        return addConjunction(m, _opRules);
       } else {
-        return addDisjunction(m, _rules);
+        return addDisjunction(m, _opRules);
       }
     }
   }
@@ -387,6 +393,9 @@ rarg  : r_id_var  { $$ = $1; }
       | STRING    { $$ = new DagNode($1); }
       | '#'       { $$ = new VarDagNode("#", Bindings.LOCAL); }
       ;
+//rarg  : rexpr     { $$ = $1; }
+//      | '#'       { $$ = new VarDagNode("#", Bindings.LOCAL); }
+//      ;
 
 r_id_var : ID     { $$ = new DagNode($1); }
          | VAR    { $$ = new VarDagNode($1, Bindings.LOCAL); }

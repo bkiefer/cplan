@@ -578,7 +578,9 @@ public class DagNode {
         DagNode sub = edge._value;
         if (sub instanceof SpecialDagNode) {
           DagNode eval = ((SpecialDagNode)sub).evaluate(here, bindings);
-          if (edge._feature == ID_FEAT_ID) {
+          if (edge._feature == ID_FEAT_ID)  // why this??
+              // || edge._feature == PROP_FEAT_ID)
+          {
             // add the plain evaluated node to the varDags
             varDags.add(eval);
           } else {

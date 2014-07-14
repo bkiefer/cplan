@@ -402,6 +402,19 @@ public class UttplanParserTest {
       "@f:foo(<Feat>prop)",
       "@f:foo(<Feat>replace)",
     },
+    /*
+    // 55 test complex arguments to functions
+    { "<foo> #f: ^ <foo>(!<foobar>) -> #f ^ random(<foobar>b, <foobar>b):.",
+      "@f:foo(<foo>(:a))",
+      "@f:foo(<foo>(:a ^ <foobar>b))"
+    },
+
+    // 56 test functions embedded in complex arguments
+    { "<foo> #f: ^ <foo>(!<foobar>) -> #f ^ random(<foobar>add(2,2), <foobar>add(2,2)):.",
+      "@f:foo(<foo>(:a))",
+      "@f:foo(<foo>(:a ^ <foobar>4))"
+    },
+     */
   };
 
 
@@ -673,7 +686,7 @@ public class UttplanParserTest {
     RuleParser parser = new RuleParser(new Lexer());
     parser.reset(input, new StringReader(input));
     //parser.setDebugLevel(99);
-    parser.errorVerbose = true;
+    parser.setErrorVerbose(true);
     return parser;
   }
 
@@ -684,7 +697,7 @@ public class UttplanParserTest {
     RuleParser parser = new RuleParser(lexer);
     parser.reset(input, new StringReader(input));
     //parser.setDebugLevel(99);
-    parser.errorVerbose = false;
+    parser.setErrorVerbose (false);
     return parser;
   }
 
@@ -760,7 +773,9 @@ public class UttplanParserTest {
     for (String testPattern : parseTestPatternsNegative ) {
       RuleParser parser = getSilentRuleParser(testPattern);
       // getRuleParser(testPattern);
-      assertFalse("Parsing pattern " + i + " " + testPattern, parser.parse());
+      assertFalse("Parsing pattern " + i + " " + testPattern,
+          (parser.parse()
+              && parser.getLexer().getAllErrorPositions().isEmpty()));
       ++i;
     }
   }
@@ -842,7 +857,7 @@ public class UttplanParserTest {
   }
 
   @Test public void testRuleApplicationSpecial() throws IOException {
-    int i = -1;
+    int i = 43;
     _print = true;
     if (i >= 0)
         testApplyOneSet(matchTestPatternsPositive[i], true, i);
@@ -996,7 +1011,7 @@ public class UttplanParserTest {
     } catch (PlanningException ex) {
       msg = ex.getMessage();
     }
-    assertEquals(msg, "LHS");
+    assertEquals("LHS", msg);
   }
 
   @Test
@@ -1078,6 +1093,9 @@ public class UttplanParserTest {
     assertEquals("((:a ^ <F> ((#i: ^ :#t) ^ #p)) ^ (eq([@3@], [@3@]) ~ 1)) " +
     		"-> ##fs = [ #i: :#t #p res[ eq([@3@], [@3@])]] .",
         dString);
+//    assertEquals("((:a ^ <F> ((#i: ^ :#t) ^ #p)) ^ (eq([ 3], [ 3]) ~ 1)) " +
+//    		"-> ##fs = [ #i: :#t #p res[ eq([ 3], [ 3])]] .",
+//        dString);
   }
 
   public void testPrintParseOne(String pattern, int i) throws IOException {

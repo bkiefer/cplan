@@ -13,7 +13,7 @@ public class ThrowExceptionFunction implements Function {
   @Override
   public Object apply(List<DagNode> args) {
     if (args != null && args.size() >= 1) {
-      throw new PlanningException(args.get(0).getTypeName());
+      throw new PlanningException(args.get(0).toString());
     } else {
       throw new PlanningException();
     }

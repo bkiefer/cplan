@@ -40,6 +40,7 @@ public class FunCallDagNode extends SpecialDagNode {
           if (arg instanceof DagNode) {
             DagNode dagArg = ((DagNode)arg);
             args.add(dagArg.clone(dagArg.getType()));
+            //dagArg.cloneFS());
           } else {
             args.add(arg);
           }
@@ -81,9 +82,24 @@ public class FunCallDagNode extends SpecialDagNode {
     List<DagNode> actualParameters =
       new ArrayList<DagNode>(formalParameters.size());
     for (Object o : formalParameters) {
-      actualParameters.add((o instanceof SpecialDagNode)
-                           ? ((SpecialDagNode)o).evaluate(input, bindings)
-                           : ((DagNode) o));
+      DagNode d = (DagNode) o;
+      /*
+      DagEdge e = d.getEdge(DagNode.PROP_FEAT_ID);
+      if (e != null && (e.getValue() instanceof SpecialDagNode)){
+        d = ((SpecialDagNode) e.getValue()).expandVars(input, bindings);
+      }
+      */
+      actualParameters.add((d instanceof SpecialDagNode)
+                           ? ((SpecialDagNode)d).evaluate(input, bindings)
+                           : d);
+      /*
+      try {
+        actualParameters.add(d.expandVars(bindings));
+      }
+      catch (UnificationException ex) {
+        logger.error(ex);
+      }
+      */
     }
     return actualParameters;
   }

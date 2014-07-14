@@ -152,7 +152,7 @@ public class UtterancePlanner {
   private List<Rule> readRules(Reader r, String inputDescription)
   throws IOException {
     RuleParser ruleParser = new RuleParser(_ruleLexer);
-    ruleParser.errorVerbose = true;
+    ruleParser.setErrorVerbose(true);
     ruleParser.setDebugLevel(0);
     ruleParser.reset(inputDescription, r);
     ruleParser.parse();
