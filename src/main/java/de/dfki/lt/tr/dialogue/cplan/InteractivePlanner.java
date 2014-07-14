@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +18,7 @@ import joptsimple.OptionSet;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.SimpleLayout;
@@ -25,6 +27,7 @@ import de.dfki.lt.j2emacs.J2Emacs;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest.BatchType;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest.RealizationTestItem;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest.ResultItem;
+import de.dfki.lt.tr.dialogue.cplan.functions.DeterministicRandomFunction;
 import de.dfki.lt.tr.dialogue.cplan.functions.FunctionFactory;
 import de.dfki.lt.tr.dialogue.cplan.gui.LFModelAdapter;
 import de.dfki.lt.tr.dialogue.cplan.gui.UPMainFrame;
@@ -202,7 +205,7 @@ implements UPMainFrame.CloseAllListener {
     }
   }
 
-  public void batchGenerate(String optionArg, File projectFile,
+  public void batchGenerateRandom(String optionArg, File projectFile,
     File initialSentences)
   throws IOException {
     final int MAX_EQUAL_REPEAT = 25;
@@ -275,14 +278,51 @@ implements UPMainFrame.CloseAllListener {
   }
 
 
+  /** Systematically generate all possibilities for the test items in batchFile,
+   *  writing the results to out.
+   */
+  public void batchGenerate(File projectFile, File batchFile, Writer out)
+  throws IOException {
+    final String nl = System.getProperty("line.separator");
+    Pattern punctRegex = Pattern.compile("\\s*(?:[;:,.?]\\s*)*([;:,.?])");
+    Pattern spaceRegex = Pattern.compile("\\s+");
+
+    DeterministicRandomFunction drf = new DeterministicRandomFunction();
+    FunctionFactory.register(drf, this);
+
+    this.readProjectFile(projectFile);
+    // this.setTracing(new MiniLogTracer(RuleTracer.ALL));
+
+    BatchTest bt = this.loadBatch(batchFile, BatchType.GENERATION);
+    for (int i = 0; i < bt.itemSize(); ++i) {
+      drf.newInput();
+      RealizationTestItem item = (RealizationTestItem) bt.getItem(i);
+      HashSet<String> sents = new HashSet<String>();
+      out.append("### ").append(item.lf.toString()).append(nl);
+      while (drf.newRound()) {
+        ResultItem res = bt.realizeOneItem(item, i);
+        if (res.itemStatus == BatchTest.Status.GOOD) {
+          String result = punctRegex.matcher(res.realized).replaceAll("$1");
+          result = spaceRegex.matcher(result).replaceAll(" ");
+          if (! sents.contains(result)) {
+            sents.add(result);
+            out.append(result).append(nl);
+          }
+        }
+      }
+      System.err.println(sents.size());
+    }
+  }
+
+
   private static void usage(String msg) {
     String[] usage = {
-        "Usage: UPDebugger [-[r]<ealize batch> inputfile]",
-        "                  [-[R]<realize sentences> [iterationcount:]inputfile [initialsentences]] ",
+        "Usage: UPDebugger [-[r]<ealize batch> batchfile]",
+        "                  [-[R]<ealize all sentences> batchfile] ",
         "                  [-[p]<arse batch> inputfile]",
         "                  [-c<ompileonly>] [-d<ebugdags>]",
         "                  [-g<ui>] [-t<race>={1,2,3}] [-e<macs>]",
-        "                  <projectfile>",
+        "                  <projectfile> [batchoutput]",
         "      -t : bit 1: trace match, bit 2 : trace modification"
     };
     System.out.println(msg);
@@ -300,6 +340,7 @@ implements UPMainFrame.CloseAllListener {
       uplogger.setAdditivity(false);
       Logger.getRootLogger().addAppender(
           new ConsoleAppender(new SimpleLayout(), "System.err"));
+      // Logger.getRootLogger().setLevel(Level.ERROR);
     }
 
     OptionParser parser = new OptionParser("R:r:p:P:cdgt:e::A:");
@@ -381,12 +422,20 @@ implements UPMainFrame.CloseAllListener {
         if (nonOptionArgs.size() == 0) {
           usage("No project file specified");
         } else {
-          File initialSentences = null;
+          File outputFile = null;
           if (nonOptionArgs.size() > 1) {
-            initialSentences = new File(nonOptionArgs.get(1));
+            outputFile = new File(nonOptionArgs.get(1));
           }
-          ip.batchGenerate(optionArg, new File(nonOptionArgs.get(0)),
-              initialSentences);
+          File batchFile = new File(optionArg);
+          if (! batchFile.exists()) {
+            usage("Batch input file not found:" + batchFile);
+            return;
+          }
+          Writer out = (outputFile != null ? new FileWriter(outputFile)
+              : new PrintWriter(System.out));
+          ip.batchGenerate(new File(nonOptionArgs.get(0)), batchFile, out);
+          if (outputFile != null)
+            out.close();
           ip.allClosed();
         }
       }

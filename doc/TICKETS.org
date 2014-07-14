@@ -1,14 +1,29 @@
-**** NOW *****
-- generate button does run, too,
-- batch window not modal, can reload test file
-- trace window: only result, optionally input / variables / rule
-  rule: nicely formatted!
-- put "random" into sequential mode to really find all sentences
-- find features / types functionality
+* NOW
+  - One-shot rules, the criterion is: has the rule been successfully applied to
+    this node already?
+  - Split D-unit lists, add punctuation for CCG generation
+  - Extend Compounds such that also actions can be shared, maybe like this:
+    cond1, cond2, cond3
+    ->
+    act1, act2
+    { cond4, cond5 -> act3
+      { cond6 -> act4.
+        cond7 -> act5.
+      }.
+      cond8 -> act6.
+    }
+    Alternative: if/then/switch syntax
 
-- plugin_directory config is not described in documentation
+  - generate button does run, too,
+  - batch window not modal, can reload test file
+  - trace window: only result, optionally input / variables / rule
+    rule: nicely formatted!
+  - put "random" into sequential mode to really find all sentences
+  - find features / types functionality
 
-- make clear that Rules section names MUST start with "Rules"
+  - plugin_directory config is not described in documentation
+
+  - make clear that Rules section names MUST start with "Rules"
 
 // Setting type in current node does not work like this:
 :apology -> # ! <__TYPE>, # ^ <__TYPE>apologize.
@@ -65,7 +80,7 @@ FIX BAD DETECTION OF RULE ERROR FOR THIS RULE:
 #ctrl ^ <InsertPerformance>done.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-**** SOON ****
+* SOON
 
 - Change design of trace window: information overload, present information
   on demand, like variable bindings, rule, etc., maybe in a different (pop up)
@@ -147,7 +162,7 @@ Today:
 + progress bar / activity indicator for batch tests (slow generator)
 + j2emacs pops to front when file is shown (tested in gtk/linux)
 
-*** DISCUSSIONS ***
+* DISCUSSIONS
 
 arguments / modifiers to the cplanner process rather in input structure, or
 by access using plugins / to background memory
@@ -165,3 +180,4 @@ b) as request to a background process
      => needs proper modularization
    - non-cascaded processing would maybe require this
 
+* Done
