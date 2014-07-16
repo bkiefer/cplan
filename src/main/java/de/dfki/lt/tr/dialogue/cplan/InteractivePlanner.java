@@ -277,6 +277,7 @@ implements UPMainFrame.CloseAllListener {
     }
   }
 
+  private static final int MAX_EQUAL_TURNS = 10000;
 
   /** Systematically generate all possibilities for the test items in batchFile,
    *  writing the results to out.
@@ -292,6 +293,7 @@ implements UPMainFrame.CloseAllListener {
 
     this.readProjectFile(projectFile);
     // this.setTracing(new MiniLogTracer(RuleTracer.ALL));
+    super._realizer = null; // Don't attempt to do CCG realization
 
     BatchTest bt = this.loadBatch(batchFile, BatchType.GENERATION);
     for (int i = 0; i < bt.itemSize(); ++i) {
@@ -299,18 +301,24 @@ implements UPMainFrame.CloseAllListener {
       RealizationTestItem item = (RealizationTestItem) bt.getItem(i);
       HashSet<String> sents = new HashSet<String>();
       out.append("### ").append(item.lf.toString()).append(nl);
-      while (drf.newRound()) {
+      out.flush();
+      int equalTurns = 0;
+      while (drf.newRound() && ++equalTurns < MAX_EQUAL_TURNS) {
         ResultItem res = bt.realizeOneItem(item, i);
         if (res.itemStatus == BatchTest.Status.GOOD) {
           String result = punctRegex.matcher(res.realized).replaceAll("$1");
           result = spaceRegex.matcher(result).replaceAll(" ");
+          if (result.isEmpty()) break;
           if (! sents.contains(result)) {
+            equalTurns = 0;
             sents.add(result);
             out.append(result).append(nl);
+            out.flush();
           }
         }
       }
-      System.err.println(sents.size());
+      System.err.println(sents.size()
+          + ((equalTurns >= MAX_EQUAL_TURNS)?" *":""));
     }
   }
 
@@ -422,6 +430,7 @@ implements UPMainFrame.CloseAllListener {
         if (nonOptionArgs.size() == 0) {
           usage("No project file specified");
         } else {
+          Logger.getRootLogger().setLevel(Level.ERROR);
           File outputFile = null;
           if (nonOptionArgs.size() > 1) {
             outputFile = new File(nonOptionArgs.get(1));
