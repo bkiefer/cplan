@@ -22,11 +22,6 @@ public class DeterministicRandomFunction implements Function {
   /** The current list of choice points (one instance of a call sequence) */
   private ArrayList<Integer> _alternatives;
 
-  public DeterministicRandomFunction() {
-    _alternatives = new ArrayList<Integer>(10);
-    _arities = new ArrayList<Integer>(10);
-  }
-
   /** Call this before starting realization, it generates a new call sequence
    *
    * @return true if there is a new call sequence, false otherwise, which means
@@ -34,7 +29,13 @@ public class DeterministicRandomFunction implements Function {
    */
   public boolean newRound() {
     _callNo = 0;
-    if (_alternatives.isEmpty()) return true;
+    if (_alternatives == null) {
+      // first call
+      _alternatives = new ArrayList<Integer>(10);
+      _arities = new ArrayList<Integer>(10);
+      return true;
+    }
+    if (_alternatives.isEmpty()) return false;
     int last = _alternatives.size() - 1;
     do {
       int current = _alternatives.get(last) + 1;
@@ -52,9 +53,8 @@ public class DeterministicRandomFunction implements Function {
 
   /** Call this when the processing of a new test item starts */
   public void newInput() {
-    _alternatives.clear();
-    _arities.clear();
-    newRound();
+    _alternatives = null;
+    _arities = null;
   }
 
   private static <T> void toString(StringBuilder sb, List<T> l) {
@@ -82,7 +82,7 @@ public class DeterministicRandomFunction implements Function {
       _alternatives.add(0);
       _arities.add(args.size());
     }
-    System.out.println(this);
+    // System.out.println(this);
     int current =_alternatives.get(_callNo++);
     return args.get(current);
   }
