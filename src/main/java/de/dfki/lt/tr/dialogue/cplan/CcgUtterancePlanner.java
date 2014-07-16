@@ -24,18 +24,18 @@ import de.dfki.lt.tr.dialogue.cplan.util.PairList;
 public class CcgUtterancePlanner extends UtterancePlanner {
 
   /** The CCG grammar, if specified and loadable */
-  private Grammar _grammar;
+  protected Grammar _grammar;
 
   /** The File the CCG grammar was loaded from, to avoid reloading if this has
    *  not changed.
    */
-  private File _lastGrammarLocation;
+  protected File _lastGrammarLocation;
 
   /** A CCG realizer instance, if a grammar has been loaded */
-  private Realizer _realizer = null;
+  protected Realizer _realizer = null;
 
   /** A CCG parser instance, if a grammar has been loaded */
-  private Parser _parser = null;
+  protected Parser _parser = null;
 
   public CcgUtterancePlanner() { super(); }
 
