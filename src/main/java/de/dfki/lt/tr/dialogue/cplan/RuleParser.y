@@ -26,10 +26,92 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
 %define parse.error verbose
 
 %code {
+  /** A class to collect matches and actions to generate real rules when
+   *  done.
+   */
+  private class RuleProto {
+      /** The left hand side of a rule */
+    private Match _match;
+
+    /** The right hand side of the rule */
+    private LinkedList<Action> _replace;
+
+    /** Where was this rule defined */
+    private Location _position;
+
+    public RuleProto(Match m, LinkedList<Action> actions, Location loc) {
+      _match = m;
+      _replace = actions;
+      _position = loc;
+    }
+
+    public void addActionsToFront(RuleProto r) {
+      _replace.addAll(0, r._replace);
+    }
+
+    public void setMatch(Match m) { _match = m; }
+
+    public Match getMatch() { return _match ; }
+
+    public LinkedList<RuleProto> applyToAll(List<Op> ops) {
+      LinkedList<RuleProto> result = new LinkedList<RuleProto>();
+      for (Op op : ops) {
+        result.addAll(op.apply(this));
+      }
+      return result;
+    }
+
+    public Rule toRule() {
+      return new BasicRule(new VarMatch(null, _match), _replace, _position);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder();
+      return BasicRule.appendActions(_replace,
+              BasicRule.appendMatches(_match, sb).append(" -> "))
+           .append(" .").toString();
+    }
+
+  }
+
+
+  /** Class to account for in-group initial matches */
+  private class Op {
+    private char _op;
+    private LinkedList<RuleProto> _opRules;
+
+    Op(char op, LinkedList<RuleProto> rules) {
+      _op = op;
+      _opRules = rules;
+    }
+
+    /** r is an outer rule specification, while this represents a list of
+     *  matches and actions embedded in a group.
+     *
+     *  Thus, create a "new" list by prepending the matches and actions of r
+     *  to all members of _opRules.
+     */
+    public LinkedList<RuleProto> apply(RuleProto r) {
+      for (RuleProto rule : _opRules) {
+        Match arg1 = r.getMatch().deepCopy();
+        Match arg2 = rule.getMatch();
+        rule.setMatch((_op == '^')
+                      ? new Conjunction(arg1, arg2)
+                      : new Disjunction(arg1, arg2));
+        rule.addActionsToFront(r);
+      }
+      return _opRules;
+    }
+  }
+
+
   private List _rules;
 
   public List<Rule> getRules() {
-    return (List<Rule>) _rules;
+    List<Rule> result = new java.util.ArrayList<Rule>(_rules.size());
+    for (RuleProto p : (List<RuleProto>)_rules) result.add(p.toRule());
+    return result;
   }
 
   public de.dfki.lt.tr.dialogue.cplan.Lexer getLexer() {
@@ -37,7 +119,7 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
   }
 
   public void reset() {
-    _rules = new LinkedList<BasicRule>();
+    _rules = new LinkedList<RuleProto>();
   }
 
   public void reset(String inputDescription, Reader input) {
@@ -46,8 +128,8 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
       .setInputReader(inputDescription, input);
   }
 
-  private LinkedList<BasicRule> newRuleList(BasicRule rule) {
-    LinkedList<BasicRule> l = new LinkedList<BasicRule>();
+  private LinkedList<RuleProto> newRuleList(RuleProto rule) {
+    LinkedList<RuleProto> l = new LinkedList<RuleProto>();
     if (rule != null) {
       l.add(rule);
     }
@@ -55,32 +137,15 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
   }
 
 
-  private LinkedList<BasicRule> addConjunction(Match m,
-                                               LinkedList<BasicRule> rules) {
-    for (BasicRule rule : rules) {
-      rule.setMatch(new Conjunction(m.deepCopy(), rule.getMatch()));
-    }
-    return rules;
-  }
-
-  private LinkedList<BasicRule> addDisjunction(Match m,
-                                               LinkedList<BasicRule> rules) {
-    for (BasicRule rule : rules) {
-      rule.setMatch(new Disjunction(m.deepCopy(), rule.getMatch()));
-    }
-    return rules;
-  }
-
-
-  private LinkedList<BasicRule> addTopVarMatches(LinkedList<BasicRule> rules) {
-    for (BasicRule rule : rules) {
+  private LinkedList<RuleProto> addTopVarMatches(LinkedList<RuleProto> rules) {
+    for (RuleProto rule : rules) {
       rule.setMatch(new VarMatch(null, rule.getMatch()));
     }
     return rules;
   }
 
-  private BasicRule newRule(Match match, List actions, Location loc) {
-    return new BasicRule(match, (List<Action>) actions, loc);
+  private RuleProto newRule(Match match, List actions, Location loc) {
+    return new RuleProto(match, (LinkedList<Action>) actions, loc);
   }
 
 
@@ -111,57 +176,32 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
     return null;
   }
 
-  private class Op {
-    char _op;
-    LinkedList<BasicRule> _opRules;
-
-    Op(char op, LinkedList<BasicRule> rules) {
-      _op = op;
-      _opRules = rules;
-    }
-
-    public LinkedList<BasicRule> apply(Match m) {
-      if (_op == '^') {
-        return addConjunction(m, _opRules);
-      } else {
-        return addDisjunction(m, _opRules);
-      }
-    }
-  }
-
-  public LinkedList<Op> newOpList(char op, LinkedList<BasicRule> rules) {
+  public LinkedList<Op> newOpList(char op, LinkedList<RuleProto> rules) {
     LinkedList<Op> result = new LinkedList<Op>();
     result.add(new Op(op, rules));
     return result;
   }
 
-  public LinkedList<Rule> applyToAll(Match m, List<Op> ops) {
-    LinkedList<Rule> result = new LinkedList<Rule>();
-    for (Op op : ops) {
-      result.addAll(op.apply(m));
-    }
-    return result;
-  }
 
   /*
   private class Op {
 
     private Op _rest;
     private Match _m;
-    private List<BasicRule> _rules;
+    private List<RuleProto> _rules;
 
     char _op;
 
-    List<BasicRule> apply(Match m);
+    List<RuleProto> apply(Match m);
 
-    private Op(char op, Match m, List<BasicRule> l, Op rest) {
+    private Op(char op, Match m, List<RuleProto> l, Op rest) {
       _op = op
       _rules = l;
       _m = m;
       _rest = rest;
     }
 
-    public Op(char op, List<BasicRule> l, Op rest) {
+    public Op(char op, List<RuleProto> l, Op rest) {
       this(op, null, l, rest);
     }
 
@@ -173,11 +213,11 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
       this(op, m, null, null );
     }
 
-    public Op(char op, List<BasicRule> l) {
+    public Op(char op, List<RuleProto> l) {
       this(op, null, l, null);
     }
 
-    public List<BasicRule> apply(Match m) {
+    public List<RuleProto> apply(Match m) {
       if (
     }
   }
@@ -200,9 +240,7 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
 
 %type < Action > action
 
-%type < BasicRule > rule
-
-%type < LinkedList > start rules rulegroup group groups
+%type < LinkedList > start rules group groups
 
 %type < List > actions rargs
 
@@ -212,33 +250,23 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
 
 start : rules            { _rules = $1; }
 
-rules : rulegroup rules   { _rules = $1; _rules.addAll($2); $$ = _rules; }
-      | rulegroup         { $$ = $1; }
+rules : group rules   { _rules = $1; _rules.addAll($2); $$ = _rules; }
+      | group         { $$ = $1; }
       ;
 
-rulegroup : rule '.'              { $$ = newRuleList($1); }
-          | expr '{' groups '}'   { $$ = applyToAll($1, $3); }
-          ;
+group : expr ARROW actions '.' { $$ = newRuleList(newRule($1, $3, @2)); }
+      | expr ARROW actions '{' groups '}'
+        { $$ = newRule($1, $3, @2).applyToAll($5); }
+      | expr '{' groups '}'
+        { $$ = newRule($1, new LinkedList<Action>(), @2).applyToAll($3); }
+      | error                  { $$ = new LinkedList<RuleProto>(); }
+      ;
 
 groups : '|' group groups    { $3.addFirst(new Op('|', $2)); $$ = $3; }
        | '^' group groups    { $3.addFirst(new Op('^', $2)); $$ = $3; }
        | '|' group           { $$ = newOpList('|', $2); }
        | '^' group           { $$ = newOpList('^', $2); }
        ;
-
-group : rule '.'         { $$ = newRuleList($1); }
-      | expr '{' groups '}'  { $$ = applyToAll($1, $3); }
-      ;
-
-/*
-rules : rule '.' rules   { if ($1 != null) $3.addFirst($1); $$ = $3;}
-      | rule '.'         { $$ = newRuleList($1); }
-      ;
-*/
-
-rule : expr ARROW actions { $$ = newRule(new VarMatch(null, $1), $3, @2); }
-     | error              { $$ = null; }
-     ;
 
 expr : expr '|' eterm     { $$ = new Disjunction($1, $3); }
      | eterm

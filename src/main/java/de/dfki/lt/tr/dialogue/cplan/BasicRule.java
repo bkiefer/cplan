@@ -35,31 +35,30 @@ public class BasicRule implements Rule {
     _position = new Position(pos.begin.line, 0, pos.begin.msg);
   }
 
-  /** Get the match part of this rule. Package visibility intended, only to use
-   *  with rule construction in RuleParser!
-   */
-  Match getMatch() { return _match; }
-
-  /** Set the match part of this rule. package visibility intended, only to use
-   *  with rule construction in RuleParser!
-   */
-  void setMatch(Match m) { _match = m; }
-
-  public StringBuilder appendMatches(StringBuilder sb) {
+  public static StringBuilder appendMatches(Match m, StringBuilder sb) {
     //for (VarMatch vm : _matches) {
     //  sb.append(vm);
     //}
-    sb.append(_match);
+    sb.append(m);
     return sb;
   }
 
-  public StringBuilder appendActions(StringBuilder sb) {
-    Iterator<Action> it = _replace.iterator();
+  public StringBuilder appendMatches(StringBuilder sb) {
+    return appendMatches(_match, sb);
+  }
+
+  public static StringBuilder appendActions(Iterable<Action> rep,
+      StringBuilder sb) {
+    Iterator<Action> it = rep.iterator();
     sb.append(it.next());
     while (it.hasNext()) {
       sb.append(", ").append(it.next());
     }
     return sb;
+  }
+
+  public StringBuilder appendActions(StringBuilder sb) {
+    return appendActions(_replace, sb);
   }
 
   public Position getPosition() {

@@ -440,293 +440,279 @@ public class RuleParser
       {
           case 2:
   if (yyn == 2)
-    /* "RuleParser.y":213  */ /* lalr1.java:489  */
+    /* "RuleParser.y":251  */ /* lalr1.java:489  */
     { _rules = (( LinkedList )(yystack.valueAt (1-(1)))); };
   break;
     
 
   case 3:
   if (yyn == 3)
-    /* "RuleParser.y":215  */ /* lalr1.java:489  */
+    /* "RuleParser.y":253  */ /* lalr1.java:489  */
     { _rules = (( LinkedList )(yystack.valueAt (2-(1)))); _rules.addAll((( LinkedList )(yystack.valueAt (2-(2))))); yyval = _rules; };
   break;
     
 
   case 4:
   if (yyn == 4)
-    /* "RuleParser.y":216  */ /* lalr1.java:489  */
+    /* "RuleParser.y":254  */ /* lalr1.java:489  */
     { yyval = (( LinkedList )(yystack.valueAt (1-(1)))); };
   break;
     
 
   case 5:
   if (yyn == 5)
-    /* "RuleParser.y":219  */ /* lalr1.java:489  */
-    { yyval = newRuleList((( BasicRule )(yystack.valueAt (2-(1))))); };
+    /* "RuleParser.y":257  */ /* lalr1.java:489  */
+    { yyval = newRuleList(newRule((( Match )(yystack.valueAt (4-(1)))), (( List )(yystack.valueAt (4-(3)))), yystack.locationAt (4-(2)))); };
   break;
     
 
   case 6:
   if (yyn == 6)
-    /* "RuleParser.y":220  */ /* lalr1.java:489  */
-    { yyval = applyToAll((( Match )(yystack.valueAt (4-(1)))), (( LinkedList )(yystack.valueAt (4-(3))))); };
+    /* "RuleParser.y":259  */ /* lalr1.java:489  */
+    { yyval = newRule((( Match )(yystack.valueAt (6-(1)))), (( List )(yystack.valueAt (6-(3)))), yystack.locationAt (6-(2))).applyToAll((( LinkedList )(yystack.valueAt (6-(5))))); };
   break;
     
 
   case 7:
   if (yyn == 7)
-    /* "RuleParser.y":223  */ /* lalr1.java:489  */
-    { (( LinkedList )(yystack.valueAt (3-(3)))).addFirst(new Op('|', (( LinkedList )(yystack.valueAt (3-(2)))))); yyval = (( LinkedList )(yystack.valueAt (3-(3)))); };
+    /* "RuleParser.y":261  */ /* lalr1.java:489  */
+    { yyval = newRule((( Match )(yystack.valueAt (4-(1)))), new LinkedList<Action>(), yystack.locationAt (4-(2))).applyToAll((( LinkedList )(yystack.valueAt (4-(3))))); };
   break;
     
 
   case 8:
   if (yyn == 8)
-    /* "RuleParser.y":224  */ /* lalr1.java:489  */
-    { (( LinkedList )(yystack.valueAt (3-(3)))).addFirst(new Op('^', (( LinkedList )(yystack.valueAt (3-(2)))))); yyval = (( LinkedList )(yystack.valueAt (3-(3)))); };
+    /* "RuleParser.y":262  */ /* lalr1.java:489  */
+    { yyval = new LinkedList<RuleProto>(); };
   break;
     
 
   case 9:
   if (yyn == 9)
-    /* "RuleParser.y":225  */ /* lalr1.java:489  */
-    { yyval = newOpList('|', (( LinkedList )(yystack.valueAt (2-(2))))); };
+    /* "RuleParser.y":265  */ /* lalr1.java:489  */
+    { (( LinkedList )(yystack.valueAt (3-(3)))).addFirst(new Op('|', (( LinkedList )(yystack.valueAt (3-(2)))))); yyval = (( LinkedList )(yystack.valueAt (3-(3)))); };
   break;
     
 
   case 10:
   if (yyn == 10)
-    /* "RuleParser.y":226  */ /* lalr1.java:489  */
-    { yyval = newOpList('^', (( LinkedList )(yystack.valueAt (2-(2))))); };
+    /* "RuleParser.y":266  */ /* lalr1.java:489  */
+    { (( LinkedList )(yystack.valueAt (3-(3)))).addFirst(new Op('^', (( LinkedList )(yystack.valueAt (3-(2)))))); yyval = (( LinkedList )(yystack.valueAt (3-(3)))); };
   break;
     
 
   case 11:
   if (yyn == 11)
-    /* "RuleParser.y":229  */ /* lalr1.java:489  */
-    { yyval = newRuleList((( BasicRule )(yystack.valueAt (2-(1))))); };
+    /* "RuleParser.y":267  */ /* lalr1.java:489  */
+    { yyval = newOpList('|', (( LinkedList )(yystack.valueAt (2-(2))))); };
   break;
     
 
   case 12:
   if (yyn == 12)
-    /* "RuleParser.y":230  */ /* lalr1.java:489  */
-    { yyval = applyToAll((( Match )(yystack.valueAt (4-(1)))), (( LinkedList )(yystack.valueAt (4-(3))))); };
+    /* "RuleParser.y":268  */ /* lalr1.java:489  */
+    { yyval = newOpList('^', (( LinkedList )(yystack.valueAt (2-(2))))); };
   break;
     
 
   case 13:
   if (yyn == 13)
-    /* "RuleParser.y":239  */ /* lalr1.java:489  */
-    { yyval = newRule(new VarMatch(null, (( Match )(yystack.valueAt (3-(1))))), (( List )(yystack.valueAt (3-(3)))), yystack.locationAt (3-(2))); };
-  break;
-    
-
-  case 14:
-  if (yyn == 14)
-    /* "RuleParser.y":240  */ /* lalr1.java:489  */
-    { yyval = null; };
+    /* "RuleParser.y":271  */ /* lalr1.java:489  */
+    { yyval = new Disjunction((( Match )(yystack.valueAt (3-(1)))), (( Match )(yystack.valueAt (3-(3))))); };
   break;
     
 
   case 15:
   if (yyn == 15)
-    /* "RuleParser.y":243  */ /* lalr1.java:489  */
-    { yyval = new Disjunction((( Match )(yystack.valueAt (3-(1)))), (( Match )(yystack.valueAt (3-(3))))); };
+    /* "RuleParser.y":275  */ /* lalr1.java:489  */
+    { yyval = new Conjunction((( Match )(yystack.valueAt (3-(1)))), (( Match )(yystack.valueAt (3-(3))))); };
   break;
     
 
   case 17:
   if (yyn == 17)
-    /* "RuleParser.y":247  */ /* lalr1.java:489  */
-    { yyval = new Conjunction((( Match )(yystack.valueAt (3-(1)))), (( Match )(yystack.valueAt (3-(3))))); };
+    /* "RuleParser.y":280  */ /* lalr1.java:489  */
+    { yyval = new FeatVal((( Match )(yystack.valueAt (4-(2)))), (( Match )(yystack.valueAt (4-(4))))); };
+  break;
+    
+
+  case 18:
+  if (yyn == 18)
+    /* "RuleParser.y":281  */ /* lalr1.java:489  */
+    { yyval = new FeatVal((( Match )(yystack.valueAt (3-(2)))), null); };
   break;
     
 
   case 19:
   if (yyn == 19)
-    /* "RuleParser.y":252  */ /* lalr1.java:489  */
-    { yyval = new FeatVal((( Match )(yystack.valueAt (4-(2)))), (( Match )(yystack.valueAt (4-(4))))); };
+    /* "RuleParser.y":282  */ /* lalr1.java:489  */
+    { yyval = new VarMatch(new GlobalVar((( String )(yystack.valueAt (5-(2))))), (( Match )(yystack.valueAt (5-(4))))); };
   break;
     
 
   case 20:
   if (yyn == 20)
-    /* "RuleParser.y":253  */ /* lalr1.java:489  */
-    { yyval = new FeatVal((( Match )(yystack.valueAt (3-(2)))), null); };
+    /* "RuleParser.y":283  */ /* lalr1.java:489  */
+    { yyval = new VarMatch((( MatchLVal )(yystack.valueAt (5-(2)))), (( Match )(yystack.valueAt (5-(4))))); };
   break;
     
 
   case 21:
   if (yyn == 21)
-    /* "RuleParser.y":254  */ /* lalr1.java:489  */
-    { yyval = new VarMatch(new GlobalVar((( String )(yystack.valueAt (5-(2))))), (( Match )(yystack.valueAt (5-(4))))); };
+    /* "RuleParser.y":284  */ /* lalr1.java:489  */
+    { yyval = (( Match )(yystack.valueAt (1-(1)))); };
   break;
     
 
   case 22:
   if (yyn == 22)
-    /* "RuleParser.y":255  */ /* lalr1.java:489  */
-    { yyval = new VarMatch((( MatchLVal )(yystack.valueAt (5-(2)))), (( Match )(yystack.valueAt (5-(4))))); };
+    /* "RuleParser.y":287  */ /* lalr1.java:489  */
+    { yyval = (( Match )(yystack.valueAt (1-(1)))); };
   break;
     
 
   case 23:
   if (yyn == 23)
-    /* "RuleParser.y":256  */ /* lalr1.java:489  */
-    { yyval = (( Match )(yystack.valueAt (1-(1)))); };
-  break;
-    
-
-  case 24:
-  if (yyn == 24)
-    /* "RuleParser.y":259  */ /* lalr1.java:489  */
-    { yyval = (( Match )(yystack.valueAt (1-(1)))); };
-  break;
-    
-
-  case 25:
-  if (yyn == 25)
-    /* "RuleParser.y":260  */ /* lalr1.java:489  */
+    /* "RuleParser.y":288  */ /* lalr1.java:489  */
     { yyval = new Conjunction((( Match )(yystack.valueAt (2-(1)))),
                                    new FeatVal(DagNode.TYPE_FEAT_ID, (( Match )(yystack.valueAt (2-(2)))))); };
   break;
     
 
-  case 26:
-  if (yyn == 26)
-    /* "RuleParser.y":262  */ /* lalr1.java:489  */
+  case 24:
+  if (yyn == 24)
+    /* "RuleParser.y":290  */ /* lalr1.java:489  */
     { yyval = new FeatVal(DagNode.TYPE_FEAT_ID, (( Match )(yystack.valueAt (2-(2))))); };
   break;
     
 
-  case 27:
-  if (yyn == 27)
-    /* "RuleParser.y":263  */ /* lalr1.java:489  */
+  case 25:
+  if (yyn == 25)
+    /* "RuleParser.y":291  */ /* lalr1.java:489  */
     { yyval = new FeatVal(DagNode.PROP_FEAT_ID, (( Match )(yystack.valueAt (1-(1))))); };
   break;
     
 
-  case 28:
-  if (yyn == 28)
-    /* "RuleParser.y":264  */ /* lalr1.java:489  */
+  case 26:
+  if (yyn == 26)
+    /* "RuleParser.y":292  */ /* lalr1.java:489  */
     { yyval = new FeatVal(DagNode.PROP_FEAT_ID,
                                              new Atom((( String )(yystack.valueAt (1-(1)))))); };
   break;
     
 
+  case 27:
+  if (yyn == 27)
+    /* "RuleParser.y":294  */ /* lalr1.java:489  */
+    { (( Match )(yystack.valueAt (2-(2)))).setNegated(true); yyval = (( Match )(yystack.valueAt (2-(2)))); };
+  break;
+    
+
+  case 28:
+  if (yyn == 28)
+    /* "RuleParser.y":295  */ /* lalr1.java:489  */
+    { yyval = (( Match )(yystack.valueAt (3-(2)))); };
+  break;
+    
+
   case 29:
   if (yyn == 29)
-    /* "RuleParser.y":266  */ /* lalr1.java:489  */
-    { (( Match )(yystack.valueAt (2-(2)))).setNegated(true); yyval = (( Match )(yystack.valueAt (2-(2)))); };
+    /* "RuleParser.y":296  */ /* lalr1.java:489  */
+    { yyval = new Coref((( Match )(yystack.valueAt (2-(2))))); };
   break;
     
 
   case 30:
   if (yyn == 30)
-    /* "RuleParser.y":267  */ /* lalr1.java:489  */
-    { yyval = (( Match )(yystack.valueAt (3-(2)))); };
+    /* "RuleParser.y":303  */ /* lalr1.java:489  */
+    { yyval = new FeatVal(DagNode.ID_FEAT_ID, new Atom((( String )(yystack.valueAt (2-(1)))))); };
   break;
     
 
   case 31:
   if (yyn == 31)
-    /* "RuleParser.y":268  */ /* lalr1.java:489  */
-    { yyval = new Coref((( Match )(yystack.valueAt (2-(2))))); };
+    /* "RuleParser.y":304  */ /* lalr1.java:489  */
+    { yyval = new LocalVar((( String )(yystack.valueAt (2-(1)))));  };
   break;
     
 
   case 32:
   if (yyn == 32)
-    /* "RuleParser.y":275  */ /* lalr1.java:489  */
-    { yyval = new FeatVal(DagNode.ID_FEAT_ID, new Atom((( String )(yystack.valueAt (2-(1)))))); };
+    /* "RuleParser.y":305  */ /* lalr1.java:489  */
+    { yyval = new GlobalVar((( String )(yystack.valueAt (2-(1))))); };
   break;
     
 
   case 33:
   if (yyn == 33)
-    /* "RuleParser.y":276  */ /* lalr1.java:489  */
-    { yyval = new LocalVar((( String )(yystack.valueAt (2-(1)))));  };
+    /* "RuleParser.y":308  */ /* lalr1.java:489  */
+    { yyval = new LocalVar((( String )(yystack.valueAt (1-(1))))); };
   break;
     
 
   case 34:
   if (yyn == 34)
-    /* "RuleParser.y":277  */ /* lalr1.java:489  */
-    { yyval = new GlobalVar((( String )(yystack.valueAt (2-(1))))); };
+    /* "RuleParser.y":309  */ /* lalr1.java:489  */
+    { yyval = new Atom((( String )(yystack.valueAt (1-(1))))); };
   break;
     
 
   case 35:
   if (yyn == 35)
-    /* "RuleParser.y":280  */ /* lalr1.java:489  */
-    { yyval = new LocalVar((( String )(yystack.valueAt (1-(1))))); };
+    /* "RuleParser.y":311  */ /* lalr1.java:489  */
+    { yyval = (( Match )(yystack.valueAt (1-(1)))); };
   break;
     
 
   case 36:
   if (yyn == 36)
-    /* "RuleParser.y":281  */ /* lalr1.java:489  */
-    { yyval = new Atom((( String )(yystack.valueAt (1-(1))))); };
+    /* "RuleParser.y":312  */ /* lalr1.java:489  */
+    { (( Match )(yystack.valueAt (2-(2)))).setNegated(true); yyval = (( Match )(yystack.valueAt (2-(2)))); };
   break;
     
 
   case 37:
   if (yyn == 37)
-    /* "RuleParser.y":283  */ /* lalr1.java:489  */
-    { yyval = (( Match )(yystack.valueAt (1-(1)))); };
+    /* "RuleParser.y":313  */ /* lalr1.java:489  */
+    { yyval = (( Match )(yystack.valueAt (3-(2)))); };
   break;
     
 
   case 38:
   if (yyn == 38)
-    /* "RuleParser.y":284  */ /* lalr1.java:489  */
-    { (( Match )(yystack.valueAt (2-(2)))).setNegated(true); yyval = (( Match )(yystack.valueAt (2-(2)))); };
+    /* "RuleParser.y":316  */ /* lalr1.java:489  */
+    { yyval = (( Match )(yystack.valueAt (1-(1)))); };
   break;
     
 
   case 39:
   if (yyn == 39)
-    /* "RuleParser.y":285  */ /* lalr1.java:489  */
-    { yyval = (( Match )(yystack.valueAt (3-(2)))); };
+    /* "RuleParser.y":317  */ /* lalr1.java:489  */
+    { yyval = new Disjunction((( Match )(yystack.valueAt (3-(1)))), (( Match )(yystack.valueAt (3-(3))))); };
   break;
     
 
   case 40:
   if (yyn == 40)
-    /* "RuleParser.y":288  */ /* lalr1.java:489  */
-    { yyval = (( Match )(yystack.valueAt (1-(1)))); };
-  break;
-    
-
-  case 41:
-  if (yyn == 41)
-    /* "RuleParser.y":289  */ /* lalr1.java:489  */
-    { yyval = new Disjunction((( Match )(yystack.valueAt (3-(1)))), (( Match )(yystack.valueAt (3-(3))))); };
-  break;
-    
-
-  case 42:
-  if (yyn == 42)
-    /* "RuleParser.y":292  */ /* lalr1.java:489  */
+    /* "RuleParser.y":320  */ /* lalr1.java:489  */
     { yyval = getNewFunCall((( String )(yystack.valueAt (4-(1)))), (( List )(yystack.valueAt (4-(3)))), yystack.locationAt (4-(1)));
                              if (yyval == null) return YYERROR ;
                            };
   break;
     
 
-  case 43:
-  if (yyn == 43)
-    /* "RuleParser.y":295  */ /* lalr1.java:489  */
+  case 41:
+  if (yyn == 41)
+    /* "RuleParser.y":323  */ /* lalr1.java:489  */
     { yyval = getNewFunCall((( String )(yystack.valueAt (3-(1)))), null, yystack.locationAt (3-(1)));
                              if (yyval == null) return YYERROR ;
                            };
   break;
     
 
-  case 44:
-  if (yyn == 44)
-    /* "RuleParser.y":318  */ /* lalr1.java:489  */
+  case 42:
+  if (yyn == 42)
+    /* "RuleParser.y":346  */ /* lalr1.java:489  */
     {
             List<Action> result  = new LinkedList<Action>();
             result.add((( Action )(yystack.valueAt (1-(1)))));
@@ -735,16 +721,16 @@ public class RuleParser
   break;
     
 
-  case 45:
-  if (yyn == 45)
-    /* "RuleParser.y":323  */ /* lalr1.java:489  */
+  case 43:
+  if (yyn == 43)
+    /* "RuleParser.y":351  */ /* lalr1.java:489  */
     { (( List )(yystack.valueAt (3-(3)))).add(0, (( Action )(yystack.valueAt (3-(1))))); yyval = (( List )(yystack.valueAt (3-(3)))); };
   break;
     
 
-  case 46:
-  if (yyn == 46)
-    /* "RuleParser.y":327  */ /* lalr1.java:489  */
+  case 44:
+  if (yyn == 44)
+    /* "RuleParser.y":355  */ /* lalr1.java:489  */
     {
          DagNode rval = (((( DagNode )(yystack.valueAt (3-(3)))) == null) ? null : (( DagNode )(yystack.valueAt (3-(3)))).copyAndInvalidate());
          yyval = new Assignment((( VarDagNode )(yystack.valueAt (3-(1)))), rval);
@@ -752,9 +738,9 @@ public class RuleParser
   break;
     
 
-  case 47:
-  if (yyn == 47)
-    /* "RuleParser.y":332  */ /* lalr1.java:489  */
+  case 45:
+  if (yyn == 45)
+    /* "RuleParser.y":360  */ /* lalr1.java:489  */
     {
          DagNode rval = (((( DagNode )(yystack.valueAt (3-(3)))) == null) ? null : (( DagNode )(yystack.valueAt (3-(3)))).copyAndInvalidate());
          yyval = new Addition((( VarDagNode )(yystack.valueAt (3-(1)))), rval);
@@ -762,148 +748,148 @@ public class RuleParser
   break;
     
 
+  case 46:
+  if (yyn == 46)
+    /* "RuleParser.y":367  */ /* lalr1.java:489  */
+    { yyval = new Deletion((( VarDagNode )(yystack.valueAt (5-(1)))), new DagNode((( String )(yystack.valueAt (5-(4)))), new DagNode())); };
+  break;
+    
+
+  case 47:
+  if (yyn == 47)
+    /* "RuleParser.y":370  */ /* lalr1.java:489  */
+    { yyval = new VarDagNode((( String )(yystack.valueAt (1-(1)))), Bindings.LOCAL); };
+  break;
+    
+
   case 48:
   if (yyn == 48)
-    /* "RuleParser.y":339  */ /* lalr1.java:489  */
-    { yyval = new Deletion((( VarDagNode )(yystack.valueAt (5-(1)))), new DagNode((( String )(yystack.valueAt (5-(4)))), new DagNode())); };
+    /* "RuleParser.y":371  */ /* lalr1.java:489  */
+    { yyval = new VarDagNode((( String )(yystack.valueAt (1-(1)))), Bindings.RIGHTLOCAL); };
   break;
     
 
   case 49:
   if (yyn == 49)
-    /* "RuleParser.y":342  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode((( String )(yystack.valueAt (1-(1)))), Bindings.LOCAL); };
+    /* "RuleParser.y":372  */ /* lalr1.java:489  */
+    { yyval = new VarDagNode("#", Bindings.LOCAL); };
   break;
     
 
   case 50:
   if (yyn == 50)
-    /* "RuleParser.y":343  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode((( String )(yystack.valueAt (1-(1)))), Bindings.RIGHTLOCAL); };
+    /* "RuleParser.y":373  */ /* lalr1.java:489  */
+    { yyval = new VarDagNode((( String )(yystack.valueAt (2-(1)))), (( Path )(yystack.valueAt (2-(2))))); };
   break;
     
 
   case 51:
   if (yyn == 51)
-    /* "RuleParser.y":344  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode("#", Bindings.LOCAL); };
+    /* "RuleParser.y":377  */ /* lalr1.java:489  */
+    { yyval = (( Path )(yystack.valueAt (4-(4)))).addToFront((( String )(yystack.valueAt (4-(2))))); };
   break;
     
 
   case 52:
   if (yyn == 52)
-    /* "RuleParser.y":345  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode((( String )(yystack.valueAt (2-(1)))), (( Path )(yystack.valueAt (2-(2))))); };
+    /* "RuleParser.y":378  */ /* lalr1.java:489  */
+    { yyval = new Path(); };
   break;
     
 
   case 53:
   if (yyn == 53)
-    /* "RuleParser.y":349  */ /* lalr1.java:489  */
-    { yyval = (( Path )(yystack.valueAt (4-(4)))).addToFront((( String )(yystack.valueAt (4-(2))))); };
+    /* "RuleParser.y":381  */ /* lalr1.java:489  */
+    { (( DagNode )(yystack.valueAt (3-(1)))).add((( DagNode )(yystack.valueAt (3-(3))))); (( DagNode )(yystack.valueAt (3-(1)))).setNominal(); yyval = (( DagNode )(yystack.valueAt (3-(1)))); };
   break;
     
 
   case 54:
   if (yyn == 54)
-    /* "RuleParser.y":350  */ /* lalr1.java:489  */
-    { yyval = new Path(); };
+    /* "RuleParser.y":382  */ /* lalr1.java:489  */
+    { yyval = (( DagNode )(yystack.valueAt (1-(1)))); };
   break;
     
 
   case 55:
   if (yyn == 55)
-    /* "RuleParser.y":353  */ /* lalr1.java:489  */
-    { (( DagNode )(yystack.valueAt (3-(1)))).add((( DagNode )(yystack.valueAt (3-(3))))); (( DagNode )(yystack.valueAt (3-(1)))).setNominal(); yyval = (( DagNode )(yystack.valueAt (3-(1)))); };
+    /* "RuleParser.y":385  */ /* lalr1.java:489  */
+    { yyval = new DagNode((( String )(yystack.valueAt (4-(2)))), (( DagNode )(yystack.valueAt (4-(4))))).setNominal(); };
   break;
     
 
   case 56:
   if (yyn == 56)
-    /* "RuleParser.y":354  */ /* lalr1.java:489  */
+    /* "RuleParser.y":386  */ /* lalr1.java:489  */
     { yyval = (( DagNode )(yystack.valueAt (1-(1)))); };
   break;
     
 
   case 57:
   if (yyn == 57)
-    /* "RuleParser.y":357  */ /* lalr1.java:489  */
-    { yyval = new DagNode((( String )(yystack.valueAt (4-(2)))), (( DagNode )(yystack.valueAt (4-(4))))).setNominal(); };
+    /* "RuleParser.y":390  */ /* lalr1.java:489  */
+    { yyval = (( DagNode )(yystack.valueAt (1-(1)))); };
   break;
     
 
   case 58:
   if (yyn == 58)
-    /* "RuleParser.y":358  */ /* lalr1.java:489  */
-    { yyval = (( DagNode )(yystack.valueAt (1-(1)))); };
-  break;
-    
-
-  case 59:
-  if (yyn == 59)
-    /* "RuleParser.y":362  */ /* lalr1.java:489  */
-    { yyval = (( DagNode )(yystack.valueAt (1-(1)))); };
-  break;
-    
-
-  case 60:
-  if (yyn == 60)
-    /* "RuleParser.y":363  */ /* lalr1.java:489  */
+    /* "RuleParser.y":391  */ /* lalr1.java:489  */
     { (( DagNode )(yystack.valueAt (2-(1)))).add(new DagNode(DagNode.TYPE_FEAT_ID, (( DagNode )(yystack.valueAt (2-(2))))));
                             yyval = (( DagNode )(yystack.valueAt (2-(1)))); };
   break;
     
 
-  case 61:
-  if (yyn == 61)
-    /* "RuleParser.y":365  */ /* lalr1.java:489  */
+  case 59:
+  if (yyn == 59)
+    /* "RuleParser.y":393  */ /* lalr1.java:489  */
     { yyval = new DagNode(DagNode.TYPE_FEAT_ID, (( DagNode )(yystack.valueAt (2-(2)))))
                                     .setNominal();
                           };
   break;
     
 
-  case 62:
-  if (yyn == 62)
-    /* "RuleParser.y":368  */ /* lalr1.java:489  */
+  case 60:
+  if (yyn == 60)
+    /* "RuleParser.y":396  */ /* lalr1.java:489  */
     { yyval = new DagNode(DagNode.PROP_FEAT_ID, (( DagNode )(yystack.valueAt (1-(1))))); };
   break;
     
 
-  case 63:
-  if (yyn == 63)
-    /* "RuleParser.y":369  */ /* lalr1.java:489  */
+  case 61:
+  if (yyn == 61)
+    /* "RuleParser.y":397  */ /* lalr1.java:489  */
     { yyval = new DagNode(DagNode.PROP_FEAT_ID,
                                              new DagNode((( String )(yystack.valueAt (1-(1)))))); };
   break;
     
 
-  case 64:
-  if (yyn == 64)
-    /* "RuleParser.y":371  */ /* lalr1.java:489  */
+  case 62:
+  if (yyn == 62)
+    /* "RuleParser.y":399  */ /* lalr1.java:489  */
     { yyval = (( DagNode )(yystack.valueAt (3-(2)))).setNominal(); };
   break;
     
 
-  case 65:
-  if (yyn == 65)
-    /* "RuleParser.y":380  */ /* lalr1.java:489  */
+  case 63:
+  if (yyn == 63)
+    /* "RuleParser.y":408  */ /* lalr1.java:489  */
     {
              yyval = new DagNode(DagNode.ID_FEAT_ID, (( DagNode )(yystack.valueAt (2-(1))))).setNominal();
          };
   break;
     
 
-  case 66:
-  if (yyn == 66)
-    /* "RuleParser.y":385  */ /* lalr1.java:489  */
+  case 64:
+  if (yyn == 64)
+    /* "RuleParser.y":413  */ /* lalr1.java:489  */
     { (( List )(yystack.valueAt (3-(3)))).add(0, (( DagNode )(yystack.valueAt (3-(1))))); yyval = (( List )(yystack.valueAt (3-(3)))); };
   break;
     
 
-  case 67:
-  if (yyn == 67)
-    /* "RuleParser.y":386  */ /* lalr1.java:489  */
+  case 65:
+  if (yyn == 65)
+    /* "RuleParser.y":414  */ /* lalr1.java:489  */
     { List<DagNode> result = new LinkedList<DagNode>();
                            result.add((( DagNode )(yystack.valueAt (1-(1)))));
                            yyval = result;
@@ -911,67 +897,67 @@ public class RuleParser
   break;
     
 
+  case 66:
+  if (yyn == 66)
+    /* "RuleParser.y":420  */ /* lalr1.java:489  */
+    { yyval = (( DagNode )(yystack.valueAt (1-(1)))); };
+  break;
+    
+
+  case 67:
+  if (yyn == 67)
+    /* "RuleParser.y":421  */ /* lalr1.java:489  */
+    { yyval = new DagNode((( String )(yystack.valueAt (1-(1))))); };
+  break;
+    
+
   case 68:
   if (yyn == 68)
-    /* "RuleParser.y":392  */ /* lalr1.java:489  */
-    { yyval = (( DagNode )(yystack.valueAt (1-(1)))); };
+    /* "RuleParser.y":422  */ /* lalr1.java:489  */
+    { yyval = new VarDagNode("#", Bindings.LOCAL); };
   break;
     
 
   case 69:
   if (yyn == 69)
-    /* "RuleParser.y":393  */ /* lalr1.java:489  */
+    /* "RuleParser.y":428  */ /* lalr1.java:489  */
     { yyval = new DagNode((( String )(yystack.valueAt (1-(1))))); };
   break;
     
 
   case 70:
   if (yyn == 70)
-    /* "RuleParser.y":394  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode("#", Bindings.LOCAL); };
+    /* "RuleParser.y":429  */ /* lalr1.java:489  */
+    { yyval = new VarDagNode((( String )(yystack.valueAt (1-(1)))), Bindings.LOCAL); };
   break;
     
 
   case 71:
   if (yyn == 71)
-    /* "RuleParser.y":400  */ /* lalr1.java:489  */
-    { yyval = new DagNode((( String )(yystack.valueAt (1-(1))))); };
+    /* "RuleParser.y":430  */ /* lalr1.java:489  */
+    { yyval = new VarDagNode((( String )(yystack.valueAt (2-(1)))), (( Path )(yystack.valueAt (2-(2))))); };
   break;
     
 
   case 72:
   if (yyn == 72)
-    /* "RuleParser.y":401  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode((( String )(yystack.valueAt (1-(1)))), Bindings.LOCAL); };
+    /* "RuleParser.y":431  */ /* lalr1.java:489  */
+    { yyval = new VarDagNode((( String )(yystack.valueAt (1-(1)))), Bindings.RIGHTLOCAL); };
   break;
     
 
   case 73:
   if (yyn == 73)
-    /* "RuleParser.y":402  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode((( String )(yystack.valueAt (2-(1)))), (( Path )(yystack.valueAt (2-(2))))); };
-  break;
-    
-
-  case 74:
-  if (yyn == 74)
-    /* "RuleParser.y":403  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode((( String )(yystack.valueAt (1-(1)))), Bindings.RIGHTLOCAL); };
-  break;
-    
-
-  case 75:
-  if (yyn == 75)
-    /* "RuleParser.y":404  */ /* lalr1.java:489  */
+    /* "RuleParser.y":432  */ /* lalr1.java:489  */
     { yyval = getNewFunCallDagNode((( String )(yystack.valueAt (4-(1)))), (( List )(yystack.valueAt (4-(3)))), yystack.locationAt (4-(1)));
                                if (yyval == null) return YYERROR ;
                              };
   break;
     
 
-  case 76:
-  if (yyn == 76)
-    /* "RuleParser.y":407  */ /* lalr1.java:489  */
+  case 74:
+  if (yyn == 74)
+    /* "RuleParser.y":435  */ /* lalr1.java:489  */
     { yyval = getNewFunCallDagNode((( String )(yystack.valueAt (3-(1)))), null, yystack.locationAt (3-(1)));
                                if (yyval == null) return YYERROR ;
                              };
@@ -979,7 +965,7 @@ public class RuleParser
     
 
 
-/* "RuleParser.java":983  */ /* lalr1.java:489  */
+/* "RuleParser.java":969  */ /* lalr1.java:489  */
         default: break;
       }
 
@@ -1401,7 +1387,7 @@ public class RuleParser
     return yyvalue == yytable_ninf_;
   }
 
-  private static final short yypact_ninf_ = -118;
+  private static final short yypact_ninf_ = -67;
   private static final short yytable_ninf_ = -5;
 
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
@@ -1411,20 +1397,20 @@ public class RuleParser
   {
     return new short[]
     {
-      16,  -118,     3,    15,    32,  -118,    40,   107,     8,   126,
-     131,    83,  -118,    65,    69,    35,    48,  -118,  -118,     8,
-    -118,  -118,  -118,  -118,  -118,  -118,    86,    -1,   100,    36,
-      99,     8,     8,  -118,  -118,  -118,     3,    15,  -118,  -118,
-    -118,  -118,    95,   112,   126,   126,  -118,   126,    84,   126,
-    -118,   126,   110,   114,  -118,  -118,   125,  -118,  -118,  -118,
-     119,    18,    16,    16,   132,    48,  -118,  -118,   128,  -118,
-     125,  -118,  -118,  -118,  -118,   133,   134,  -118,    64,    78,
-       8,  -118,   151,  -118,    95,   145,   141,   145,   112,   148,
-      61,   112,  -118,    90,  -118,  -118,    52,  -118,  -118,  -118,
-     143,  -118,  -118,   157,   145,   101,   149,  -118,  -118,   101,
-     144,   162,   149,  -118,  -118,   112,  -118,  -118,   150,  -118,
-     125,   152,   102,  -118,   145,  -118,  -118,   154,   155,  -118,
-    -118,   145,  -118,  -118,  -118,  -118,  -118
+      50,   -67,     4,    39,    46,   -67,    29,    93,    23,   112,
+     137,   104,   -67,    15,    38,    97,   -67,   -67,    23,   -67,
+     -67,   -67,   -67,   -67,   -67,    96,    87,   127,    -4,   101,
+      23,    23,   -67,   -67,   -67,     4,    39,   -67,   -67,   -67,
+       5,    79,   112,   112,   -67,   112,    70,   112,   -67,   112,
+     111,   119,   -67,   -67,   129,   -67,   -67,    32,   126,    47,
+      50,    50,   138,    97,   -67,   -67,   135,   -67,   129,   -67,
+     -67,   -67,   -67,   134,   132,   -67,    64,    83,    23,   -67,
+     150,   -67,   -67,    79,     5,   131,   141,   131,    79,    79,
+     -67,    76,   -67,   -67,    82,   -67,   -67,   -67,   142,   145,
+     -67,   -67,   155,   131,   117,   146,   -67,   -67,   117,   143,
+     157,   146,   -67,   -67,   -67,   147,   -67,   129,   -67,   148,
+      -7,   -67,   131,   -67,   -67,   149,   -67,   -67,   131,   -67,
+     -67,   -67,   -67
     };
   }
 
@@ -1436,20 +1422,20 @@ public class RuleParser
   {
     return new byte[]
     {
-       0,    14,    36,    35,     0,    28,     0,     0,     0,     0,
-       0,     0,     2,     0,     0,     0,    16,    18,    23,    24,
-      27,    32,    33,    34,    36,    35,     0,    36,     0,     0,
-       0,     0,     0,    37,    26,    29,     0,     0,    31,     1,
-       3,     5,     0,     0,     0,     0,    25,    20,     0,     0,
-      30,     0,    40,     0,    38,    49,    54,    50,    51,    13,
-      44,     0,     0,     0,     0,    15,    17,    19,    71,    72,
-      54,    69,    74,    43,    70,     0,    67,    68,     0,     0,
-       0,    39,     0,    52,     0,     0,     0,     0,     9,     0,
-       0,    10,     6,     0,    73,    42,     0,    21,    22,    41,
-       0,    45,    63,     0,     0,     0,    47,    56,    58,    59,
-      62,     0,    46,     7,    11,     0,     8,    76,     0,    66,
-      54,     0,     0,    61,     0,    60,    65,     0,     0,    75,
-      53,     0,    64,    55,    48,    12,    57
+       0,     8,    34,    33,     0,    26,     0,     0,     0,     0,
+       0,     0,     2,     0,     0,    14,    16,    21,    22,    25,
+      30,    31,    32,    34,    33,     0,    34,     0,     0,     0,
+       0,     0,    35,    24,    27,     0,     0,    29,     1,     3,
+       0,     0,     0,     0,    23,    18,     0,     0,    28,     0,
+      38,     0,    36,    47,    52,    48,    49,     0,    42,     0,
+       0,     0,     0,    13,    15,    17,    69,    70,    52,    67,
+      72,    41,    68,     0,    65,    66,     0,     0,     0,    37,
+       0,    50,     5,     0,     0,     0,     0,     0,    11,    12,
+       7,     0,    71,    40,     0,    19,    20,    39,     0,     0,
+      43,    61,     0,     0,     0,    45,    54,    56,    57,    60,
+       0,    44,     9,    10,    74,     0,    64,    52,     6,     0,
+       0,    59,     0,    58,    63,     0,    73,    51,     0,    62,
+      53,    46,    55
     };
   }
 
@@ -1459,9 +1445,9 @@ public class RuleParser
   {
     return new short[]
     {
-    -118,  -118,   158,  -118,   -82,   109,    75,     1,   129,    -5,
-    -118,   160,    -6,    -3,    94,  -118,    91,  -118,  -118,   -67,
-     -77,  -117,  -118,  -118,   -16,  -118,   -47
+     -67,   -67,   153,    69,   -27,    -2,   125,    -5,   -67,   151,
+      -6,    -1,    90,   -67,    85,   -67,   -67,   -65,   -66,   -20,
+     -67,   -67,    33,   -67,   -45
     };
   }
 
@@ -1471,9 +1457,9 @@ public class RuleParser
   {
     return new byte[]
     {
-      -1,    11,    12,    13,    64,    88,    14,    15,    16,    17,
-      18,    19,    20,    52,    53,    30,    59,    60,    61,    83,
-     106,   107,   108,   109,    75,    76,   110
+      -1,    11,    12,    13,    62,    14,    15,    16,    17,    18,
+      19,    50,    51,    29,    57,    58,    59,    81,   105,   106,
+     107,   108,    73,    74,   109
     };
   }
 
@@ -1485,24 +1471,23 @@ public class RuleParser
   {
     return new short[]
     {
-      26,    77,    33,    94,    35,    34,   113,   133,    29,   116,
-     112,    24,    25,    33,   136,    48,    46,     1,    21,     2,
-       3,     4,    21,     5,    31,    33,    33,   122,    32,    54,
-       6,    85,     7,   128,    22,     8,     9,    10,    86,    87,
-      66,    42,    67,    24,    25,    43,    77,    44,    44,    77,
-      78,    23,    79,   130,    50,    68,    69,    70,   123,    71,
-      72,    45,   125,    90,    90,    -4,     1,    42,     2,     3,
-       4,   115,     5,    44,    33,    74,    44,   118,    41,     6,
-     119,     7,    97,    39,     8,     9,    10,    68,    69,    70,
-      44,    71,    72,    68,    69,    70,    98,    71,    72,    55,
-      56,    47,    73,    57,    68,    69,    70,    74,   117,    72,
-      27,     3,    28,    74,     5,   124,    51,    49,    58,    23,
-     132,     6,    80,     7,    62,    63,     8,     9,    10,     2,
-       3,     4,    81,     5,    36,    37,     4,    89,    89,    82,
-       6,    84,     7,    92,    93,     8,     9,    10,    68,    69,
-      70,    95,   102,    72,   100,   111,    96,   114,   120,   103,
-     121,   104,   124,   126,   105,   127,   135,   131,   129,   134,
-      38,    40,    91,    65,    99,   101
+      25,    75,    32,    92,    34,    28,   122,    33,    42,    53,
+      54,   129,    32,    55,    48,    -4,     1,    44,     2,     3,
+       4,   111,     5,    20,    32,    32,    23,    24,    56,     6,
+      52,     7,    23,    24,     8,     9,    10,   120,    64,    30,
+      65,    82,    83,    31,    40,    76,    75,    77,    41,    75,
+      42,     1,   127,     2,     3,     4,    99,     5,    21,   121,
+      85,   112,   113,   123,     6,    22,     7,    86,    87,     8,
+       9,    10,    32,    66,    67,    68,    42,    69,    70,    66,
+      67,    68,    95,    69,    70,    66,    67,    68,    71,    69,
+      70,    60,    61,    72,   114,    42,    26,     3,    27,    72,
+       5,    96,   130,    46,    38,    72,    20,     6,   132,     7,
+      43,    45,     8,     9,    10,     2,     3,     4,    49,     5,
+      66,    67,    68,    78,   115,    70,     6,   116,     7,    88,
+      89,     8,     9,    10,    66,    67,    68,    79,   101,    70,
+      35,    36,     4,    80,    47,   102,    22,   103,    84,    90,
+     104,    91,    93,    98,    94,   110,   118,   117,   119,   122,
+     125,    37,   124,   128,   131,   126,    39,    63,    97,   100
     };
   }
 
@@ -1511,24 +1496,23 @@ private static final short yycheck_[] = yycheck_init();
   {
     return new short[]
     {
-       6,    48,     8,    70,     9,     8,    88,   124,     7,    91,
-      87,     3,     4,    19,   131,    16,    19,     1,    19,     3,
-       4,     5,    19,     7,    16,    31,    32,   104,    20,    32,
-      14,    13,    16,   115,    19,    19,    20,    21,    20,    21,
-      45,     6,    47,     3,     4,    10,    93,    12,    12,    96,
-      49,    19,    51,   120,    18,     3,     4,     5,   105,     7,
-       8,    13,   109,    62,    63,     0,     1,     6,     3,     4,
-       5,    10,     7,    12,    80,    23,    12,    93,     9,    14,
-      96,    16,    18,     0,    19,    20,    21,     3,     4,     5,
-      12,     7,     8,     3,     4,     5,    18,     7,     8,     4,
-       5,    15,    18,     8,     3,     4,     5,    23,    18,     8,
-       3,     4,     5,    23,     7,    13,    17,    17,    23,    19,
-      18,    14,    12,    16,    12,    13,    19,    20,    21,     3,
-       4,     5,    18,     7,     3,     4,     5,    62,    63,    14,
-      14,    22,    16,    11,    16,    19,    20,    21,     3,     4,
-       5,    18,     7,     8,     3,    14,    22,     9,    15,    14,
-       3,    16,    13,    19,    19,     3,    11,    15,    18,    15,
-      10,    13,    63,    44,    80,    84
+       6,    46,     8,    68,     9,     7,    13,     8,    12,     4,
+       5,    18,    18,     8,    18,     0,     1,    18,     3,     4,
+       5,    87,     7,    19,    30,    31,     3,     4,    23,    14,
+      31,    16,     3,     4,    19,    20,    21,   103,    43,    16,
+      45,     9,    10,    20,     6,    47,    91,    49,    10,    94,
+      12,     1,   117,     3,     4,     5,    83,     7,    19,   104,
+      13,    88,    89,   108,    14,    19,    16,    20,    21,    19,
+      20,    21,    78,     3,     4,     5,    12,     7,     8,     3,
+       4,     5,    18,     7,     8,     3,     4,     5,    18,     7,
+       8,    12,    13,    23,    18,    12,     3,     4,     5,    23,
+       7,    18,   122,    16,     0,    23,    19,    14,   128,    16,
+      13,    15,    19,    20,    21,     3,     4,     5,    17,     7,
+       3,     4,     5,    12,    91,     8,    14,    94,    16,    60,
+      61,    19,    20,    21,     3,     4,     5,    18,     7,     8,
+       3,     4,     5,    14,    17,    14,    19,    16,    22,    11,
+      19,    16,    18,     3,    22,    14,    11,    15,     3,    13,
+       3,    10,    19,    15,    15,    18,    13,    42,    78,    84
     };
   }
 
@@ -1540,19 +1524,19 @@ private static final short yycheck_[] = yycheck_init();
     return new byte[]
     {
        0,     1,     3,     4,     5,     7,    14,    16,    19,    20,
-      21,    25,    26,    27,    30,    31,    32,    33,    34,    35,
-      36,    19,    19,    19,     3,     4,    36,     3,     5,    31,
-      39,    16,    20,    36,    37,    33,     3,     4,    35,     0,
-      26,     9,     6,    10,    12,    13,    37,    15,    16,    17,
-      18,    17,    37,    38,    37,     4,     5,     8,    23,    40,
-      41,    42,    12,    13,    28,    32,    33,    33,     3,     4,
-       5,     7,     8,    18,    23,    48,    49,    50,    31,    31,
-      12,    18,    14,    43,    22,    13,    20,    21,    29,    30,
-      31,    29,    11,    16,    43,    18,    22,    18,    18,    38,
-       3,    40,     7,    14,    16,    19,    44,    45,    46,    47,
-      50,    14,    44,    28,     9,    10,    28,    18,    48,    48,
-      15,     3,    44,    50,    13,    50,    19,     3,    28,    18,
-      43,    15,    18,    45,    15,    11,    45
+      21,    25,    26,    27,    29,    30,    31,    32,    33,    34,
+      19,    19,    19,     3,     4,    34,     3,     5,    29,    37,
+      16,    20,    34,    35,    31,     3,     4,    33,     0,    26,
+       6,    10,    12,    13,    35,    15,    16,    17,    18,    17,
+      35,    36,    35,     4,     5,     8,    23,    38,    39,    40,
+      12,    13,    28,    30,    31,    31,     3,     4,     5,     7,
+       8,    18,    23,    46,    47,    48,    29,    29,    12,    18,
+      14,    41,     9,    10,    22,    13,    20,    21,    27,    27,
+      11,    16,    41,    18,    22,    18,    18,    36,     3,    28,
+      38,     7,    14,    16,    19,    42,    43,    44,    45,    48,
+      14,    42,    28,    28,    18,    46,    46,    15,    11,     3,
+      42,    48,    13,    48,    19,     3,    18,    41,    15,    18,
+      43,    15,    43
     };
   }
 
@@ -1562,14 +1546,14 @@ private static final short yycheck_[] = yycheck_init();
   {
     return new byte[]
     {
-       0,    24,    25,    26,    26,    27,    27,    28,    28,    28,
-      28,    29,    29,    30,    30,    31,    31,    32,    32,    33,
-      33,    33,    33,    33,    34,    34,    34,    34,    34,    34,
-      34,    34,    35,    35,    35,    36,    36,    37,    37,    37,
-      38,    38,    39,    39,    40,    40,    41,    41,    41,    42,
-      42,    42,    42,    43,    43,    44,    44,    45,    45,    46,
-      46,    46,    46,    46,    46,    47,    48,    48,    49,    49,
-      49,    50,    50,    50,    50,    50,    50
+       0,    24,    25,    26,    26,    27,    27,    27,    27,    28,
+      28,    28,    28,    29,    29,    30,    30,    31,    31,    31,
+      31,    31,    32,    32,    32,    32,    32,    32,    32,    32,
+      33,    33,    33,    34,    34,    35,    35,    35,    36,    36,
+      37,    37,    38,    38,    39,    39,    39,    40,    40,    40,
+      40,    41,    41,    42,    42,    43,    43,    44,    44,    44,
+      44,    44,    44,    45,    46,    46,    47,    47,    47,    48,
+      48,    48,    48,    48,    48
     };
   }
 
@@ -1579,14 +1563,14 @@ private static final short yycheck_[] = yycheck_init();
   {
     return new byte[]
     {
-       0,     2,     1,     2,     1,     2,     4,     3,     3,     2,
-       2,     2,     4,     3,     1,     3,     1,     3,     1,     4,
-       3,     5,     5,     1,     1,     2,     2,     1,     1,     2,
-       3,     2,     2,     2,     2,     1,     1,     1,     2,     3,
-       1,     3,     4,     3,     1,     3,     3,     3,     5,     1,
-       1,     1,     2,     4,     0,     3,     1,     4,     1,     1,
-       2,     2,     1,     1,     3,     2,     3,     1,     1,     1,
-       1,     1,     1,     2,     1,     4,     3
+       0,     2,     1,     2,     1,     4,     6,     4,     1,     3,
+       3,     2,     2,     3,     1,     3,     1,     4,     3,     5,
+       5,     1,     1,     2,     2,     1,     1,     2,     3,     2,
+       2,     2,     2,     1,     1,     1,     2,     3,     1,     3,
+       4,     3,     1,     3,     3,     3,     5,     1,     1,     1,
+       2,     4,     0,     3,     1,     4,     1,     1,     2,     2,
+       1,     1,     3,     2,     3,     1,     1,     1,     1,     1,
+       1,     2,     1,     4,     3
     };
   }
 
@@ -1613,10 +1597,10 @@ private static final short yycheck_[] = yycheck_init();
   "$end", "error", "$undefined", "ID", "VAR", "GVAR", "ARROW", "STRING",
   "RVAR", "'.'", "'{'", "'}'", "'|'", "'^'", "'<'", "'>'", "'('", "'~'",
   "')'", "':'", "'!'", "'='", "','", "'#'", "$accept", "start", "rules",
-  "rulegroup", "groups", "group", "rule", "expr", "eterm", "term",
-  "feature", "nominal", "id_lvar", "iv_term", "iv_expr", "funcall",
-  "actions", "action", "lval", "path", "rexpr", "rterm", "rfeat",
-  "rnominal", "rargs", "rarg", "r_id_var", null
+  "group", "groups", "expr", "eterm", "term", "feature", "nominal",
+  "id_lvar", "iv_term", "iv_expr", "funcall", "actions", "action", "lval",
+  "path", "rexpr", "rterm", "rfeat", "rnominal", "rargs", "rarg",
+  "r_id_var", null
     };
   }
 
@@ -1626,14 +1610,14 @@ private static final short yycheck_[] = yycheck_init();
   {
     return new short[]
     {
-       0,   213,   213,   215,   216,   219,   220,   223,   224,   225,
-     226,   229,   230,   239,   240,   243,   244,   247,   249,   252,
-     253,   254,   255,   256,   259,   260,   262,   263,   264,   266,
-     267,   268,   275,   276,   277,   280,   281,   283,   284,   285,
-     288,   289,   292,   295,   318,   323,   326,   331,   338,   342,
-     343,   344,   345,   349,   350,   353,   354,   357,   358,   362,
-     363,   365,   368,   369,   371,   380,   385,   386,   392,   393,
-     394,   400,   401,   402,   403,   404,   407
+       0,   251,   251,   253,   254,   257,   258,   260,   262,   265,
+     266,   267,   268,   271,   272,   275,   277,   280,   281,   282,
+     283,   284,   287,   288,   290,   291,   292,   294,   295,   296,
+     303,   304,   305,   308,   309,   311,   312,   313,   316,   317,
+     320,   323,   346,   351,   354,   359,   366,   370,   371,   372,
+     373,   377,   378,   381,   382,   385,   386,   390,   391,   393,
+     396,   397,   399,   408,   413,   414,   420,   421,   422,   428,
+     429,   430,   431,   432,   435
     };
   }
 
@@ -1702,10 +1686,10 @@ private static final short yycheck_[] = yycheck_init();
       return yyundef_token_;
   }
 
-  private static final int yylast_ = 175;
-  private static final int yynnts_ = 27;
+  private static final int yylast_ = 169;
+  private static final int yynnts_ = 25;
   private static final int yyempty_ = -2;
-  private static final int yyfinal_ = 39;
+  private static final int yyfinal_ = 38;
   private static final int yyterror_ = 1;
   private static final int yyerrcode_ = 256;
   private static final int yyntokens_ = 24;
@@ -1717,10 +1701,92 @@ private static final short yycheck_[] = yycheck_init();
 /* Unqualified %code blocks.  */
 /* "RuleParser.y":28  */ /* lalr1.java:1066  */
 
+  /** A class to collect matches and actions to generate real rules when
+   *  done.
+   */
+  private class RuleProto {
+      /** The left hand side of a rule */
+    private Match _match;
+
+    /** The right hand side of the rule */
+    private LinkedList<Action> _replace;
+
+    /** Where was this rule defined */
+    private Location _position;
+
+    public RuleProto(Match m, LinkedList<Action> actions, Location loc) {
+      _match = m;
+      _replace = actions;
+      _position = loc;
+    }
+
+    public void addActionsToFront(RuleProto r) {
+      _replace.addAll(0, r._replace);
+    }
+
+    public void setMatch(Match m) { _match = m; }
+
+    public Match getMatch() { return _match ; }
+
+    public LinkedList<RuleProto> applyToAll(List<Op> ops) {
+      LinkedList<RuleProto> result = new LinkedList<RuleProto>();
+      for (Op op : ops) {
+        result.addAll(op.apply(this));
+      }
+      return result;
+    }
+
+    public Rule toRule() {
+      return new BasicRule(new VarMatch(null, _match), _replace, _position);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder();
+      return BasicRule.appendActions(_replace,
+              BasicRule.appendMatches(_match, sb).append(" -> "))
+           .append(" .").toString();
+    }
+
+  }
+
+
+  /** Class to account for in-group initial matches */
+  private class Op {
+    private char _op;
+    private LinkedList<RuleProto> _opRules;
+
+    Op(char op, LinkedList<RuleProto> rules) {
+      _op = op;
+      _opRules = rules;
+    }
+
+    /** r is an outer rule specification, while this represents a list of
+     *  matches and actions embedded in a group.
+     *
+     *  Thus, create a "new" list by prepending the matches and actions of r
+     *  to all members of _opRules.
+     */
+    public LinkedList<RuleProto> apply(RuleProto r) {
+      for (RuleProto rule : _opRules) {
+        Match arg1 = r.getMatch().deepCopy();
+        Match arg2 = rule.getMatch();
+        rule.setMatch((_op == '^')
+                      ? new Conjunction(arg1, arg2)
+                      : new Disjunction(arg1, arg2));
+        rule.addActionsToFront(r);
+      }
+      return _opRules;
+    }
+  }
+
+
   private List _rules;
 
   public List<Rule> getRules() {
-    return (List<Rule>) _rules;
+    List<Rule> result = new java.util.ArrayList<Rule>(_rules.size());
+    for (RuleProto p : (List<RuleProto>)_rules) result.add(p.toRule());
+    return result;
   }
 
   public de.dfki.lt.tr.dialogue.cplan.Lexer getLexer() {
@@ -1728,7 +1794,7 @@ private static final short yycheck_[] = yycheck_init();
   }
 
   public void reset() {
-    _rules = new LinkedList<BasicRule>();
+    _rules = new LinkedList<RuleProto>();
   }
 
   public void reset(String inputDescription, Reader input) {
@@ -1737,8 +1803,8 @@ private static final short yycheck_[] = yycheck_init();
       .setInputReader(inputDescription, input);
   }
 
-  private LinkedList<BasicRule> newRuleList(BasicRule rule) {
-    LinkedList<BasicRule> l = new LinkedList<BasicRule>();
+  private LinkedList<RuleProto> newRuleList(RuleProto rule) {
+    LinkedList<RuleProto> l = new LinkedList<RuleProto>();
     if (rule != null) {
       l.add(rule);
     }
@@ -1746,32 +1812,15 @@ private static final short yycheck_[] = yycheck_init();
   }
 
 
-  private LinkedList<BasicRule> addConjunction(Match m,
-                                               LinkedList<BasicRule> rules) {
-    for (BasicRule rule : rules) {
-      rule.setMatch(new Conjunction(m.deepCopy(), rule.getMatch()));
-    }
-    return rules;
-  }
-
-  private LinkedList<BasicRule> addDisjunction(Match m,
-                                               LinkedList<BasicRule> rules) {
-    for (BasicRule rule : rules) {
-      rule.setMatch(new Disjunction(m.deepCopy(), rule.getMatch()));
-    }
-    return rules;
-  }
-
-
-  private LinkedList<BasicRule> addTopVarMatches(LinkedList<BasicRule> rules) {
-    for (BasicRule rule : rules) {
+  private LinkedList<RuleProto> addTopVarMatches(LinkedList<RuleProto> rules) {
+    for (RuleProto rule : rules) {
       rule.setMatch(new VarMatch(null, rule.getMatch()));
     }
     return rules;
   }
 
-  private BasicRule newRule(Match match, List actions, Location loc) {
-    return new BasicRule(match, (List<Action>) actions, loc);
+  private RuleProto newRule(Match match, List actions, Location loc) {
+    return new RuleProto(match, (LinkedList<Action>) actions, loc);
   }
 
 
@@ -1802,57 +1851,32 @@ private static final short yycheck_[] = yycheck_init();
     return null;
   }
 
-  private class Op {
-    char _op;
-    LinkedList<BasicRule> _opRules;
-
-    Op(char op, LinkedList<BasicRule> rules) {
-      _op = op;
-      _opRules = rules;
-    }
-
-    public LinkedList<BasicRule> apply(Match m) {
-      if (_op == '^') {
-        return addConjunction(m, _opRules);
-      } else {
-        return addDisjunction(m, _opRules);
-      }
-    }
-  }
-
-  public LinkedList<Op> newOpList(char op, LinkedList<BasicRule> rules) {
+  public LinkedList<Op> newOpList(char op, LinkedList<RuleProto> rules) {
     LinkedList<Op> result = new LinkedList<Op>();
     result.add(new Op(op, rules));
     return result;
   }
 
-  public LinkedList<Rule> applyToAll(Match m, List<Op> ops) {
-    LinkedList<Rule> result = new LinkedList<Rule>();
-    for (Op op : ops) {
-      result.addAll(op.apply(m));
-    }
-    return result;
-  }
 
   /*
   private class Op {
 
     private Op _rest;
     private Match _m;
-    private List<BasicRule> _rules;
+    private List<RuleProto> _rules;
 
     char _op;
 
-    List<BasicRule> apply(Match m);
+    List<RuleProto> apply(Match m);
 
-    private Op(char op, Match m, List<BasicRule> l, Op rest) {
+    private Op(char op, Match m, List<RuleProto> l, Op rest) {
       _op = op
       _rules = l;
       _m = m;
       _rest = rest;
     }
 
-    public Op(char op, List<BasicRule> l, Op rest) {
+    public Op(char op, List<RuleProto> l, Op rest) {
       this(op, null, l, rest);
     }
 
@@ -1864,17 +1888,17 @@ private static final short yycheck_[] = yycheck_init();
       this(op, m, null, null );
     }
 
-    public Op(char op, List<BasicRule> l) {
+    public Op(char op, List<RuleProto> l) {
       this(op, null, l, null);
     }
 
-    public List<BasicRule> apply(Match m) {
+    public List<RuleProto> apply(Match m) {
       if (
     }
   }
   */
 
-/* "RuleParser.java":1878  */ /* lalr1.java:1066  */
+/* "RuleParser.java":1902  */ /* lalr1.java:1066  */
 
 }
 

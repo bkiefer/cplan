@@ -402,6 +402,21 @@ public class UttplanParserTest {
       "@f:foo(<Feat>prop)",
       "@f:foo(<Feat>replace)",
     },
+
+    // 55 check rule groups with shared actions
+    { ":dvp  { ^ <foo> bar -> # ^ <bar> foo { ^ <a>b -> # ! <foo>. ^ <a>c -> # ^ <foo>bar. }"+
+      "        ^ <foo> baz -> # ^ <baz> foo { ^ <a>b -> # ! <foo>. ^ <a>c -> # ^ <foo>baz. } }",
+      "@d1:dvp( <a> b ^ <foo> bar )", "@d1:dvp( <a> b ^ <bar> foo )",
+    },
+
+    /* not legal
+    // 56 check rule groups with shared actions
+    { ":dvp  { ^ <foo> bar -> # ^ <bar> foo, # ! <foo> { ^ <a>b {} }"+
+      "        ^ <foo> baz -> # ^ <baz> foo, # ! <foo> { ^ <a>b {} }",
+      "@d1:dvp( <a> b ^ <foo> bar )", "@d1:dvp( <a> b ^ <bar> foo )",
+    },
+    */
+
     /*
     // 55 test complex arguments to functions
     { "<foo> #f: ^ <foo>(!<foobar>) -> #f ^ random(<foobar>b, <foobar>b):.",
@@ -591,7 +606,7 @@ public class UttplanParserTest {
     },
 
     // 7 check rule groups, multi embedding
-    { ":dvp  { ^ <foo> bar -> # ^ <bar> foo. "+
+    { ":dvp { ^ <foo> bar -> # ^ <bar> foo. "+
              " ^ <foo> (#y:baz) { ^ #x:-> # ! <foo>, # ^ <baz> #y:. } }",
       "@d1:dvp( <foo> ( :baz ^ ban ) )", "@d1:dvp( <baz> ( :baz ^ ban ) )",
     },
@@ -656,7 +671,7 @@ public class UttplanParserTest {
         "@d1:dvp(<Type>(nom1:perception ^ see) ^ <Actor>(nom3:person) ^" +
         "        <Content>(nom1:perception ^ <Actor>(nom3:person) ^" +
         "                  <Subject>(nom3:person)))",
-    }
+    },
 
     // 12 check buildin function wordcount : words
     /* There can be no newlines in the strings so this is disabled.
@@ -668,6 +683,16 @@ public class UttplanParserTest {
       "@d1:dvp( <val>\"Another String\" )",
     },
     */
+
+    // 16 check rule groups with shared actions
+    { ":dvp  { ^ <foo> bar -> # ^ <bar> foo { ^ <a>b -> # ! <foo>. ^ <a>c -> # ^ <foo>bar. }"+
+      "        ^ <foo> baz -> # ^ <baz> foo { ^ <a>b -> # ! <foo>. ^ <a>c -> # ^ <foo>baz. } }",
+      "@d1:dvp( <a> b ^ <foo> bar )", "@d1:dvp( <a> b ^ <bar> foo )",
+      "@d1:dvp( <a> c ^ <foo> bar )", "@d1:dvp( <a> c ^ <foo> bar ^ <bar> foo )",
+      "@d1:dvp( <a> b ^ <foo> baz )", "@d1:dvp( <a> b ^ <baz> foo )",
+      "@d1:dvp( <a> c ^ <foo> baz )", "@d1:dvp( <a> c ^ <foo> baz ^ <baz> foo )",
+    },
+
 
   };
 
@@ -703,8 +728,9 @@ public class UttplanParserTest {
 
   private Rule getFirstRuleParsed(String input) throws IOException {
     RuleParser parser = getRuleParser(input);
-      parser.parse();
-    Rule r = parser.getRules().get(0);
+    parser.parse();
+    List<Rule> rules = parser.getRules();
+    Rule r = rules.get(0);
     if (_print) {
       System.out.println(r); // System.exit(0);
     }
@@ -713,7 +739,7 @@ public class UttplanParserTest {
 
   private List<Rule> getRulesParsed(String input) throws IOException {
     RuleParser parser = getRuleParser(input);
-      parser.parse();
+    parser.parse();
     List<Rule> r = parser.getRules();
     if (_print) {
       for (Rule rule : r)
@@ -741,7 +767,9 @@ public class UttplanParserTest {
   throws IOException {
     {
       RuleParser parser = getRuleParser(testPattern[0]);
-      assertTrue("Parsing pattern " + i + " " + testPattern[0], parser.parse());
+      assertTrue("Parsing pattern " + i + " " + testPattern[0],
+          (parser.parse()
+              && parser.getLexer().getAllErrorPositions().isEmpty()));
       //for (Rule r : parser.getRules()) System.out.println(">>>" + r);
     }
 
@@ -857,7 +885,7 @@ public class UttplanParserTest {
   }
 
   @Test public void testRuleApplicationSpecial() throws IOException {
-    int i = 43;
+    int i = -1;
     _print = true;
     if (i >= 0)
         testApplyOneSet(matchTestPatternsPositive[i], true, i);
