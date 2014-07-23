@@ -1,4 +1,4 @@
-\example{1}: Sub-node is replaced with fresh content. Notice the match
+\example A sub-node is replaced with fresh content. Notice the match
 condition for the absence of a feature.
 
 \begin{verbatim}
@@ -8,19 +8,19 @@ condition for the absence of a feature.
 #c1 = (:marker ^ ok).
 \end{verbatim}
 
-\example{2}: Selecting a specific relation, and adding to it
+\example Selecting a specific relation, and adding to it
 \begin{verbatim}
 /// @aa:bb(<C>(<Mod>(:g ^ <x> y)))
 <C>(<Mod>(#m:g ^ ! <Cont>)) -> #m ^ <Cont>(:new ^ clean).
 \end{verbatim}
 
-\example{3}: Add a default in case of feature absence
+\example Add a default in case of feature absence
 \begin{verbatim}
 /// @aa:ascr(<C>d)
 :ascr ^ !<Tense> -> # ^ <Tense>pres.
 \end{verbatim}
 
-\example{4}: Set a global variable as marker, and test in the second rule
+\example Set a global variable as marker, and test in the second rule
 \begin{verbatim}
 /// @d:dvp(<SpeechAct>assertion ^ <w>(:foo ^ <Tense>pres))
 :dvp ^ <SpeechAct>#v -> ##speechact = #v.
@@ -29,7 +29,7 @@ condition for the absence of a feature.
 \end{verbatim}
 
 
-\example{5}: type disjunction, variable \texttt{t} matching the whole node
+\example type disjunction, variable \texttt{t} matching the whole node
 add two relations, delete \texttt{Target} feature (multiple actions)
 \begin{verbatim}
 /// @d:disj(<T>(:entity ^ <Tense>pres))
@@ -40,7 +40,7 @@ add two relations, delete \texttt{Target} feature (multiple actions)
 # ! <T>.
 \end{verbatim}
 
-\example{6}: Less preferable rewrite of the last example, the same variable
+\example Less preferable rewrite of the last example, the same variable
 name has to be used twice! Works only because of disjunction.
 \begin{verbatim}
 /// @d:disj2(<T>(:entity ^ <Tense>pres))
@@ -51,7 +51,46 @@ name has to be used twice! Works only because of disjunction.
 # ! <T>.
 \end{verbatim}
 
-\example{7}: Randomizing with complex values
+\example Using \tok{=>} rules to walk through a list
+\begin{verbatim}
+///@d:dvp(<c>0 ^ <l>(:li ^ <f>1 ^ <r>(:li ^ <f>2 ^ <r>(:li ^ <f>3 ^ <r>()))))
+///will become: @d:dvp(<c>0123 ^ <l>(:li))
+
+<c>#c: ^ <l>(#l: ^ <f>#f ^ <r>#r:)
+=>
+#l = #r:,
+#c = concatenate(#c, #f).
+\end{verbatim}
+
+\example Rule groups
+\begin{verbatim}
+:dvp ^ <SpeechAct>greeting
+^ <Context>(<Familiarity>yes ^ <Encounter>notfirst ^ <Expressive>yes)
+->
+###greet = random("ciao ", "buongiorno ", "ehi , ciao "),
+###polite = random(", come stai ? ", "! "),
+###init=concatenate(###greet, ###polite)
+###pleasure1 = "sono contento di rivederti ",
+###pleasure2 = "sono felice di rivederti ",
+# ^ :canned ^ <SpeechModus>indicative
+{
+^ <Context>(!<ChildGender> | <ChildGender>unknown)
+->
+# ^ <stringOutput>concatenate(###init, random(###pleasure1, ###pleasure2)).
+
+^ <Context>(<ChildGender>m)
+->
+# ^ <stringOutput>concatenate(###init,
+                     random(###pleasure1, ###pleasure2, "bentornato ")).
+
+^ <Context>(<ChildGender>f)
+->
+# ^ <stringOutput>concatenate(###init,
+                     random(###pleasure1, ###pleasure2, "bentornata ")).
+}
+\end{verbatim}
+
+\example Randomizing with complex values
 \begin{verbatim}
 /// @d:rand(<SpeechAct>opening ^ <Content>(:top ^ <X> y))
 :rand ^ <SpeechAct>opening ^ <Content> (#c1:top)
@@ -75,7 +114,7 @@ name has to be used twice! Works only because of disjunction.
 
 \end{verbatim}
 
-\example{8}: Alternative randomization, maybe not very convenient
+\example Alternative randomization, maybe not very convenient
 \begin{verbatim}
 /// @d:dvp(<SpeechAct>closing ^ <Content> (foo))
 :dvp ^ <SpeechAct>closing -> ##randomclosing = random(1,2).
@@ -91,7 +130,7 @@ name has to be used twice! Works only because of disjunction.
 #c1 = :closing ^ see_you.
 \end{verbatim}
 
-\example{9}: Using global variable as node store.
+\example Using global variable as node store.
 
 After application of these rules \texttt{Target} and \texttt{PointToTarget}
 point to the same node.
@@ -119,7 +158,7 @@ Again, note the colon after the global variable in the addition
                  <Cop-Scope>(s2:gaga ^ prop ^ <Questioned>true)))
  */
 \end{verbatim}
-\example{10}
+\example
 This will not add to the existing \texttt{Subject} and \texttt{Cop-Scope},
 but introduce new ones.
 \begin{verbatim}
@@ -151,7 +190,7 @@ This adds the new information to the previously matched nodes.
 \subsection{
  Global variable ``maps''
 }
-\example{11} Global variables can be used with path expressions to get
+\example Global variables can be used with path expressions to get
 dictionary-like structures
 \begin{verbatim}
 /// @d:dvp2(<Cont> (x:y ^ z) ^ <S>x)
@@ -172,7 +211,7 @@ dictionary-like structures
 \subsection{
  All you can do with variables
 }
-\example{12} Bind values to global variables and use them in another rule
+\example Bind values to global variables and use them in another rule
 \begin{verbatim}
 /// @d:dvp(<foo>(:a ^ <F>(b:c ^ d)))
 :a ^ <F> (#i:#t ^ #p) -> ##partial = :#t ^ #p, ##whole = #i:.
@@ -181,7 +220,7 @@ dictionary-like structures
 \end{verbatim}
 
 
- \example{13} Be careful that you use bound variables correctly! If you use
+ \example Be careful that you use bound variables correctly! If you use
  them as simple (type or proposition) values on the right hand side, you
  must have bound them to simple values, or complex values containing the
  appropriate edge!
@@ -200,13 +239,13 @@ in a global variable
 Right hand local variables can also be used to establish coreferences in the
 replacement part. \vspace*{1.0ex}
 
-\example{14} Check for structural equality (will also succeed if coreferent)
+\example Check for structural equality (will also succeed if coreferent)
 \begin{verbatim}
 /// @d:dvp(<Content>(:bar ^ baz) ^ <Wh-Restr>(:bar ^ baz))
 :dvp ^ <Content>#c: ^ <Wh-Restr>#c: -> # ^ :equals.
 \end{verbatim}
 
-\example{15} Check for identity (will only succeed if coreferent)
+\example Check for identity (will only succeed if coreferent)
 \begin{verbatim}
 /// @d:coref(<Content>(:bar ^ baz) ^ <Wh-Restr>(:bar ^ baz))
 /// @d:coref(<Content>(a:bar ^ baz) ^ <Wh-Restr>(a:bar))
@@ -217,7 +256,7 @@ replacement part. \vspace*{1.0ex}
 \subsection{
  Use of functions for tests and results
 }
-\example{16} Bind values to global variables and use them in another rule
+\example Bind values to global variables and use them in another rule
 \begin{verbatim}
 /// @d:dvp(<SpeechAct>provideQuestion ^ <Context>(<Question> "question " ^ <Count> "1" ))
 :dvp ^ <SpeechAct>provideQuestion
@@ -231,7 +270,7 @@ replacement part. \vspace*{1.0ex}
 # = :canned ^ <string>concatenate(###part1, #q, "?").
 \end{verbatim}
 
-\example{17} Non-integer numbers must be passed to functions as strings. Boolean functions
+\example Non-integer numbers must be passed to functions as strings. Boolean functions
 return zero or one.
 \begin{verbatim}
 /// @m:math(<arg1>9 ^ <arg2>2)
@@ -246,23 +285,12 @@ return zero or one.
 # ^ <bool> lteq("0.3", div(#arg1, #arg2)).
 \end{verbatim}
 
-\example{18} You can use arbitrary encodings in your grammar files,
+\example You can use arbitrary encodings in your grammar files,
 but if it's not UTF-8, you have to specify as `encoding' setting in the
 grammar file, and, consequently, you can only have one encoding per project.
 \begin{verbatim}
 /// @e:enc(<enc> iso-8859-15 ^ <val> "הײלגי")
 <enc> iso-8859-15 ^ <val> "הײלגי" -> # ^ <right> true.
-\end{verbatim}
-
-\example{19} Using \tok{=>} rules to walk through a list:
-\begin{verbatim}
-///@d:dvp(<c>0 ^ <l>(:li ^ <car>1 ^ <cdr>(:li ^ <car>2 ^ <cdr>(:li ^ <car>3 ^ <cdr>()))))
-///@d:dvp(<c>0123 ^ <l>(:li))
-
-<c>#c: ^ <l>(#l: ^ <car>#f ^ <cdr>#r:)
-=>
-#l = #r:,
-#c = concatenate(#c, #f).
 \end{verbatim}
 
 %%% Local Variables:

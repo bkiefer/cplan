@@ -4,7 +4,6 @@
 \usepackage{tikz}
 \usetikzlibrary{calc}
 \newcommand{\cd}[1]{\texttt{#1}}
-\newcommand{\example}[1]{\textbf{Example #1}}
 % Use this for the examples which use non-default latin encoding
 \usepackage[latin1]{inputenc}
 
@@ -18,6 +17,9 @@
 \maketitle
 \setlength{\parindent}{0em}
 
+\newcounter{myexample}{1}
+\newcommand{\example}{\textbf{\stepcounter{myexample}Example
+    \arabic{myexample}: {}}}
 %\pgfdeclareimage[interpolate=true,height=7cm]{GUIWindow}{GUIWindow}
 \pgfdeclareimage[interpolate=true,height=7cm]{MainWindow}
 {CPlanMainWindow}
@@ -373,7 +375,9 @@ the given operator) until a dot is reached, and the collected actions are only
 applied when all the collected match conditions are fulfilled. Rules with
 \tok{=>} arrows will be applied to every node as often as the match conditions
 are fullfilled (and the structure still changes), while rules with \tok{->}
-arrows will be applied only once to a node after a successful match.
+arrows will be applied only once to a node after a successful match. In a rule
+group, the arrow immediately before the dot (the one that is most deeply
+embedded) will determine the rule type of the resulting rule.
 
 The overall processing strategy will be explained in more detail in chapter~\ref{sec:procregime}.
 
