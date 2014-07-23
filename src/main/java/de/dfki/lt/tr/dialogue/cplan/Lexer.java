@@ -22,6 +22,8 @@ implements RuleParser.Lexer, LFParser.Lexer, ExtLFParser.Lexer  {
 
   private static final String charTokens = "^|!()<>:=@.#,~{}";
 
+  private int _pushBack = -1;
+
   private Reader _in;
   /** current stream position */
   private int _line;
@@ -169,7 +171,13 @@ implements RuleParser.Lexer, LFParser.Lexer, ExtLFParser.Lexer  {
 
   @SuppressWarnings("fallthrough")
   private void readNext() throws IOException {
-    _nextChar = _in.read(); ++_column;
+    if (_pushBack >= 0) {
+      _nextChar = _pushBack;
+      _pushBack = -1;
+    } else {
+      _nextChar = _in.read();
+    }
+    ++_column;
     switch (_nextChar) {
     case -1: _nextChar = RuleParser.Lexer.EOF; break;
     case '\n': _column = 0; ++_line; // fall through is intended
@@ -194,6 +202,11 @@ implements RuleParser.Lexer, LFParser.Lexer, ExtLFParser.Lexer  {
   public int peek() throws IOException {
     skipws();
     return _nextChar;
+  }
+
+  public int peekFollowing() throws IOException {
+    _pushBack = _in.read();
+    return _pushBack;
   }
 
   public boolean atEOF() {
@@ -242,7 +255,7 @@ implements RuleParser.Lexer, LFParser.Lexer, ExtLFParser.Lexer  {
     case '>':
     case ':':
     case '!':
-    case '=':
+    // case '=':
     case '@':
     case '.':
     case ',':
@@ -295,12 +308,22 @@ implements RuleParser.Lexer, LFParser.Lexer, ExtLFParser.Lexer  {
       }
       return what;
     }
+    case '=':
+      int result = _nextChar;
+      if (peekFollowing() == '>') {
+        _lval = "=>";
+        readNext();
+        result = RuleParser.Lexer.ARROW;
+      }
+      readNext();
+      return result;
     case '-':
       readNext();
       if (_nextChar != '>') {
         yyerror("unexpected character, expected '>': '" + (char)_nextChar +"'");
         return RuleParser.Lexer.EOF;
       }
+      _lval = "->";
       readNext();
       return RuleParser.Lexer.ARROW;
     }

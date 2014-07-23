@@ -309,6 +309,7 @@ public class UtterancePlanner {
     DagNode result = input.cloneFS();
     DagNode.invalidate();
     for (Processor processor : _processors) {
+      processor.init();
       boolean changed = true;
       int iterations = 0;
       while (changed && ! _interrupted &&

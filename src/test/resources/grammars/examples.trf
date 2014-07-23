@@ -224,7 +224,7 @@
      ^ <Context>(<Question> #q ^ <Count> #x: ) ^
 ( eq(#x, 1) ~ 1 )
 ->
-###part1 = random("La prima domanda è: ",
+###part1 = random("La prima domanda é: ",
                   "Ecco la prima domanda: ",
                   "Qui viene la prima domanda: ",
                   "Puoi rispondere a la prima domanda: "),

@@ -1,6 +1,7 @@
 package de.dfki.lt.tr.dialogue.cplan;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -13,12 +14,17 @@ public class ParallelProcessor implements Processor {
 
   private List<Rule> _rules;
 
+  private AppliedMap _applied;
+
   /** An object to trace matching / application of rules */
   private RuleTracer _tracer;
 
   /** Constructor: initialize the processor with a list of rules */
   public ParallelProcessor(List<Rule> basicRules) {
     _rules = basicRules;
+    int i = 0;
+    for (Rule r : _rules) { ((BasicRule)r).setId(i++); }
+    _applied = new AppliedMap();
   }
 
   @Override
@@ -40,6 +46,28 @@ public class ParallelProcessor implements Processor {
     return _rules;
   }
 
+  private static class AppliedMap {
+    private IdentityHashMap<DagNode, BitSet> _impl =
+        new IdentityHashMap<DagNode, BitSet>();
+
+    public boolean shouldApply(DagNode dag, Rule r) {
+      return ! r.oneShot()
+          || !_impl.containsKey(dag) || !_impl.get(dag).get(r.id());
+    }
+
+    public void wasApplied(DagNode dag, Rule r) {
+      if (! r.oneShot()) return;
+      BitSet s = _impl.get(dag);
+      if (s == null) {
+        s = new BitSet();
+        _impl.put(dag, s);
+      }
+      s.set(r.id());
+    }
+
+    public void clear() { _impl.clear(); }
+  }
+
   /** A local class to store successful matches together with the local bindings
    *  that were established during the match for later application of rule
    *  actions.
@@ -55,9 +83,10 @@ public class ParallelProcessor implements Processor {
       _bindings = bindings.transferLocalBindings();
     }
 
-    public void apply(DagEdge root, Bindings bindings) {
+    public void apply(DagEdge root, Bindings bindings, AppliedMap applied) {
       bindings.restoreLocalBindings(_bindings);
       _rule.executeActions(root, _applicationPoint, bindings);
+      applied.wasApplied(_applicationPoint.getValue(), _rule);
     }
 
     @Override
@@ -65,6 +94,10 @@ public class ParallelProcessor implements Processor {
       return _rule.toString() + "\n"
           + _applicationPoint + "\n" + _bindings + "\n";
     }
+  }
+
+  public void init() {
+    _applied.clear();
   }
 
   /** This method applies the rules in a pseudo-parallel way to all nodes in the
@@ -109,9 +142,10 @@ public class ParallelProcessor implements Processor {
           // apply rules to the node under path in the modified structure
           visited.put(applyNode, applyNode);
           for (Rule rule : _rules) {
-            if (rule.matches(lfEdge, nextEdge, bindings)) {
-              result.add(new RuleAction(rule, path, bindings));
-            }
+            if (_applied.shouldApply(applyNode, rule))
+              if (rule.matches(lfEdge, nextEdge, bindings)) {
+                result.add(new RuleAction(rule, path, bindings));
+              }
           }
           iterators.push(applyNode.getEdgeIterator());
         }
@@ -131,7 +165,7 @@ public class ParallelProcessor implements Processor {
     List<RuleAction> actions = computeMatches(lfEdge, bindings);
     if (actions != null) {
       for (RuleAction action : actions) {
-        action.apply(lfEdge, bindings);
+        action.apply(lfEdge, bindings, _applied);
       }
       return lfEdge.getValue();
     }

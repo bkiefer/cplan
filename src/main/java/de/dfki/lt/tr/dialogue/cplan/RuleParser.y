@@ -1,6 +1,9 @@
 /* -*- Mode: Java -*- */
 
 %code imports {
+import static de.dfki.lt.tr.dialogue.cplan.BasicRule.appendMatches;
+import static de.dfki.lt.tr.dialogue.cplan.BasicRule.appendActions;
+
 import java.io.Reader;
 import java.util.List;
 import java.util.LinkedList;
@@ -39,10 +42,15 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
     /** Where was this rule defined */
     private Location _position;
 
-    public RuleProto(Match m, LinkedList<Action> actions, Location loc) {
+    /** Is this a recurring or single application rule */
+    private boolean _oneShot;
+
+    public RuleProto(Match m, LinkedList<Action> actions, Location loc,
+                     boolean oneShot) {
       _match = m;
       _replace = actions;
       _position = loc;
+      _oneShot = oneShot;
     }
 
     public void addActionsToFront(RuleProto r) {
@@ -62,15 +70,16 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
     }
 
     public Rule toRule() {
-      return new BasicRule(new VarMatch(null, _match), _replace, _position);
+      return new BasicRule(new VarMatch(null, _match), _replace, _position,
+                           _oneShot);
     }
 
     @Override
     public String toString() {
       StringBuilder sb = new StringBuilder();
-      return BasicRule.appendActions(_replace,
-              BasicRule.appendMatches(_match, sb).append(" -> "))
-           .append(" .").toString();
+      return appendActions(_replace, appendMatches(_match, sb)
+                                       .append(_oneShot ? " -> " : " => "))
+               .append(" .").toString();
     }
 
   }
@@ -144,8 +153,9 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
     return rules;
   }
 
-  private RuleProto newRule(Match match, List actions, Location loc) {
-    return new RuleProto(match, (LinkedList<Action>) actions, loc);
+  private RuleProto newRule(Match match, List actions, Location loc,
+                            boolean oneShot) {
+    return new RuleProto(match, (LinkedList<Action>) actions, loc, oneShot);
   }
 
 
@@ -254,11 +264,12 @@ rules : group rules   { _rules = $1; _rules.addAll($2); $$ = _rules; }
       | group         { $$ = $1; }
       ;
 
-group : expr ARROW actions '.' { $$ = newRuleList(newRule($1, $3, @2)); }
+group : expr ARROW actions '.'
+        { $$ = newRuleList(newRule($1, $3, @2, $2.equals("->"))); }
       | expr ARROW actions '{' groups '}'
-        { $$ = newRule($1, $3, @2).applyToAll($5); }
+        { $$ = newRule($1, $3, @2, $2.equals("->")).applyToAll($5); }
       | expr '{' groups '}'
-        { $$ = newRule($1, new LinkedList<Action>(), @2).applyToAll($3); }
+        { $$ = newRule($1, new LinkedList<Action>(), @2, true).applyToAll($3); }
       | error                  { $$ = new LinkedList<RuleProto>(); }
       ;
 

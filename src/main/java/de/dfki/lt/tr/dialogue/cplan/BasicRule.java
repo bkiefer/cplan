@@ -25,14 +25,22 @@ public class BasicRule implements Rule {
   /** Where was this rule defined */
   private Position _position;
 
+  /** Should this rule be applied only once to a specific node */
+  private boolean _oneShot;
+
+  /** A (unique) numeric id for this rule */
+  int _id;
+
   /** Only for use in TracedRule */
   protected BasicRule() { }
 
   /** Create a new rule: bind the left and right hand side */
-  public BasicRule(Match match, List<Action> right, RuleParser.Location pos) {
+  public BasicRule(Match match, List<Action> right, RuleParser.Location pos,
+      boolean oneShot) {
     _match = match;
     _replace = right;
     _position = new Position(pos.begin.line, 0, pos.begin.msg);
+    _oneShot = oneShot;
   }
 
   public static StringBuilder appendMatches(Match m, StringBuilder sb) {
@@ -69,7 +77,8 @@ public class BasicRule implements Rule {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     return
-    appendActions(appendMatches(sb).append(" -> ")).append(" .").toString();
+    appendActions(appendMatches(sb)
+        .append(_oneShot ? " -> " : " => ")).append(" .").toString();
   }
 
   public boolean matches(DagEdge root, DagEdge here, Bindings bindings) {
@@ -124,4 +133,10 @@ public class BasicRule implements Rule {
   boolean match(DagNode lf) {
     return matches(null, new DagEdge((short)-1, lf), new Bindings());
   }
+
+  public boolean oneShot() { return _oneShot; }
+
+  public int id() { return _id; }
+
+  public void setId(int id) { _id = id; }
 }

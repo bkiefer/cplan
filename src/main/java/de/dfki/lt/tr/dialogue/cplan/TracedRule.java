@@ -54,7 +54,11 @@ public class TracedRule implements Rule {
   }
 
   @Override
-  public String toString() {
-    return _r.toString();
-  }
+  public String toString() { return _r.toString(); }
+
+  @Override
+  public boolean oneShot() { return _r.oneShot(); }
+
+  @Override
+  public int id() { return _r.id(); }
 }

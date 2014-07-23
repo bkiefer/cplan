@@ -409,6 +409,11 @@ public class UttplanParserTest {
       "@d1:dvp( <a> b ^ <foo> bar )", "@d1:dvp( <a> b ^ <bar> foo )",
     },
 
+    // 56 check global vars
+    { "! ##g: -> ##g = \"hit\", # ^ <hit>random(##g, \"hit\").",
+      "@d1:dvp( <a> b )", "@d1:dvp( <a> b ^ <hit>hit)"
+    },
+
     /* not legal
     // 56 check rule groups with shared actions
     { ":dvp  { ^ <foo> bar -> # ^ <bar> foo, # ! <foo> { ^ <a>b {} }"+
@@ -691,6 +696,19 @@ public class UttplanParserTest {
       "@d1:dvp( <a> c ^ <foo> bar )", "@d1:dvp( <a> c ^ <foo> bar ^ <bar> foo )",
       "@d1:dvp( <a> b ^ <foo> baz )", "@d1:dvp( <a> b ^ <baz> foo )",
       "@d1:dvp( <a> c ^ <foo> baz )", "@d1:dvp( <a> c ^ <foo> baz ^ <baz> foo )",
+    },
+
+    // 17 equals test agains global var, with recurring rule
+    { ":dvp ^ <Content> #c: => ##gvar = #c:." +
+      ":dvp ^ !<Cont2> ^ <Content> ##gvar: ^ <Content> #v: -> # ^ <Cont2> ( #v: ).",
+      "@d1:dvp( cplan ^ <Content> ( nom1:type ^ prop ))",
+      "@d1:dvp( cplan ^ <Content> ( nom1:type ^ prop ) ^ <Cont2> (nom1:type))"
+    },
+
+    // 18 recurring rules test
+    { "<c>#c: ^ <l>(#l: ^ <f>#f ^ <r>#r:) => #l = #r:, #c = concatenate(#c, #f).",
+      "@d:dv(<c>\"\" ^ <l>(:li ^ <f>1 ^ <r>(:li ^ <f>2 ^ <r>(:li ^ <f>3 ^ <r>(:li)))))",
+      "@d:dv(<c>123 ^<l>(:li))"
     },
 
 
@@ -996,7 +1014,7 @@ public class UttplanParserTest {
   @Test public void testTracing() throws IOException {
     ArrayList<TraceEvent> events = new ArrayList<TraceEvent>();
     RuleTracer rt = new CollectEventsTracer(events);
-    testRecursiveApplicationOne(otherPatterns[3], true, 3, rt);
+    testRecursiveApplicationOne(otherPatterns[17], true, 17, rt);
     // runs into an infinite loop because <Modifier>s are added all the time
     //testRecursiveApplicationOne(matchTestPatternsNegative[11], true, 1);
     assertEquals(4, events.size());
@@ -1005,14 +1023,14 @@ public class UttplanParserTest {
   @Test public void testUntracing() throws IOException {
     CollectEventsTracer rt = new CollectEventsTracer();
     UtterancePlanner up = new UtterancePlanner();
-    String[] testPattern = otherPatterns[3];
+    String[] testPattern = otherPatterns[17];
     up.addProcessor(up.readRulesFromString(testPattern[0]));
     up.setTracing(rt);
     for (int j = 1; j < testPattern.length; j += 2) {
       DagNode in = up.parseLfString(testPattern[j]);
       DagNode out = up.parseLfString(testPattern[j+1]);
       in = up.process(in);
-      assertEquals("Matching pattern " + 3 + "(" + j + ")", out, in);
+      assertEquals("Matching pattern " + 17 + "(" + j + ")", out, in);
     }
     assertEquals(4, rt.getEvents().size());
 

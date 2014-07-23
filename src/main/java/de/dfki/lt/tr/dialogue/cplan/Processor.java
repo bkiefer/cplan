@@ -15,4 +15,6 @@ public interface Processor {
 
   public abstract Iterable<Rule> getRules();
 
+  public abstract void init();
+
 }

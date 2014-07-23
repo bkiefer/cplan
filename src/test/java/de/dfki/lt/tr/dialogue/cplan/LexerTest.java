@@ -15,22 +15,25 @@ public class LexerTest {
     "sdaljf *& /  asdjf /*\n" +
     "***\n" +
     "*/_bla\n" + " # \n" +
-    "@<##VAR_0< ! \";lkja-> <sfdy \\\" ;lka^sd|jfl \\alsd\\\\fja\"";
+    "@<##VAR_0< ! \";lkja-> <sfdy \\\" ;lka^sd|jfl \\alsd\\\\fja\"" +
+    "=>5=5";
 
   private static int[] test1Tokens = {
     RuleParser.Lexer.ID, '>', ':', RuleParser.Lexer.VAR, RuleParser.Lexer.ARROW,
     '<', RuleParser.Lexer.ID, '>', '(', RuleParser.Lexer.ID, ':',
     RuleParser.Lexer.ID, ')',
     RuleParser.Lexer.ID, '^', '|', RuleParser.Lexer.ID, '#', '@',
-    '<', RuleParser.Lexer.GVAR, '<', '!', RuleParser.Lexer.STRING
+    '<', RuleParser.Lexer.GVAR, '<', '!', RuleParser.Lexer.STRING,
+    RuleParser.Lexer.ARROW, RuleParser.Lexer.ID, '=', RuleParser.Lexer.ID,
   };
 
   private static String[] test1Lvals = {
-    "A_aT2-", null, null, "s-s_s0e", null,
+    "A_aT2-", null, null, "s-s_s0e", "->",
     null, "Feature", null, null, "b", null,
     "c", null,
     "bbla", null, null, "_bla", null, null,
-    null, "VAR_0", null, null, ";lkja-> <sfdy \" ;lka^sd|jfl alsd\\fja"
+    null, "VAR_0", null, null, ";lkja-> <sfdy \" ;lka^sd|jfl alsd\\fja",
+    "=>", "5", null, "5"
   };
 
   @Test public void scanString() throws java.io.IOException {
@@ -40,8 +43,8 @@ public class LexerTest {
     while (token != RuleParser.Lexer.EOF) {
       if (PRINT)
         System.out.println(yylex.getTokenName(token) + " : " + yylex.getLVal());
-      assertEquals(token, test1Tokens[i]);
-      assertEquals(yylex.getLVal(), test1Lvals[i]);
+      assertEquals(i, test1Tokens[i], token);
+      assertEquals(Integer.toString(i), test1Lvals[i], yylex.getLVal());
       ++i;
       token = yylex.yylex();
     }
