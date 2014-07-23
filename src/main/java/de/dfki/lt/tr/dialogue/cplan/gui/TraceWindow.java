@@ -329,12 +329,12 @@ implements UPMainFrame.RunStateListener {
   }
 
   public void stateChanged() {
-    UPMainFrame parent = parent();
-    _actionButtons.get(SUSPEND_BTN).setEnabled(parent.isRunning() &&
-                                               ! parent.isSuspended());
-    _actionButtons.get(CONT_BTN).setEnabled(parent.isRunning() &&
-                                            parent.isSuspended());
-    _actionButtons.get(STOP_BTN).setEnabled(parent.isRunning());
+    UPMainFrame parentFrame = parent();
+    _actionButtons.get(SUSPEND_BTN).setEnabled(parentFrame.isRunning() &&
+                                               ! parentFrame.isSuspended());
+    _actionButtons.get(CONT_BTN).setEnabled(parentFrame.isRunning() &&
+                                            parentFrame.isSuspended());
+    _actionButtons.get(STOP_BTN).setEnabled(parentFrame.isRunning());
   }
 
   private abstract class TraceWindowArrangement {

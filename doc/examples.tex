@@ -253,3 +253,19 @@ grammar file, and, consequently, you can only have one encoding per project.
 /// @e:enc(<enc> iso-8859-15 ^ <val> "הײלגי")
 <enc> iso-8859-15 ^ <val> "הײלגי" -> # ^ <right> true.
 \end{verbatim}
+
+\example{19} Using \tok{=>} rules to walk through a list:
+\begin{verbatim}
+///@d:dvp(<c>0 ^ <l>(:li ^ <car>1 ^ <cdr>(:li ^ <car>2 ^ <cdr>(:li ^ <car>3 ^ <cdr>()))))
+///@d:dvp(<c>0123 ^ <l>(:li))
+
+<c>#c: ^ <l>(#l: ^ <car>#f ^ <cdr>#r:)
+=>
+#l = #r:,
+#c = concatenate(#c, #f).
+\end{verbatim}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "shortdoc"
+%%% End:

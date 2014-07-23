@@ -14,7 +14,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
-import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.BadLocationException;
 
@@ -602,17 +601,17 @@ public class UPMainFrame extends MainFrame {
   private class BatchProcessor implements FileProcessor {
     public BatchTest bt = null;
     public BatchType realizationTest;
-    private CcgUtterancePlanner _planner;
+    private CcgUtterancePlanner _batchPlanner;
 
     public BatchProcessor(CcgUtterancePlanner planner, BatchType realize) {
       realizationTest = realize;
-      _planner = planner;
+      _batchPlanner = planner;
     }
 
     @Override
     public boolean processFile(File toProcess) {
       try {
-        bt = _planner.loadBatch(toProcess, realizationTest);
+        bt = _batchPlanner.loadBatch(toProcess, realizationTest);
       } catch (IOException e) {
         return false;
       }

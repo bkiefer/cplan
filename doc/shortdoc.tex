@@ -337,7 +337,7 @@ the whole rewrite process, respectively.
 
 \section{Rules}
 
-Rules have the following form:
+A single rule has the following form:
 
 \newcommand{\nt}[1]{\,\mbox{\emph{#1}}\,}
 %\newcommand{\tok}[1]{\texttt{'#1'}}
@@ -346,34 +346,36 @@ Rules have the following form:
 \newcommand{\BAR}{\,|\,}
 \begin{center}
 
-\if0
-$\underbrace{\mbox{\nt{match} ( \tok{,}
-    (\nt{global\_variable} \mbox{\textbar}\ \nt{function}\tok{(}\nt{args}*\tok{)})
-    \tok{\^} \nt{match} )*}}_{\mbox{matching part}} \mbox{\ \tok{->}\ }
-\underbrace{\mbox{\nt{action} ( \tok{,} \nt{action} )*}}_{\mbox{action
-    part}} \mbox{\ \tok{.}}$
-\fi
-$\underbrace{\rule[-.5ex]{0pt}{1ex}\ \nt{match}^{+}\ }_{\mbox{matching part}} \mbox{\ \tok{->}\ }
-\underbrace{\mbox{\nt{action} ( \tok{,} \nt{action} )*}}_{\mbox{action
-    part}} \mbox{\ \tok{.}}$
+$\nt{match}^{+}$ \nt{arrow} \nt{actions} {\tiny$\bullet$}
+\hspace*{1.2em} with
+\nt{arrow}$\rightarrow (\tok{->}\BAR\tok{=>})$ and
+\nt{actions} $\rightarrow$ \mbox{\nt{action}(\tok{,}\nt{action})*}
 \end{center}
 
-To get a more compact representation when having many rules that share a lot
-of the preconditions, you can use \emph{rule groups}. The syntax for rule groups
-(as opposed to a single rule is as follows:
+When many rules share a lot of the preconditions or actions, you can use
+\emph{rule groups}. The syntax for rule groups (as opposed to a single rule) is
+as follows:
 
 \[
 \begin{array}{lcl}
 \nt{group} & \rightarrow &
-   \nt{match}^{+}\ ( (\tok{\^{}} \BAR  \tok{|})\ (\tok{\{}
- \nt{match}^{+}\mbox{\ \tok{->}\ }
-    \mbox{\nt{action} ( \tok{,} \nt{action} )*} \tok{.} \BAR \nt{group} \tok{\}})+ \\
+   \nt{match}^{+}\  (\nt{arrow} \nt{actions} )?
+   \ (\tok{\{}
+   \ ((\tok{\^{}} \BAR \tok{|}) \nt{group})
+   \BAR
+   \mbox{\nt{arrow}} \nt{actions} \mbox{\tiny$\bullet$}
+   \tok{\}})^{+}\\
 \end{array}
 \]
 
-All match expressions are recursively collected (connecting with the given
-operator) until a rule is reached, whose action is only applied when all the
-collected match conditions are fulfilled.
+All match expressions and actions are recursively collected (connecting with
+the given operator) until a dot is reached, and the collected actions are only
+applied when all the collected match conditions are fulfilled. Rules with
+\tok{=>} arrows will be applied to every node as often as the match conditions
+are fullfilled (and the structure still changes), while rules with \tok{->}
+arrows will be applied only once to a node after a successful match.
+
+The overall processing strategy will be explained in more detail in chapter~\ref{sec:procregime}.
 
 \subsection{Matching Part}
 \label{matching_part}
@@ -745,7 +747,8 @@ For every stage, the current processing engine proceeds as follows:
 \item At every node, match all rules against the node in the order in which
   they have been loaded
 
-  \noindent{}If the match was successful:\\[-3.4ex]
+  \noindent{}If the match was successful, and either it is a \tok{=>} rule or
+  the rule has not been applied to this node before:\\[-3.4ex]
   \begin{itemize}
   \item[] store the rule together with the
     local bindings of the match for later execution of the rule's actions

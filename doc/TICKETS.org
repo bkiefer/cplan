@@ -1,24 +1,9 @@
 * NOW
-  - One-shot rules, the criterion is: has the rule been successfully applied to
-    this node already?
   - Split D-unit lists, add punctuation for CCG generation
-  - Extend Compounds such that also actions can be shared, maybe like this:
-    cond1, cond2, cond3
-    ->
-    act1, act2
-    { cond4, cond5 -> act3
-      { cond6 -> act4.
-        cond7 -> act5.
-      }.
-      cond8 -> act6.
-    }
-    Alternative: if/then/switch syntax
-
   - generate button does run, too,
   - batch window not modal, can reload test file
   - trace window: only result, optionally input / variables / rule
     rule: nicely formatted!
-  - put "random" into sequential mode to really find all sentences
   - find features / types functionality
 
   - plugin_directory config is not described in documentation
@@ -145,23 +130,6 @@ Today:
 - manage partiality for AlizE: return n-best chunks
 - get conversion to FS to work
 
-+ Exception catching during batch test?
-+ better logging for generation in urbi system (log4j properties?)
-+ log4j properties: see file components/dialogue-fst/start-dialogue-fst.sh
-+ if there is additional material in the LF input window, there is NO parse
-  error! (fixed: due to batch LFs parsing)
-+ batch reload does not clean items
-+ sorting results in wrong selection in main window and editor
-+ *** FAILURE *** disappeared in batch result window
-+ sorting for batch result window
-
-+ test if rules meant to be applied on substructures really work: OK
-+ generate all sentences for canned text with a large batch run
-+ batch window does not refresh on batch rerun
-+ syntax error in batch file should not break the whole process
-+ progress bar / activity indicator for batch tests (slow generator)
-+ j2emacs pops to front when file is shown (tested in gtk/linux)
-
 * DISCUSSIONS
 
 arguments / modifiers to the cplanner process rather in input structure, or
@@ -181,3 +149,35 @@ b) as request to a background process
    - non-cascaded processing would maybe require this
 
 * Done
+  + Exception catching during batch test?
+  + better logging for generation in urbi system (log4j properties?)
+  + log4j properties: see file components/dialogue-fst/start-dialogue-fst.sh
+  + if there is additional material in the LF input window, there is NO parse
+    error! (fixed: due to batch LFs parsing)
+  + batch reload does not clean items
+  + sorting results in wrong selection in main window and editor
+  + *** FAILURE *** disappeared in batch result window
+  + sorting for batch result window
+
+  + test if rules meant to be applied on substructures really work: OK
+  + generate all sentences for canned text with a large batch run
+  + batch window does not refresh on batch rerun
+  + syntax error in batch file should not break the whole process
+  + progress bar / activity indicator for batch tests (slow generator)
+  + j2emacs pops to front when file is shown (tested in gtk/linux)
+
+  + One-shot rules, the criterion is: has the rule been successfully applied to
+    this node already?
+  + Extend Compounds such that also actions can be shared, maybe like this:
+    cond1, cond2, cond3
+    ->
+    act1, act2
+    { cond4, cond5 -> act3
+      { cond6 -> act4.
+        cond7 -> act5.
+      }
+      cond8 -> act6.
+    }
+    Alternative: if/then/switch syntax
+  + put "random" into sequential mode to really find all sentences
+  + extended compounds and recurrent vs. non-recurrent rules in shortdoc.tex
