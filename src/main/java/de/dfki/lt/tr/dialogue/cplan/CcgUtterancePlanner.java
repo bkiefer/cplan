@@ -6,6 +6,7 @@ import static de.dfki.lt.tr.dialogue.cplan.CcgPlannerConstants.KEY_CCG_GRAMMAR;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -45,6 +46,19 @@ public class CcgUtterancePlanner extends UtterancePlanner {
     readProjectFile(toClone._projectFile);
   }
 
+  private int _dUnitTypeId, _markerTypeId;
+  private short _firstFeatId, _nextFeatId;
+
+  private static HashMap<String, String> _markers;
+
+  static {
+    _markers = new HashMap<String, String>();
+    String[][] mrks = {
+        {"dot", "."}, {"comma", ","}, {"question", "?"}, {"exclamation", "!"}
+    };
+    for (String[] m : mrks) _markers.put(m[0], m[1]+" ");
+  }
+
   private void readCCGGrammar(File grammarFile) throws IOException {
     if (_lastGrammarLocation == null ||
         ! _lastGrammarLocation.equals(grammarFile)) {
@@ -81,6 +95,10 @@ public class CcgUtterancePlanner extends UtterancePlanner {
       }
     }
     super.finishProject(projectFile, project, settings, ruleSections);
+    _dUnitTypeId = DagNode.getTypeId("d-units");
+    _markerTypeId = DagNode.getTypeId("marker");
+    _firstFeatId = DagNode.getFeatureId("First");
+    _nextFeatId = DagNode.getFeatureId("Next");
   }
 
   /** Read the project file for this content planner. In addition to the super
@@ -128,7 +146,26 @@ public class CcgUtterancePlanner extends UtterancePlanner {
     return result;
   }
 
-  public String realize(DagNode dagLf) {
+  /** traverse the d-lists structure in preorder and collect all base element */
+  void collectDUnits(DagNode dag, List<DagNode> units) {
+    if (dag == null) return;
+    DagNode e = dag.getValue(DagNode.TYPE_FEAT_ID);
+    if (e != null) {
+      int type = e.getType();
+      if (type == _dUnitTypeId) {
+        collectDUnits(dag.getValue(_firstFeatId), units);
+        collectDUnits(dag.getValue(_nextFeatId), units);
+      } else {
+        units.add(dag);
+      }
+    } else {
+      logger.warn("Dag without type edge: " + dag);
+      units.add(dag);
+    }
+  }
+
+
+  public String realizeOld(DagNode dagLf) {
     String result = "";
     if (_realizer != null && dagLf != null) {
       DagEdge content = dagLf.getEdge(DagNode.getFeatureId("Content"));
@@ -141,6 +178,32 @@ public class CcgUtterancePlanner extends UtterancePlanner {
       result = resEdge.getSign().getOrthography();
     }
     return result;
+  }
+
+  public String realize(DagNode dagLf) {
+    StringBuilder result = new StringBuilder();
+    if (_realizer != null && dagLf != null) {
+      List<DagNode> units = new ArrayList<DagNode>(5);
+      collectDUnits(dagLf, units);
+      for (DagNode d : units) {
+        DagNode e = d.getValue(DagNode.TYPE_FEAT_ID);
+        if (e != null && e.getType() == _markerTypeId) {
+          String what = d.getValue(DagNode.PROP_FEAT_ID).getTypeName();
+          String marker = _markers.get(what);
+          if (marker == null) {
+            logger.warn("Unknown marker: " + what);
+          } else {
+            result.append(marker);
+          }
+        } else {
+          LF lf = DagToLF.convertToLF(d);
+          // System.out.println(lf);
+          Edge resEdge = _realizer.realize(lf);
+          result.append(resEdge.getSign().getOrthography());
+        }
+      }
+    }
+    return result.toString();
   }
 
   public DagNode analyze(String input) {
