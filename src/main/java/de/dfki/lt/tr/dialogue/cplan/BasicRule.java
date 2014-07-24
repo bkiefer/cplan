@@ -44,9 +44,6 @@ public class BasicRule implements Rule {
   }
 
   public static StringBuilder appendMatches(Match m, StringBuilder sb) {
-    //for (VarMatch vm : _matches) {
-    //  sb.append(vm);
-    //}
     sb.append(m);
     return sb;
   }
@@ -84,12 +81,6 @@ public class BasicRule implements Rule {
   public boolean matches(DagEdge root, DagEdge here, Bindings bindings) {
     bindings.resetLocalBindings();
     boolean result = true;
-    /*
-    for (VarMatch varMatch : _matches) {
-      result = varMatch.match(here, bindings);
-      if (! result) break;
-    }
-    */
     result = _match.startMatch(here, bindings);
     return result;
   }

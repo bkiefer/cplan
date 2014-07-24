@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="de/dfki/lt/tr/dialogue/cplan/functions/Math.java" kind="src" path="src/main/java"/>
-	<classpathentry kind="src" output="cplan-core/target/test-classes" path="src/test/java"/>
+	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="lib" path="lib/java/junit.jar"/>
 	<classpathentry kind="lib" path="lib/java/log4j-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/java/trove-3.0.3.jar"/>
