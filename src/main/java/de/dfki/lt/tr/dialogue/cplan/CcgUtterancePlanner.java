@@ -47,9 +47,10 @@ public class CcgUtterancePlanner extends UtterancePlanner {
   }
 
   private int _dUnitTypeId, _markerTypeId;
-  private short _firstFeatId, _nextFeatId;
+  private short _firstFeatId, _nextFeatId, _modeFeatId;
 
   private static HashMap<String, String> _markers;
+  private static HashMap<String, String> _modes;
 
   static {
     _markers = new HashMap<String, String>();
@@ -57,6 +58,12 @@ public class CcgUtterancePlanner extends UtterancePlanner {
         {"dot", "."}, {"comma", ","}, {"question", "?"}, {"exclamation", "!"}
     };
     for (String[] m : mrks) _markers.put(m[0], m[1]+" ");
+    _modes = new HashMap<String, String>();
+    String[][] mds = {
+        {"affirmative", "."}, {"coordinative", ","}, {"interrogative", "?"},
+        {"exclamative", "!"}, {"explicative", ":"}
+    };
+    for (String[] m : mds) _modes.put(m[0], m[1]+" ");
   }
 
   private void readCCGGrammar(File grammarFile) throws IOException {
@@ -99,7 +106,8 @@ public class CcgUtterancePlanner extends UtterancePlanner {
     _markerTypeId = DagNode.getTypeId("marker");
     _firstFeatId = DagNode.getFeatureId("First");
     _nextFeatId = DagNode.getFeatureId("Next");
-  }
+    _modeFeatId = DagNode.getFeatureId("Mode");
+    }
 
   /** Read the project file for this content planner. In addition to the super
    *  class' method, read the specified CCG grammar, if any.
@@ -200,6 +208,16 @@ public class CcgUtterancePlanner extends UtterancePlanner {
           // System.out.println(lf);
           Edge resEdge = _realizer.realize(lf);
           result.append(resEdge.getSign().getOrthography());
+          DagNode mode = d.getValue(_modeFeatId);
+          if (mode != null) {
+            String what = mode.getValue(DagNode.PROP_FEAT_ID).getTypeName();
+            String marker = _modes.get(what);
+            if (marker == null) {
+              logger.warn("Unknown marker: " + what);
+            } else {
+              result.append(marker);
+            }
+          }
         }
       }
     }
