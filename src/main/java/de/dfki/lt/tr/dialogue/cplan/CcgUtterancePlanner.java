@@ -63,7 +63,7 @@ public class CcgUtterancePlanner extends UtterancePlanner {
         {"affirmative", "."}, {"coordinative", ","}, {"interrogative", "?"},
         {"exclamative", "!"}, {"explicative", ":"}
     };
-    for (String[] m : mds) _modes.put(m[0], m[1]+" ");
+    for (String[] m : mds) _modes.put(m[0], m[1]);
   }
 
   private void readCCGGrammar(File grammarFile) throws IOException {
@@ -218,6 +218,7 @@ public class CcgUtterancePlanner extends UtterancePlanner {
               result.append(marker);
             }
           }
+          result.append(" ");
         }
       }
     }
