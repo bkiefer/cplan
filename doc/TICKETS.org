@@ -1,14 +1,10 @@
 * NOW
-  - Split D-unit lists, add punctuation for CCG generation
-  - generate button does run, too,
   - batch window not modal, can reload test file
   - trace window: only result, optionally input / variables / rule
     rule: nicely formatted!
   - find features / types functionality
 
   - plugin_directory config is not described in documentation
-
-  - make clear that Rules section names MUST start with "Rules"
 
 // Setting type in current node does not work like this:
 :apology -> # ! <__TYPE>, # ^ <__TYPE>apologize.
@@ -93,7 +89,8 @@ FIX BAD DETECTION OF RULE ERROR FOR THIS RULE:
 - pretty printing for LF's (and rules) so selected inputs from batch window
   are readable
 
-- #var variables on RHS which do not occur on LHS should be a syntax error
+- #var variables on RHS which do not occur on LHS should be a syntax error,
+  as well as ###y vars which have not been bound previously!
 
 - Copying of structures (and substructures) into a new window / a text
   representation to the clipboard
@@ -169,15 +166,15 @@ b) as request to a background process
   + One-shot rules, the criterion is: has the rule been successfully applied to
     this node already?
   + Extend Compounds such that also actions can be shared, maybe like this:
-    cond1, cond2, cond3
-    ->
+    cond1, cond2, cond3 ->
     act1, act2
     { cond4, cond5 -> act3
-      { cond6 -> act4.
-        cond7 -> act5.
-      }
+      { cond6 -> act4. cond7 -> act5. }
       cond8 -> act6.
     }
     Alternative: if/then/switch syntax
   + put "random" into sequential mode to really find all sentences
   + extended compounds and recurrent vs. non-recurrent rules in shortdoc.tex
+  + Split D-unit lists, add punctuation for CCG generation
+  + generate button does run, too,
+  + make clear that Rules section names MUST start with "Rules"

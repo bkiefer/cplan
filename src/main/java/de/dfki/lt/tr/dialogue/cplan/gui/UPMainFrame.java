@@ -120,7 +120,7 @@ public class UPMainFrame extends MainFrame {
     {"Load", "edit-redo", "Reload Rules", "Reload Rules",
       new Runnable() { public void run() { reloadCurrentProject(); } } },
     {"Process", "gnome-run", "Process Input", "Process",
-      new Runnable() { public void run() { processInput(true); } } },
+      new Runnable() { public void run() { processInput(true, false); } } },
     {"Trace", "go-next", "Trace Processing", "Trace",
       new Runnable() { public void run() { processTracing(); } } },
     /*
@@ -139,7 +139,7 @@ public class UPMainFrame extends MainFrame {
       new Runnable() { public void run() { clearInput(); } }
     },
     {"Realize", "generate-text", "Realize output", "Realize",
-      new Runnable() { public void run() { doRealization(_output); } }
+      new Runnable() { public void run() { processInput(true, true); } }
     },
     {"Parse", "insert-text", "Analyze Sentence", "Parse",
       new Runnable() { public void run() { parseInput(); } }
@@ -342,19 +342,10 @@ public class UPMainFrame extends MainFrame {
         setProcessorSuspended(isSuspended);
       }
     });
-    if (processInput(false)) {
+    if (processInput()) {
       @SuppressWarnings("unused")
       TraceWindow tw = new TraceWindow(UPMainFrame.this, events);
       runPlanner();
-    }
-  }
-
-  private void doRealization(DagNode dag) {
-    try {
-      setStatusLine(_planner.doRealization(_output));
-    }
-    catch (NullPointerException ex) {
-      setStatusLine("Exception during realization", Color.RED);
     }
   }
 
@@ -502,7 +493,15 @@ public class UPMainFrame extends MainFrame {
     _planner.interruptProcessing();
   }
 
-  private void runPlanner() {
+  /** Start the planner in a new thread, signalling termination via the
+   *  registered RunStateListeners.
+   *
+   *  If startRealization is true, the CCG realizer will be called after the
+   *  graph rewriting phase
+   *
+   * @param startRealization if true, call the CCG realizer, if available.
+   */
+  private void runPlanner(final boolean startRealization) {
     // should be in its own thread, with a listener that sets the
     // output, and an indicator that it's running
     _processingThread = new Thread(
@@ -514,10 +513,16 @@ public class UPMainFrame extends MainFrame {
               setOutput(_planner.process(_input));
               if (_output == null) {
                 setStatusLine("No output", Color.ORANGE);
+              } else {
+                if (startRealization)
+                  setStatusLine(_planner.doRealization(_output));
               }
             }
             catch (PlanningException ex) {
               setStatusLine(ex.getMessage(), Color.ORANGE);
+            }
+            catch (NullPointerException ex) {
+              setStatusLine("Exception during realization", Color.RED);
             }
             finally {
               processingEnds();
@@ -527,13 +532,16 @@ public class UPMainFrame extends MainFrame {
     _processingThread.start();
   }
 
+  /** @see runPlanner(boolean startRealization) */
+  private void runPlanner() { runPlanner(false); }
+
   /** This method takes the input string from the input area and tries to
    *  process it. If parsing the input reveals a syntax error, the caret is
    *  put to the error position and the error is signaled by using a reddish
    *  color as background for the input area. Otherwise, the processing is
    *  started in a new thread.
    */
-  private boolean processInput(boolean startPlanner) {
+  private boolean processInput(boolean startPlanner, boolean startRealization) {
     clearStatusLine();
     _inputArea.setBackground(NORMAL_COLOR);
     String currentText = _inputArea.getText();
@@ -549,7 +557,7 @@ public class UPMainFrame extends MainFrame {
       _history.add(currentText);
       if (! isStopped()) return false;
       if (startPlanner)
-        runPlanner();
+        runPlanner(startRealization);
       return true;
     }
     else {
@@ -572,6 +580,9 @@ public class UPMainFrame extends MainFrame {
     }
     return false;
   }
+
+  /** @see processInput(boolean startPlanner, boolean startRealization) */
+  private boolean processInput() { return processInput(false, false); }
 
   private boolean parseInput() {
     clearStatusLine();
