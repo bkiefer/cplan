@@ -366,7 +366,7 @@ implements UPMainFrame.CloseAllListener {
       System.exit(1);
     }
 
-    List<String> nonOptionArgs = options.nonOptionArguments();
+    List<String> nonOptionArgs = (List<String>) options.nonOptionArguments();
 
     String optionArg = null;
 

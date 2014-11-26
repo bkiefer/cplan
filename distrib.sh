@@ -1,12 +1,9 @@
 rm cplanner.tar.*
-tar cf cplanner.tar --exclude-vcs --exclude-backups \
-    --exclude=junit\* \
+tar cf cplanner.tar --exclude-vcs --exclude-backups --exclude=junit\* \
     updebugger \
-    deplibs/* \
-    lib/java/dataviz.jar lib/java/j2emacs.jar lib/java \
+    target/lib/java/*.jar \
     etc/* \
     doc/shortdoc.pdf \
     doc/presentation* \
-    doc/readme.txt \
-    target/cplan-gui.jar &&
+    doc/readme.txt &&
 gzip -9 cplanner.tar

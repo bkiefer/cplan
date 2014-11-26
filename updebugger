@@ -26,11 +26,13 @@ if test -n "$DEBUG"; then
     JAVA_OPTS="-Xdebug -Xrunjdwp:transport=$JPDA_TRANSPORT,address=$JPDA_ADDRESS,server=y,suspend=n "
 fi
 
+checkjava() {
+    "$JAVA_HOME"/bin/java -version 2>&1 | grep -q "version \"*1\.[56789]"
+}
 
 if test -z "$CYGWIN" ; then
     if test -n "$JAVA_HOME" ; then
-        "$JAVA_HOME"/bin/java -version 2>&1 | grep -q "version \"*1\.[567]" ||
-        unset JAVA_HOME JAVA_BINDIR JAVA_ROOT JDK_HOME JRE_HOME
+        checkjava || unset JAVA_HOME JAVA_BINDIR JAVA_ROOT JDK_HOME JRE_HOME
     fi
     CPSEP=':'
 else
@@ -43,8 +45,7 @@ IFS=$'\n'
 if test -z "$CYGWIN" -a -z "$JAVA_HOME" ; then
     for path in `type -all java`; do
         JAVA_HOME=`echo "${path##java is}" | sed 's|.* \(/.*\)/bin/java|\1|'`
-         if test -n "$JAVA_HOME" &&
-            $JAVA_HOME/bin/java -version 2>&1 | grep -q "version \"*1\.[567]" ; then
+         if test -n "$JAVA_HOME" && checkjava ; then
             export JAVA_HOME
             break
         else
@@ -86,7 +87,7 @@ cygwinify_path() {
     fi
 }
 
-JAVA_OPTS="${JAVA_OPTS}-cp `dozify_path "$APP_HOME/target/lib/java/\*"` "
+JAVA_OPTS="${JAVA_OPTS}-cp \"`dozify_path "$APP_HOME/target/lib/java/*"`\" "
 
 if test -f "log4j.properties" ; then
     L4JSETUP="log4j.properties"
@@ -110,5 +111,5 @@ APP_HOME=`dozify_path $APP_HOME`
 if test -n "$L4JSETUP" ; then
     JAVA_OPTS="$JAVA_OPTS -Dlog4j.configuration=file:${L4JSETUP}"
 fi
-eval "$JAVA_BIN" "$JAVA_OPTS" -Dapp.dir="$APP_HOME" $MAINCLASS $* \
+eval "$JAVA_BIN $JAVA_OPTS -Dapp.dir=\"$APP_HOME\" $MAINCLASS $*" \
   || echo "$usage"
