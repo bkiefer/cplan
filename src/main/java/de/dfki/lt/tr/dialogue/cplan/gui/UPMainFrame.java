@@ -54,38 +54,47 @@ public class UPMainFrame extends MainFrame {
 
   /** FileProcessor for project files
    */
-  private class ProjectFileProcessor extends FileProcessorAdapter {
+  private static class ProjectFileProcessor extends FileProcessorAdapter {
     /** Set the project file to the given file and load its contents */
     @Override
-    public boolean processFile(File projectFile) {
+    public boolean processFile(File projectFile, MainFrame mf) {
+      UPMainFrame upmf = null;
+      try {
+        upmf = (UPMainFrame)mf;
+      }
+      catch (ClassCastException cex) {
+        // for total safety
+        logger.error("ProjectFileProcessor was called on a non UPMainFrame");
+        return false;
+      }
       if (projectFile == null) {
-        _projectFile = null;
-        _currentDir = new File(".");
+        upmf._projectFile = null;
+        upmf._currentDir = new File(".");
       }
       else {
-        setTitle("Reading project file: " + projectFile);
-        _projectFile = projectFile;
-        _currentDir = _projectFile.getAbsoluteFile().getParentFile();
-        readProjectFile();
-        _preferences.recentFiles().add(projectFile.getAbsolutePath());
+        upmf.setTitle("Reading project file: " + projectFile);
+        upmf._projectFile = projectFile;
+        upmf._currentDir = upmf._projectFile.getAbsoluteFile().getParentFile();
+        upmf.readProjectFile();
+        upmf._preferences.recentFiles().add(projectFile.getAbsolutePath());
         try {
-          File historyFile = _planner.getHistoryFile();
+          File historyFile = upmf._planner.getHistoryFile();
           if (historyFile == null) {
-            historyFile = _currentDir;
+            historyFile = upmf._currentDir;
           }
-          _history.load(historyFile);
-          setStatusLine("rule files reloaded");
+          upmf._history.load(historyFile);
+          upmf.setStatusLine("rule files reloaded");
         }
         catch (IOException ioex) {
-          setStatusLine("Problem reading history file: "
+          upmf.setStatusLine("Problem reading history file: "
               + ioex.getLocalizedMessage(), Color.RED);
         }
       }
       /** Enable/Disable reload rules, process, start trace
        *  depending on existence of rule file
        */
-      updateButtonStates();
-      return (projectFile == null || _projectFile != null);
+      upmf.updateButtonStates();
+      return (projectFile == null || upmf._projectFile != null);
     }
   }
 
@@ -269,7 +278,8 @@ public class UPMainFrame extends MainFrame {
     _displayPane.setDividerLocation(.5);
     setTitle(title);
     try {
-      _fileProcessor.processFile(ruleFile == null ? null : new File(ruleFile));
+      _fileProcessor.processFile(ruleFile == null ? null : new File(ruleFile),
+          this);
     } catch (IOException e) {
       Logger.getLogger("UtterancePlanner")
       .error("Problem reading project file" + e);
@@ -620,7 +630,7 @@ public class UPMainFrame extends MainFrame {
     }
 
     @Override
-    public boolean processFile(File toProcess) {
+    public boolean processFile(File toProcess, MainFrame mf) {
       try {
         bt = _batchPlanner.loadBatch(toProcess, realizationTest);
       } catch (IOException e) {
