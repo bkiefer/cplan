@@ -192,7 +192,7 @@ public class DagTest {
 
   private boolean testEqualsMultiOne(String lf, String lf2) {
     LFParser lfparser = new LFParser(new Lexer(new StringReader(lf)));
-    lfparser.errorVerbose = true;
+    lfparser.setErrorVerbose(true);
     DagNode res = null;
     try {
       if (lfparser.parse())
@@ -201,7 +201,7 @@ public class DagTest {
     catch (IOException ioex) {
     }
     LFParser lfparser2 = new LFParser(new Lexer(new StringReader(lf2)));
-    lfparser2.errorVerbose = true;
+    lfparser2.setErrorVerbose(true);
     DagNode res2 = null;
     try {
       if (lfparser2.parse())

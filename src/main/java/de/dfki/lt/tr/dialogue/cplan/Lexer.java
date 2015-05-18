@@ -13,7 +13,7 @@ import de.dfki.lt.tr.dialogue.cplan.RuleParser.Location;
 import de.dfki.lt.tr.dialogue.cplan.util.Position;
 
 public class Lexer
-implements RuleParser.Lexer, LFParser.Lexer, ExtLFParser.Lexer  {
+implements RuleParser.Lexer, LFParser.Lexer  {
   private static String[] tokenNames = {
     "ID", "VAR", "GVAR", "COMPARISON", "ARROW", "STRING", "RVAR"
   };

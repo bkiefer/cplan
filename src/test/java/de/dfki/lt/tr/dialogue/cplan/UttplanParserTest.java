@@ -770,7 +770,7 @@ public class UttplanParserTest {
     LFParser parser = new LFParser(new Lexer());
     parser.reset(input, new StringReader(input));
     //parser.setDebugLevel(99);
-    parser.errorVerbose = true;
+    parser.setErrorVerbose(true);
     return parser;
   }
 

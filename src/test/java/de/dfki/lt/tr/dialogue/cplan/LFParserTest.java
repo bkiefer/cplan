@@ -37,6 +37,16 @@ public class LFParserTest {
     "@a:b(foo ^ <bar>\"string value\")"
   };
 
+  private static String[] rawLFs = {
+    "provide(answer)",
+    "@raw:provide(answer)",
+    "provide(answer, value=\"foo bar\")",
+    "@raw:provide(answer ^ <value>\"foo bar\")",
+    "provide(answer, value=foo, text=bar)",
+    "@raw:provide(answer ^ <value>foo ^ <text>bar)"
+  };
+
+
   @Before public void setUp() {
     // next line is needed to initialize static fields
     @SuppressWarnings("unused")
@@ -56,7 +66,7 @@ public class LFParserTest {
 
   private void testOne(String lf, int i) throws IOException {
     LFParser lfparser = new LFParser(new Lexer(new StringReader(lf)));
-    lfparser.errorVerbose = true;
+    lfparser.setErrorVerbose(true);
     DagNode res = null;
     if (lfparser.parse())
       res = lfparser.getResultLF();
@@ -72,9 +82,32 @@ public class LFParserTest {
     }
   }
 
+  private void testOneRaw(String raw, String lf, int i) throws IOException {
+    LFParser lfparserRaw = new LFParser(new Lexer(new StringReader(raw)));
+    lfparserRaw.setErrorVerbose(true);
+    LFParser lfparser = new LFParser(new Lexer(new StringReader(lf)));
+    lfparser.setErrorVerbose(true);
+    DagNode res = null, rawRes = null;
+    if (lfparserRaw.parse())
+      rawRes = lfparserRaw.getResultLF();
+    if (lfparser.parse())
+      res = lfparser.getResultLF();
+
+    String lfString = (res == null) ? null : res.toString();
+    if (PRINT) { System.out.println(lf); System.out.println(lfString); }
+    assertEquals("Run "+ i + " " + lf, res, rawRes);
+  }
+
+  @Test public void testRawLFs() throws IOException {
+    for(int i = 0; i < rawLFs.length; i += 2) {
+      testOneRaw(rawLFs[i], rawLFs[i+1], i>>1 + 1);
+    }
+  }
+
   private void testOneExt(String lf, int i) throws IOException {
-    ExtLFParser lfparser = new ExtLFParser(new Lexer(new StringReader(lf)));
-    lfparser.errorVerbose = true;
+    LFParser lfparser = new LFParser(new Lexer(new StringReader(lf)));
+    lfparser.setExtMode(true);
+    lfparser.setErrorVerbose(true);
     DagNode res = null;
     if (lfparser.parse())
       res = lfparser.getResultLFs().get(0);
@@ -123,7 +156,7 @@ public class LFParserTest {
         "<selectedAnswer>(unknown | 1 | 2 | 3 | 4 | 5) ^\n" +
         "<questionCount>(unknown | 1 | 2 | 3))\n";
     ExtLFParser lfparser = new ExtLFParser(new Lexer(new StringReader(testItem)));
-    lfparser.errorVerbose = true;
+    lfparser.setErrorVerbose(true);
     DagNode res = null;
     assertTrue(lfparser.parse());
     int lfs = lfparser.getResultLFs().size();

@@ -2,7 +2,7 @@
 %.java:%.y
 	bison -v $<
 
-all: RuleParser.java LFParser.java ExtLFParser.java
+all: RuleParser.java LFParser.java
 
 clean:
-	rm RuleParser.java LFParser.java ExtLFParser.java
+	rm RuleParser.java LFParser.java

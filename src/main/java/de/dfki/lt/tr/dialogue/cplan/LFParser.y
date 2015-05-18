@@ -3,6 +3,8 @@
 %code imports {
 import java.io.Reader;
 import java.util.HashMap;
+import java.util.List;
+import java.util.LinkedList;
 
 @SuppressWarnings({"fallthrough", "unused"})
 }
@@ -13,9 +15,13 @@ import java.util.HashMap;
 
 %define public
 
-%define parser_class_name "LFParser"
+%name-prefix "LF"
+
+%define parse.error verbose
 
 %code {
+  private boolean extMode = false;
+
   private DagNode _lf;
 
   private HashMap<String, DagNode> _nodes = new HashMap<String, DagNode>();
@@ -48,6 +54,13 @@ import java.util.HashMap;
   }
 
   /** Transfer the result back to the caller of the parser */
+  public List<DagNode> getResultLFs() {
+    List<DagNode> result = new LinkedList<DagNode>();
+    result.add(_lf.copyAndInvalidate());
+    return result;
+  }
+
+  /** Transfer the result back to the caller of the parser */
   public DagNode getResultLF() {
     return _lf.copyAndInvalidate();
   }
@@ -55,6 +68,13 @@ import java.util.HashMap;
   public void reset() {
     _lf = null;
     _nodes.clear();
+  }
+
+  /** extMode == true allows to parse multiple LFs in a row, while false will
+   *  parse only one LF
+   */
+  public void setExtMode(boolean what) {
+    extMode = what;
   }
 
   public void reset(String inputDescription, Reader input) {
@@ -72,7 +92,7 @@ import java.util.HashMap;
 %token < String >  ARROW      262
 %token < String >  STRING     263
 
-%type < DagNode > lf lfconj lfterm
+%type < DagNode > lf lfconj lfterm rawlf keyval
 
 %type < Object > start
 
@@ -80,7 +100,9 @@ import java.util.HashMap;
 
 %%
 
-start : lf               { $$ = null; _lf = $1; }
+start : lf               { $$ = null; _lf = $1; if (extMode) return YYACCEPT; }
+      | rawlf            { $$ = null; _lf = $1; if (extMode) return YYACCEPT; }
+      | error            { $$ = null; _lf = null; }
       ;
 
 // plain logical forms
@@ -124,3 +146,22 @@ lfterm : '<' ID '>' '(' lfconj ')' { $$ = newLF($2, $5).setNominal(); }
        | ID             { $$ = newLF(DagNode.PROP_FEAT_ID, $1); }
        ;
 
+rawlf : ID '(' ID keyval ')'
+                        {
+                          DagNode prop = newLF(DagNode.PROP_FEAT_ID, $3);
+                          if ($4 != null) {
+                            prop = unify(prop, $4);
+                          }
+                          $$ = unify(getNewLF("raw").setNominal(),
+                                 unify(newLF(DagNode.TYPE_FEAT_ID, $1), prop));
+                        };
+
+keyval : ',' ID '=' STRING keyval {
+	DagNode res = newLF($2, newLF(DagNode.PROP_FEAT_ID, $4)).setNominal();
+	$$ = ($5 == null) ? res : unify(res, $5);
+	}
+       | ',' ID '=' ID keyval {
+	DagNode res = newLF($2, newLF(DagNode.PROP_FEAT_ID, $4)).setNominal();
+	$$ = ($5 == null) ? res : unify(res, $5);
+	}
+       | { $$ = null; };
