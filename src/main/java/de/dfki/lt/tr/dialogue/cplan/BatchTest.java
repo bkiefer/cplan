@@ -299,7 +299,7 @@ public class BatchTest {
     reload();
   }
 
-  void readNextRealizationItem(Reader in, Lexer l, ExtLFParser parser)
+  void readNextRealizationItem(Reader in, Lexer l, LFParser parser)
       throws IOException {
     parser.reset();
     boolean good = parser.parse();
@@ -321,7 +321,7 @@ public class BatchTest {
     }
   }
 
-  void readNextParsingItem(Reader in, Lexer l, ExtLFParser parser)
+  void readNextParsingItem(Reader in, Lexer l, LFParser parser)
       throws IOException {
     Position pos = l.getStartPos();
     String nextSentence = l.readLine();
@@ -353,7 +353,7 @@ public class BatchTest {
     _items.add(new ParsingTestItem(nextSentence, answers, pos));
   }
 
-  void readNextPlanningItem(Reader in, Lexer l, ExtLFParser parser)
+  void readNextPlanningItem(Reader in, Lexer l, LFParser parser)
       throws IOException {
     parser.reset();
     boolean good = parser.parse();
@@ -379,7 +379,8 @@ public class BatchTest {
     _items.clear();
     Reader in = new FileReader(_batchFile);
     Lexer l = new Lexer(_batchFile.getCanonicalPath(), in);
-    ExtLFParser parser = new ExtLFParser(l);
+    LFParser parser = new LFParser(l);
+    parser.setExtMode(true);
     do {
       switch (_realizationTest) {
       case GENERATION: readNextRealizationItem(in, l, parser); break;

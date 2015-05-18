@@ -13,11 +13,9 @@
 
   <target name="modules" description="make submodules">
     <antcall target="subant">
-      <param name="target" value="${target}"/>
       <param name="dir" value="../cplan-core"/>
     </antcall>
     <antcall target="subant">
-      <param name="target" value="${target}"/>
       <param name="dir" value="../openccg-dfki"/>
     </antcall>
   </target>
