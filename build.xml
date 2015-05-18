@@ -13,15 +13,12 @@
 
   <target name="modules" description="make submodules">
     <antcall target="subant">
-      <param name="target" value="${target}"/>
       <param name="dir" value="../cplan-ccg"/>
     </antcall>
     <antcall target="subant">
-      <param name="target" value="${target}"/>
       <param name="dir" value="../dataviz"/>
     </antcall>
     <antcall target="subant">
-      <param name="target" value="${target}"/>
       <param name="dir" value="../j2emacs"/>
     </antcall>
   </target>
