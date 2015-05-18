@@ -1107,8 +1107,8 @@ public class UttplanParserTest {
     // Pass proper directory
     String baseDir = System.getProperty("basedir");
     File pluginDirectory = ((baseDir == null)
-        ? new File("target/test-resources/plugins/")
-        : new File(baseDir, "target/test-resources/plugins/"));
+        ? new File("src/test/resources/plugins/")
+        : new File(baseDir, "src/test/resources/plugins/"));
 
     FunctionFactory.registerPlugins(pluginDirectory, null);
     String[] testPattern = {

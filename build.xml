@@ -23,8 +23,7 @@
       </classpath>
       <compilerarg value="-Xlint"/>
     </javac>
-    <mkdir dir="${tests.classes.dir}/../test-resources/plugins/"/>
-    <jar destfile="${tests.classes.dir}/../test-resources/plugins/testplug.jar"
+    <jar destfile="${tests.source.dir}/../resources/plugins/testplug.jar"
          compress="true">
       <fileset dir="${tests.source.dir}/../resources/plugins/"
                includes="**/*.class"/>
@@ -37,7 +36,7 @@
 
   <target name="clean-special">
     <delete failonerror="false">
-      <fileset dir="${tests.classes.dir}/../test-resources/plugins/"
+      <fileset dir="${tests.source.dir}/../resources/plugins/"
                includes="*.jar"/>
       <fileset dir="${tests.source.dir}/../resources/plugins/"
                includes="**/*.class"/>
