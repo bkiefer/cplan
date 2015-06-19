@@ -176,12 +176,13 @@ public class CcgUtterancePlanner extends UtterancePlanner {
   public String realizeOld(DagNode dagLf) {
     String result = "";
     if (_realizer != null && dagLf != null) {
+      /*
       DagEdge content = dagLf.getEdge(DagNode.getFeatureId("Content"));
-      if (false && content != null) {
+      if (content != null) {
         dagLf = content.getValue();
       }
+      */
       LF lf = DagToLF.convertToLF(dagLf);
-      // System.out.println(lf);
       Edge resEdge = _realizer.realize(lf);
       result = resEdge.getSign().getOrthography();
     }
