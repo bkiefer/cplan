@@ -1202,7 +1202,7 @@ private static final byte yycheck_[] = yycheck_init();
   /** Transfer the result back to the caller of the parser */
   public List<DagNode> getResultLFs() {
     List<DagNode> result = new LinkedList<DagNode>();
-    result.add(_lf.copyAndInvalidate());
+    if (_lf != null) result.add(_lf.copyAndInvalidate());
     return result;
   }
 

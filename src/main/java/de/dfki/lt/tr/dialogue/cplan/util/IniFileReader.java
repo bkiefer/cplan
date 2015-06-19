@@ -70,42 +70,47 @@ public class IniFileReader {
 
     String currentSection = null;
     String nextLine = null;
-    BufferedReader in = new BufferedReader(new FileReader(f));
-    while ((nextLine = in.readLine()) != null) {
-      nextLine = nextLine.trim();
-      int hashPos = nextLine.indexOf('#');
-      if (hashPos != -1) {
-        nextLine = nextLine.substring(0, hashPos);
-      }
-      if (! nextLine.isEmpty()) {
-        if (nextLine.charAt(0) == '[') { // begin of section
-          String sectionName = nextLine.substring(1, nextLine.lastIndexOf(']'));
-          sectionName = sectionName.trim();
-          if (currentSection != null) {
-            h.sectionEnd(currentSection);
-          }
-          currentSection = sectionName;
-          h.sectionStart(currentSection);
-        } else {
-          if (currentSection == null) {
-            throw new IllegalStateException(
-                "Key/value pair without active section :" +nextLine);
-          }
-          String key, value = null;
-          int eqPos = nextLine.indexOf('=');
-          if (eqPos != -1) {
-            key = nextLine.substring(0, eqPos).trim();
-            value = nextLine.substring(eqPos + 1).trim();
+    BufferedReader in = null;
+    try {
+      in = new BufferedReader(new FileReader(f));
+      while ((nextLine = in.readLine()) != null) {
+        nextLine = nextLine.trim();
+        int hashPos = nextLine.indexOf('#');
+        if (hashPos != -1) {
+          nextLine = nextLine.substring(0, hashPos);
+        }
+        if (! nextLine.isEmpty()) {
+          if (nextLine.charAt(0) == '[') { // begin of section
+            String sectionName = nextLine.substring(1, nextLine.lastIndexOf(']'));
+            sectionName = sectionName.trim();
+            if (currentSection != null) {
+              h.sectionEnd(currentSection);
+            }
+            currentSection = sectionName;
+            h.sectionStart(currentSection);
           } else {
-            key = nextLine.trim();
+            if (currentSection == null) {
+              throw new IllegalStateException(
+                  "Key/value pair without active section :" +nextLine);
+            }
+            String key, value = null;
+            int eqPos = nextLine.indexOf('=');
+            if (eqPos != -1) {
+              key = nextLine.substring(0, eqPos).trim();
+              value = nextLine.substring(eqPos + 1).trim();
+            } else {
+              key = nextLine.trim();
+            }
+            h.keyValuePair(key, value);
           }
-          h.keyValuePair(key, value);
         }
       }
+      if (currentSection != null) {
+        h.sectionEnd(currentSection);
+      }
     }
-    if (currentSection != null) {
-      h.sectionEnd(currentSection);
+    finally {
+      if (in != null) in.close();
     }
-    in.close();
   }
 }
