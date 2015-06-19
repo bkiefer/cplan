@@ -23,6 +23,12 @@
 - Only batch double click raises emacs window, otherwise, no navigation in
   batch window possible
 
+- Appearance dialogue / Font selection
+
+- Switch to SWT for native look & feel
+
+- Sorting of items in batch window
+
 - does the batch use the new grammar version after reload? or should reload
   also reload the grammar?
 

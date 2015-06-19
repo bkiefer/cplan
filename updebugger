@@ -111,5 +111,6 @@ APP_HOME=`dozify_path $APP_HOME`
 if test -n "$L4JSETUP" ; then
     JAVA_OPTS="$JAVA_OPTS -Dlog4j.configuration=file:${L4JSETUP}"
 fi
-eval "$JAVA_BIN $JAVA_OPTS -Dapp.dir=\"$APP_HOME\" $MAINCLASS $*" \
+if test -z "$*"; then opts="-g"; fi
+eval "$JAVA_BIN $JAVA_OPTS -Dapp.dir=\"$APP_HOME\" $MAINCLASS $opts $*" \
   || echo "$usage"
