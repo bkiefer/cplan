@@ -23,7 +23,7 @@
 
 // Test for the global variable (multiple matches)
 
-:ascription ^ <Tense>, ##speechact ^ assertion
+:ascription ^ <Tense> ^ (##speechact ~ assertion)
 ->
 # ^ <Mood>ind.
 
@@ -59,13 +59,13 @@
 ->
 ##randomclosing = random(1,2).
 
-:dvp ^ <SpeechAct>closing ^ <Content> (#c1:top),
-##randomclosing ^ 1
+:dvp ^ <SpeechAct>closing ^ <Content> (#c1:top) ^
+(##randomclosing ~ 1)
 ->
 #c1 = :closing ^ bye.
 
-:dvp ^ <SpeechAct>closing ^ <Content> (#c1:top),
-##randomclosing ^ 2
+:dvp ^ <SpeechAct>closing ^ <Content> (#c1:top) ^
+(##randomclosing ~ 2)
 ->
 #c1 = :closing ^ see_you.
 
@@ -134,13 +134,13 @@
 ->
 ##gvar<Content> = #c:.
 
-:dvp ^ !<Cont2>, ##gvar ^ <Content> #v:
+:dvp ^ !<Cont2> ^ (##gvar ~ <Content> #v:)
 ->
 # ^ <Cont2> ( #v: ).
 
 // or, alternatively for the second rule
 
-:dvp ^ !<Cont2>, ##gvar ^ <Content>
+:dvp ^ !<Cont2> ^ (##gvar ~ <Content>)
 ->
 # ^ <Cont2> ( ##gvar<Content>: ).
 
@@ -180,8 +180,8 @@
  *****************************************************************************/
 
 :dvp ^ <SpeechAct>provideQuestionQuiz
-     ^ <Context>(<Question> #q: ^ <QuestionCount> #x: ),
-eq(#x, 1) ^ 1
+     ^ <Context>(<Question> #q: ^ <QuestionCount> #x: ) ^
+(eq(#x, 1) ~ 1)
 ->
 ###part1 = random("La prima domanda è: ",
                   "Ecco la prima domanda: ",
