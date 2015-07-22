@@ -196,15 +196,26 @@ public class CcgUtterancePlanner extends UtterancePlanner {
       collectDUnits(dagLf, units);
       for (DagNode d : units) {
         DagNode e = d.getValue(DagNode.TYPE_FEAT_ID);
-        if (e != null && e.getType() == _markerTypeId) {
-          String what = d.getValue(DagNode.PROP_FEAT_ID).getTypeName();
-          String marker = _markers.get(what);
-          if (marker == null) {
-            logger.warn("Unknown marker: " + what);
+        String sub = null;
+        if (e != null) {
+          if (e.getType() == _markerTypeId) {
+            String what = d.getValue(DagNode.PROP_FEAT_ID).getTypeName();
+            String marker = _markers.get(what);
+            if (marker == null) {
+              logger.warn("Unknown marker: " + what);
+            } else {
+              sub = marker;
+            }
           } else {
-            result.append(marker);
+            if (e.getTypeName().equals("canned")){
+              DagEdge edge = e.getEdge(DagNode.getFeatureId("string"))
+                  .getValue().getEdge(DagNode.PROP_FEAT_ID);
+              sub = edge.getValue().getTypeName();
+            }
           }
-        } else {
+        }
+
+        if (sub == null) {
           LF lf = DagToLF.convertToLF(d);
           // System.out.println(lf);
           Edge resEdge = _realizer.realize(lf);
@@ -219,8 +230,10 @@ public class CcgUtterancePlanner extends UtterancePlanner {
               result.append(marker);
             }
           }
-          result.append(" ");
+        } else {
+          result.append(sub);
         }
+        result.append(" ");
       }
     }
     return result.toString();
