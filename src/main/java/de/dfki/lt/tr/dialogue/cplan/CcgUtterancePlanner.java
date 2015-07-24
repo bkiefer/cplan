@@ -208,7 +208,7 @@ public class CcgUtterancePlanner extends UtterancePlanner {
             }
           } else {
             if (e.getTypeName().equals("canned")){
-              DagEdge edge = e.getEdge(DagNode.getFeatureId("string"))
+              DagEdge edge = d.getEdge(DagNode.getFeatureId("string"))
                   .getValue().getEdge(DagNode.PROP_FEAT_ID);
               sub = edge.getValue().getTypeName();
             }
