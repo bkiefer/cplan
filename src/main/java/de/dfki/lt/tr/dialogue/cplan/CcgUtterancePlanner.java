@@ -46,7 +46,8 @@ public class CcgUtterancePlanner extends UtterancePlanner {
     readProjectFile(toClone._projectFile);
   }
 
-  private int _dUnitTypeId, _markerTypeId;
+  private int _dUnitTypeId;
+  // , _markerTypeId;
   private short _firstFeatId, _nextFeatId, _modeFeatId;
 
   private static HashMap<String, String> _markers;
@@ -103,7 +104,7 @@ public class CcgUtterancePlanner extends UtterancePlanner {
     }
     super.finishProject(projectFile, project, settings, ruleSections);
     _dUnitTypeId = DagNode.getTypeId("d-units");
-    _markerTypeId = DagNode.getTypeId("marker");
+    // _markerTypeId = DagNode.getTypeId("marker");
     _firstFeatId = DagNode.getFeatureId("First");
     _nextFeatId = DagNode.getFeatureId("Next");
     _modeFeatId = DagNode.getFeatureId("Mode");
@@ -196,8 +197,8 @@ public class CcgUtterancePlanner extends UtterancePlanner {
       collectDUnits(dagLf, units);
       for (DagNode d : units) {
         DagNode e = d.getValue(DagNode.TYPE_FEAT_ID);
-        String sub = null;
-        if (e != null) {
+        if (e != null && e.getTypeName().equals("canned")) {
+             /*{
           if (e.getType() == _markerTypeId) {
             String what = d.getValue(DagNode.PROP_FEAT_ID).getTypeName();
             String marker = _markers.get(what);
@@ -206,32 +207,26 @@ public class CcgUtterancePlanner extends UtterancePlanner {
             } else {
               sub = marker;
             }
-          } else {
-            if (e.getTypeName().equals("canned")){
-              DagEdge edge = d.getEdge(DagNode.getFeatureId("string"))
-                  .getValue().getEdge(DagNode.PROP_FEAT_ID);
-              sub = edge.getValue().getTypeName();
-            }
-          }
-        }
-
-        if (sub == null) {
+          } else {*/
+          DagEdge edge = d.getEdge(DagNode.getFeatureId("string"))
+          .getValue().getEdge(DagNode.PROP_FEAT_ID);
+          result.append(edge.getValue().getTypeName());
+        } else {
           LF lf = DagToLF.convertToLF(d);
           // System.out.println(lf);
           Edge resEdge = _realizer.realize(lf);
           result.append(resEdge.getSign().getOrthography());
-          DagNode mode = d.getValue(_modeFeatId);
-          if (mode != null) {
-            String what = mode.getValue(DagNode.PROP_FEAT_ID).getTypeName();
-            String marker = _modes.get(what);
-            if (marker == null) {
-              logger.warn("Unknown marker: " + what);
-            } else {
-              result.append(marker);
-            }
+        }
+
+        DagNode mode = d.getValue(_modeFeatId);
+        if (mode != null) {
+          String what = mode.getValue(DagNode.PROP_FEAT_ID).getTypeName();
+          String marker = _modes.get(what);
+          if (marker == null) {
+            logger.warn("Unknown marker: " + what);
+          } else {
+            result.append(marker);
           }
-        } else {
-          result.append(sub);
         }
         result.append(" ");
       }
