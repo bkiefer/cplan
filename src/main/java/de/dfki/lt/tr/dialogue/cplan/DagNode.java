@@ -381,10 +381,11 @@ public class DagNode {
   }
 
   public DagNode copySafelyRec(IdentityHashMap<DagNode, DagNode> copyMap) {
-    DagNode newCopy = copyMap.get(this);
+    DagNode here = this.dereference();
+    DagNode newCopy = copyMap.get(here);
     if (newCopy == null) {
-      newCopy = this.clone(_typeCode);
-      copyMap.put(this, newCopy);
+      newCopy = here.clone(_typeCode);
+      copyMap.put(here, newCopy);
       if (getEdges() != null) {
         for (DagEdge e : getEdges()) {
           newCopy.addEdge(
