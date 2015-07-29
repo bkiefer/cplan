@@ -391,6 +391,10 @@ public class BatchTest {
   }
 
 
+  public boolean validGenericAnswer(String in) {
+    return ! in.replaceAll("[:;,?. ]", "").isEmpty();
+  }
+
   public ResultItem realizeOneItem(RealizationTestItem item, int i) {
     DagNode result = _planner.process(item.lf);
     String generated = "";
@@ -420,7 +424,7 @@ public class BatchTest {
       plannerLogger.removeAppender(sentinel);
     }
     if (resultStatus == Status.GOOD &&
-        ! ((item.answers.contains("*") && ! generated.isEmpty())
+        ! ((item.answers.contains("*") && validGenericAnswer(generated))
            || item.answers.contains(generated))) {
       resultStatus = Status.BAD;
     }
