@@ -43,6 +43,8 @@ public class FunctionFactory {
     register(new ConstantFunction("1"), planner);
     register(new CloneNode(), planner);
     register(new IdentityFunction(), planner);
+    register(new Equal(), planner);
+    register(new Bound(), planner);
     register(new ThrowExceptionFunction(), planner);
     register(new WarningFunction(), planner);
     // math functions
