@@ -1038,7 +1038,6 @@ public class DagNode {
   public void sortEdges() {
     Collections.sort(_outedges,
         new Comparator<DagEdge>(){
-          @Override
           public int compare(DagEdge arg0, DagEdge arg1) {
             return arg0._feature - arg1._feature;
           }
@@ -1094,9 +1093,9 @@ public class DagNode {
       }
     }
 
-    @Override public boolean hasNext() { return _curr != null; }
+    public boolean hasNext() { return _curr != null; }
 
-    @Override public DagEdge next() {
+    public DagEdge next() {
       DagEdge now = _curr;
       if (_impl.hasNext()) {
         _curr = _impl.next();
@@ -1108,7 +1107,6 @@ public class DagNode {
       return now;
     }
 
-    @Override
     public void remove() { throw new UnsupportedOperationException(); }
   }
 

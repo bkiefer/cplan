@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jline.ConsoleReader;
+import jline.console.ConsoleReader;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -148,7 +148,7 @@ implements UPMainFrame.CloseAllListener {
 
     LoadProjectAction(UPMainFrame mf) { _mf = mf; }
 
-    @Override public void execute(String... args) { _mf.reloadCurrentProject(); }
+    public void execute(String... args) { _mf.reloadCurrentProject(); }
   }
 
   void startGui(final String projectFile) {

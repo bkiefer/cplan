@@ -15,7 +15,6 @@ public class PairList<K, V> implements Iterable<Pair<K, V>> {
     _impl.clear();
   }
 
-  @Override
   public Iterator<Pair<K, V>> iterator() {
     return _impl.iterator();
   }

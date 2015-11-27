@@ -149,10 +149,8 @@ implements UPMainFrame.RunStateListener {
       this.fireTableDataChanged();
     }
 
-    @Override
     public int getColumnCount() { return 2; }
 
-    @Override
     public int getRowCount() { return _keys.size(); }
 
     /** This is a read-only model */
@@ -165,7 +163,6 @@ implements UPMainFrame.RunStateListener {
       assert(false);
     }
 
-    @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
       if (rowIndex >= _keys.size())
         return "";
@@ -177,7 +174,6 @@ implements UPMainFrame.RunStateListener {
   class ValueChangeListener implements ChangeListener {
     /** Called when the trace scrollbar is moved.
      *  Display the state for the new value */
-    @Override
     public void stateChanged(ChangeEvent e) {
       displayState(_current.getValue());
     }

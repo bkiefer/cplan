@@ -56,7 +56,6 @@ public class UPMainFrame extends MainFrame {
    */
   private static class ProjectFileProcessor extends FileProcessorAdapter {
     /** Set the project file to the given file and load its contents */
-    @Override
     public boolean processFile(File projectFile, MainFrame mf) {
       UPMainFrame upmf = null;
       try {
@@ -287,7 +286,6 @@ public class UPMainFrame extends MainFrame {
 
     setProcessorStopped();
     addRunStateListener(new RunStateListener() {
-      @Override
       public void stateChanged() { updateButtonStates(); }
     });
   }
@@ -347,7 +345,6 @@ public class UPMainFrame extends MainFrame {
     ListRangeModel<TraceEvent> events = new ListRangeModel<TraceEvent>();
     _tracer = new CollectEventsTracer(events);
     _tracer.addListener(new SuspendableTracer.SuspendListener() {
-      @Override
       public void suspended(boolean isSuspended) {
         setProcessorSuspended(isSuspended);
       }
@@ -629,7 +626,6 @@ public class UPMainFrame extends MainFrame {
       _batchPlanner = planner;
     }
 
-    @Override
     public boolean processFile(File toProcess, MainFrame mf) {
       try {
         bt = _batchPlanner.loadBatch(toProcess, realizationTest);
@@ -639,12 +635,10 @@ public class UPMainFrame extends MainFrame {
       return true;
     }
 
-    @Override
     public FileAssociation getAssociation(String extension) {
       throw new UnsupportedOperationException();
     }
 
-    @Override
     public FileFilter getFileFilter() { return null; }
   }
 

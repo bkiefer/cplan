@@ -75,5 +75,10 @@ public abstract class Match {
     return m;
   }
 
+public DagEdge getBinding(DagEdge input, Bindings bindings) {
+	// TODO Auto-generated method stub
+	return null;
+}
+
 }
 

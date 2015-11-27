@@ -112,10 +112,8 @@ public class ItemsTableWindow extends JFrame {
       fireTableDataChanged();
     }
 
-    @Override
     public int getColumnCount() { return colNames().length; }
 
-    @Override
     public int getRowCount() {
       int result = _showGood ? _bt.goodSize() : 0;
       if (_showBad) result += _bt.badSize();
@@ -132,7 +130,6 @@ public class ItemsTableWindow extends JFrame {
       assert (false);
     }
 
-    @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
       ResultItem item = getItem(rowIndex);
       switch (columnIndex) {
@@ -332,7 +329,6 @@ public class ItemsTableWindow extends JFrame {
     // add check boxes to display only good or bad items
     JCheckBox showGood = new JCheckBox(new AbstractAction("good") {
       private static final long serialVersionUID = 1L;
-      @Override
       public void actionPerformed(ActionEvent e) {
         _showGood = ((JCheckBox)e.getSource()).isSelected();
         ((ItemsTableModel)ItemsTableWindow.this._itemsDisplay.getModel())
@@ -342,7 +338,6 @@ public class ItemsTableWindow extends JFrame {
     showGood.setSelected(_showGood);
     JCheckBox showBad = new JCheckBox(new AbstractAction("bad") {
       private static final long serialVersionUID = 1L;
-      @Override
       public void actionPerformed(ActionEvent e) {
         _showBad = ((JCheckBox)e.getSource()).isSelected();
         ((ItemsTableModel)ItemsTableWindow.this._itemsDisplay.getModel())

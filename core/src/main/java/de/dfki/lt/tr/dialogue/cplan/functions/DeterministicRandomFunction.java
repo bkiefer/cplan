@@ -74,7 +74,6 @@ public class DeterministicRandomFunction implements Function {
     return sb.toString();
   }
 
-  @Override
   public Object apply(List<DagNode> args) {
     // if this call is not recorded in the current call sequence, add it and
     // take the first alternative
@@ -87,17 +86,14 @@ public class DeterministicRandomFunction implements Function {
     return args.get(current);
   }
 
-  @Override
   public int arity() {
     return -1;
   }
 
-  @Override
   public String name() {
     return "random";
   }
 
-  @Override
   public void register(UtterancePlanner planner) { }
 
 }

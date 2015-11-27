@@ -27,7 +27,6 @@ public class ParallelProcessor implements Processor {
     _applied = new AppliedMap();
   }
 
-  @Override
   public void setTracing(RuleTracer t) {
     List<Rule> rules = new ArrayList<Rule>(_rules.size());
     for (Rule r : _rules) {
@@ -37,7 +36,6 @@ public class ParallelProcessor implements Processor {
     _tracer = t;
   }
 
-  @Override
   public RuleTracer getTracing() {
     return _tracer;
   }
@@ -159,7 +157,6 @@ public class ParallelProcessor implements Processor {
    *  the actions in the order in which they were found. Rule matching is
    *  applied in the order in which the rules are loaded.
    */
-  @Override
   public DagNode applyRules(DagNode lf, Bindings bindings) {
     DagEdge lfEdge = new DagEdge((short)-1, lf);
     List<RuleAction> actions = computeMatches(lfEdge, bindings);

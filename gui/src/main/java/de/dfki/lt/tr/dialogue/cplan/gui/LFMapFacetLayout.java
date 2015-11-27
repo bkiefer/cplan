@@ -34,12 +34,10 @@ public class LFMapFacetLayout extends FacetLayoutBase {
     }
   }
 
-  @Override
   public int facet() {
     return ModelAdapter.MAP;
   }
 
-  @Override
   public GraphicalNode transform(Object model, ViewContext context,
       int facetMask) {
     if (model == null) return null;

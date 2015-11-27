@@ -14,4 +14,6 @@ public interface IniFileHandler {
    *  only a key is given in the file, which may be OK.
    */
   public abstract void keyValuePair(String key, String value);
+
+PairList<String, PairList<String, String>> getResult();
 }

@@ -8,7 +8,6 @@ public class MiniTracer implements RuleTracer {
     setTracing(bitmask);
   }
 
-  @Override
   public void traceMatch(DagEdge root, DagEdge current, BasicRule r,
       Bindings bindings) {
     if ((_ruleTracing & MATCHING) != 0) {
@@ -16,12 +15,10 @@ public class MiniTracer implements RuleTracer {
     }
   }
 
-  @Override
   public void traceBeforeApplication(DagEdge root, DagEdge current, BasicRule r,
       Bindings bindings){
   }
 
-  @Override
   public void traceAfterApplication(DagEdge root, DagEdge current, BasicRule r,
       Bindings bindings){
     if ((_ruleTracing & MODIFICATION) != 0) {
@@ -29,7 +26,6 @@ public class MiniTracer implements RuleTracer {
     }
   }
 
-  @Override
   public void setTracing(int bitmask) {
     _ruleTracing = bitmask;
   }

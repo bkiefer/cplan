@@ -14,23 +14,19 @@ public class DiscreteRandomFunction implements Function {
     rand = new Random(System.currentTimeMillis());
   }
 
-  @Override
   public Object apply(List<DagNode> args) {
     int i = rand.nextInt(args.size());
     return args.get(i);
   }
 
-  @Override
   public int arity() {
     return -1;
   }
 
-  @Override
   public String name() {
     return "random";
   }
 
-  @Override
   public void register(UtterancePlanner planner) { }
 
 }

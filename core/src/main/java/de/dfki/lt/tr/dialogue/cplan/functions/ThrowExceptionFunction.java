@@ -10,7 +10,6 @@ import de.dfki.lt.tr.dialogue.cplan.UtterancePlanner;
  */
 public class ThrowExceptionFunction implements Function {
 
-  @Override
   public Object apply(List<DagNode> args) {
     if (args != null && args.size() >= 1) {
       throw new PlanningException(args.get(0).toString());
@@ -19,17 +18,14 @@ public class ThrowExceptionFunction implements Function {
     }
   }
 
-  @Override
   public int arity() {
     return -1;
   }
 
-  @Override
   public String name() {
     return "throwException";
   }
 
-  @Override
   public void register(UtterancePlanner planner) {  }
 
 }

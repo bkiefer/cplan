@@ -5,7 +5,7 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>de.dfki.tarot.nlp</groupId>
+  <groupId>de.dfki.mlt</groupId>
   <artifactId>cplan</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
@@ -21,8 +21,9 @@
   </licenses>
 
   <modules>
-    <module>../cplan-core</module>
-    <module>../cplan-ccg</module>
+    <module>core</module>
+    <module>ccg</module>
+    <module>gui</module>
   </modules>
 
   <properties>

@@ -27,7 +27,6 @@ public class CollectEventsTracer extends SuspendableTracer {
     return _events;
   }
 
-  @Override
   public void traceAfterApplication(DagEdge root, DagEdge current, BasicRule r,
       Bindings bindings) {
     TraceEvent curr = _events.get(_last);
@@ -41,7 +40,6 @@ public class CollectEventsTracer extends SuspendableTracer {
     ++_last;
   }
 
-  @Override
   public void traceMatch(DagEdge root, DagEdge current, BasicRule r,
       Bindings bindings) {
     checkSuspended();

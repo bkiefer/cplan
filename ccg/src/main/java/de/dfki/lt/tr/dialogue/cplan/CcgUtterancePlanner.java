@@ -289,13 +289,11 @@ public class CcgUtterancePlanner extends UtterancePlanner {
       private int _max;
       private static final int step = 10;
 
-      @Override
       public void setMaximum(int max) {
         _max = max;
         logger.info(_lastPercentage + "% processed");
       }
 
-      @Override
       public void progress(int count) {
         int newPercentage = (int) ((100.0 * count) / _max);
         if (newPercentage >= _lastPercentage + step) {

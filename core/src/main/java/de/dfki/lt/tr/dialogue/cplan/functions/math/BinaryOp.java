@@ -24,4 +24,9 @@ public abstract class BinaryOp extends MathOp {
   }
 
   protected abstract double mathApply(double x, double y);
+
+public String name() {
+	// TODO Auto-generated method stub
+	return null;
+}
 }

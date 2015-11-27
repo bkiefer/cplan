@@ -113,7 +113,6 @@ implements RuleParser.Lexer, LFParser.Lexer  {
   }
 
 
-  @Override
   public void yyerror(Location loc, String msg) {
     Position beg = loc.begin;
     _lastErrors.add(new Position(beg.line, beg.column,
@@ -363,12 +362,10 @@ implements RuleParser.Lexer, LFParser.Lexer  {
     return _lastErrors;
   }
 
-  @Override
   public Position getEndPos() {
     return getCurrentPosition();
   }
 
-  @Override
   public Position getStartPos() {
     return _startPos;
   }

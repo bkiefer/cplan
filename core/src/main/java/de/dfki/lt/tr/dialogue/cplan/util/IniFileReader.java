@@ -14,6 +14,12 @@ public class IniFileReader {
 
   private interface MyHandler extends IniFileHandler {
     public PairList<String, PairList<String, String>> getResult();
+
+	void sectionStart(String name);
+
+	void sectionEnd(String name);
+
+	void keyValuePair(String key, String value);
   }
 
   /** This provides a minimalistic interface for those who don't want to bother
@@ -32,22 +38,18 @@ public class IniFileReader {
 
       private PairList<String, String> _currentSection = null;
 
-      @Override
       public PairList<String, PairList<String, String>> getResult() {
         return _result;
       }
 
-      @Override
       public void keyValuePair(String key, String value) {
         _currentSection.add(key, value);
       }
 
-      @Override
       public void sectionEnd(String name) {
         _currentSection = null;
       }
 
-      @Override
       public void sectionStart(String name) {
         _currentSection = new PairList<String, String>();
         _result.add(name, _currentSection);

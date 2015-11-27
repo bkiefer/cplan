@@ -18,7 +18,6 @@ public class CcgHierarchy implements Hierarchy {
     _typeMap = new HashMap<Integer, SimpleType>();
   }
 
-  @Override
   public void registerType(String name, int id) {
     if (! _typeMap.containsKey(id)) {
       SimpleType newType = null;
@@ -29,7 +28,6 @@ public class CcgHierarchy implements Hierarchy {
     }
   }
 
-  @Override
   public boolean subsumes(int type1, int type2) {
     SimpleType st1 = _typeMap.get(type1);
     if (st1 == null) return false;

@@ -13,7 +13,6 @@ public class WarningFunction implements Function {
 
   protected Logger logger = Logger.getLogger("UtterancePlanner");
 
-  @Override
   public Object apply(List<DagNode> args) {
     if (args != null && args.size() >= 1) {
       logger.warn(args.get(0).getTypeName());
@@ -21,17 +20,14 @@ public class WarningFunction implements Function {
     return "true";
   }
 
-  @Override
   public int arity() {
     return 1;
   }
 
-  @Override
   public String name() {
     return "warning";
   }
 
-  @Override
   public void register(UtterancePlanner planner) {  }
 
 }

@@ -62,15 +62,12 @@ public class LFModelAdapter extends ModelAdapter {
       _iterator = it;
     }
 
-    @Override
     public boolean hasNext() {
       return _iterator != null && _iterator.hasNext();
     }
 
-    @Override
     public Object next() { return _iterator.next().getValue(); }
 
-    @Override
     public void remove() { throw new UnsupportedOperationException(); }
   }
 

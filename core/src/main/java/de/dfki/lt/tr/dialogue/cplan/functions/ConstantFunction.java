@@ -13,22 +13,18 @@ public class ConstantFunction implements Function {
     _constant = constant;
   }
 
-  @Override
   public Object apply(List<DagNode> args) {
     return _constant;
   }
 
-  @Override
   public String name() {
     return "constant"+_constant;
   }
 
-  @Override
   public int arity() {
     return 0;
   }
   
-  @Override
   public void register(UtterancePlanner planner) { }
 
 }

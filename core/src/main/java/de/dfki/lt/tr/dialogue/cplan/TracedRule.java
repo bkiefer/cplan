@@ -37,7 +37,6 @@ public class TracedRule implements Rule {
     return r;
   }
 
-  @Override
   public boolean matches(DagEdge root, DagEdge here, Bindings bindings) {
     boolean result = _r.matches(root, here, bindings);
     if (result)
@@ -45,7 +44,6 @@ public class TracedRule implements Rule {
     return result;
   }
 
-  @Override
   public boolean executeActions(DagEdge root, DagEdge curr, Bindings bindings) {
     _tracer.traceBeforeApplication(root, curr, _r, bindings);
     boolean result = _r.executeActions(root, curr, bindings);
@@ -56,9 +54,7 @@ public class TracedRule implements Rule {
   @Override
   public String toString() { return _r.toString(); }
 
-  @Override
   public boolean oneShot() { return _r.oneShot(); }
 
-  @Override
   public int id() { return _r.id(); }
 }
