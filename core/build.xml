@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- In order to compile sources, it is necessary having installed an JDK
+(a simple JRE will not be sufficient -> no javac). -->
+
+<project name="cplan" basedir="." default="compile">
+
+  <import file="../buildsys/build-skeleton.xml" as=""/>
+
+  <!-- ================================================================= -->
+  <!-- Build plugin for special test                                     -->
+  <!-- ================================================================= -->
+
+  <target name="test-special" depends="compile"
+          description="create a test plugin for a junit test">
+    <javac debug="yes" deprecation="yes"
+           srcdir="${tests.source.dir}/../resources/plugins"
+           destdir="${tests.source.dir}/../resources/plugins">
+      <patternset refid="sources"/>
+      <classpath>
+        <path refid="classpath"/>
+        <pathelement path="${classes.dir}"/>
+      </classpath>
+      <compilerarg value="-Xlint"/>
+    </javac>
+    <jar destfile="${tests.source.dir}/../resources/plugins/testplug.jar"
+         compress="true">
+      <fileset dir="${tests.source.dir}/../resources/plugins/"
+               includes="**/*.class"/>
+    </jar>
+  </target>
+
+  <!-- ================================================================= -->
+  <!-- Clean plugin for special test                                     -->
+  <!-- ================================================================= -->
+
+  <target name="clean-special">
+    <delete failonerror="false">
+      <fileset dir="${tests.source.dir}/../resources/plugins/"
+               includes="*.jar"/>
+      <fileset dir="${tests.source.dir}/../resources/plugins/"
+               includes="**/*.class"/>
+    </delete>
+  </target>
+
+</project>

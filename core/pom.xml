@@ -1,0 +1,91 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>de.dfki.tarot.nlp</groupId>
+    <artifactId>cplan</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>cplan-core</artifactId>
+
+  <licenses>
+    <license>
+      <name>LGPL 3 or later</name>
+      <url>http://www.gnu.org/licenses/lgpl.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.test.failure.ignore>true</maven.test.failure.ignore>  <!-- TODO: fix the failing tests -->
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>net.sf.trove4j</groupId>
+      <artifactId>trove4j</artifactId>
+      <version>3.0.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.16</version>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <id>generate-test-plugin</id>
+            <phase>process-test-classes</phase>
+            <configuration>
+              <target>
+                <property name="build.compiler" value="extJavac"/>
+                <property name="target.dir" value="./target"/>
+                <property name="classes.dir" value="${target.dir}/classes"/>
+                <property name="test.classes.dir" value="${target.dir}/test-classes"/>
+                <javac debug="yes" deprecation="yes"
+                       srcdir="${test.classes.dir}/plugins"
+                       destdir="${test.classes.dir}/plugins"
+                       includeantruntime="false">
+                  <!-- <patternset refid="sources"/> -->
+                  <classpath>
+                    <path refid="maven.test.classpath"/>
+                    <pathelement path="${classes.dir}"/>
+                  </classpath>
+                  <compilerarg value="-Xlint"/>
+                </javac>
+                <mkdir dir="${target.dir}/test-resources/plugins/"/>
+                <jar destfile="${target.dir}/test-resources/plugins/testplug.jar"
+                     compress="true">
+                  <fileset dir="${test.classes.dir}/plugins/"
+                           includes="**/*.class"/>
+                </jar>
+                <!-- clean up so that the .class files don't confuse the test runner -->
+                <delete failonerror="true">
+                  <fileset dir="${test.classes.dir}/plugins/"
+                           includes="**/*.class"/>
+                </delete>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

@@ -1,0 +1,1549 @@
+Grammar
+
+    0 $accept: start $end
+
+    1 start: rules
+
+    2 rules: group rules
+    3      | group
+
+    4 group: expr ARROW actions '.'
+    5      | expr ARROW actions '{' groups '}'
+    6      | expr '{' groups '}'
+    7      | error
+
+    8 groups: '|' group groups
+    9       | '^' group groups
+   10       | '|' group
+   11       | '^' group
+
+   12 expr: expr '|' eterm
+   13     | eterm
+
+   14 eterm: eterm '^' term
+   15      | term
+
+   16 term: '<' id_lvar '>' term
+   17     | '<' id_lvar '>'
+   18     | '(' GVAR '~' expr ')'
+   19     | '(' funcall '~' expr ')'
+   20     | feature
+
+   21 feature: nominal
+   22        | nominal iv_term
+   23        | ':' iv_term
+   24        | id_lvar
+   25        | STRING
+   26        | '!' term
+   27        | '(' expr ')'
+   28        | '=' nominal
+
+   29 nominal: ID ':'
+   30        | VAR ':'
+   31        | GVAR ':'
+
+   32 id_lvar: VAR
+   33        | ID
+
+   34 iv_term: id_lvar
+   35        | '!' iv_term
+   36        | '(' iv_expr ')'
+
+   37 iv_expr: iv_term
+   38        | iv_term '|' iv_expr
+
+   39 funcall: ID '(' rargs ')'
+   40        | ID '(' ')'
+
+   41 actions: action
+   42        | action ',' actions
+
+   43 action: lval '=' rexpr
+   44       | lval '^' rexpr
+   45       | lval '!' '<' ID '>'
+
+   46 lval: VAR
+   47     | RVAR
+   48     | '#'
+   49     | GVAR path
+
+   50 path: '<' ID '>' path
+   51     | %empty
+
+   52 rexpr: rexpr '^' rterm
+   53      | rterm
+
+   54 rterm: '<' ID '>' rterm
+   55      | rfeat
+
+   56 rfeat: rnominal
+   57      | rnominal r_id_var
+   58      | ':' r_id_var
+   59      | r_id_var
+   60      | STRING
+   61      | '(' rexpr ')'
+
+   62 rnominal: r_id_var ':'
+
+   63 rargs: rarg ',' rargs
+   64      | rarg
+
+   65 rarg: r_id_var
+   66     | STRING
+   67     | '#'
+
+   68 r_id_var: ID
+   69         | VAR
+   70         | GVAR path
+   71         | RVAR
+   72         | ID '(' rargs ')'
+   73         | ID '(' ')'
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'!' (33) 26 35 45
+'#' (35) 48 67
+'(' (40) 18 19 27 36 39 40 61 72 73
+')' (41) 18 19 27 36 39 40 61 72 73
+',' (44) 42 63
+'.' (46) 4
+':' (58) 23 29 30 31 58 62
+'<' (60) 16 17 45 50 54
+'=' (61) 28 43
+'>' (62) 16 17 45 50 54
+'^' (94) 9 11 14 44 52
+'{' (123) 5 6
+'|' (124) 8 10 12 38
+'}' (125) 5 6
+'~' (126) 18 19
+error (256) 7
+ID (258) 29 33 39 40 45 50 54 68 72 73
+VAR (259) 30 32 46 69
+GVAR (260) 18 31 49 70
+ARROW (262) 4 5
+STRING (263) 25 60 66
+RVAR (264) 47 71
+
+
+Nonterminals, with rules where they appear
+
+$accept (24)
+    on left: 0
+start (25)
+    on left: 1, on right: 0
+rules (26)
+    on left: 2 3, on right: 1 2
+group (27)
+    on left: 4 5 6 7, on right: 2 3 8 9 10 11
+groups (28)
+    on left: 8 9 10 11, on right: 5 6 8 9
+expr (29)
+    on left: 12 13, on right: 4 5 6 12 18 19 27
+eterm (30)
+    on left: 14 15, on right: 12 13 14
+term (31)
+    on left: 16 17 18 19 20, on right: 14 15 16 26
+feature (32)
+    on left: 21 22 23 24 25 26 27 28, on right: 20
+nominal (33)
+    on left: 29 30 31, on right: 21 22 28
+id_lvar (34)
+    on left: 32 33, on right: 16 17 24 34
+iv_term (35)
+    on left: 34 35 36, on right: 22 23 35 37 38
+iv_expr (36)
+    on left: 37 38, on right: 36 38
+funcall (37)
+    on left: 39 40, on right: 19
+actions (38)
+    on left: 41 42, on right: 4 5 42
+action (39)
+    on left: 43 44 45, on right: 41 42
+lval (40)
+    on left: 46 47 48 49, on right: 43 44 45
+path (41)
+    on left: 50 51, on right: 49 50 70
+rexpr (42)
+    on left: 52 53, on right: 43 44 52 61
+rterm (43)
+    on left: 54 55, on right: 52 53 54
+rfeat (44)
+    on left: 56 57 58 59 60 61, on right: 55
+rnominal (45)
+    on left: 62, on right: 56 57
+rargs (46)
+    on left: 63 64, on right: 39 63 72
+rarg (47)
+    on left: 65 66 67, on right: 63 64
+r_id_var (48)
+    on left: 68 69 70 71 72 73, on right: 57 58 59 62 65
+
+
+State 0
+
+    0 $accept: . start $end
+
+    error   shift, and go to state 1
+    ID      shift, and go to state 2
+    VAR     shift, and go to state 3
+    GVAR    shift, and go to state 4
+    STRING  shift, and go to state 5
+    '<'     shift, and go to state 6
+    '('     shift, and go to state 7
+    ':'     shift, and go to state 8
+    '!'     shift, and go to state 9
+    '='     shift, and go to state 10
+
+    start    go to state 11
+    rules    go to state 12
+    group    go to state 13
+    expr     go to state 14
+    eterm    go to state 15
+    term     go to state 16
+    feature  go to state 17
+    nominal  go to state 18
+    id_lvar  go to state 19
+
+
+State 1
+
+    7 group: error .
+
+    $default  reduce using rule 7 (group)
+
+
+State 2
+
+   29 nominal: ID . ':'
+   33 id_lvar: ID .
+
+    ':'  shift, and go to state 20
+
+    $default  reduce using rule 33 (id_lvar)
+
+
+State 3
+
+   30 nominal: VAR . ':'
+   32 id_lvar: VAR .
+
+    ':'  shift, and go to state 21
+
+    $default  reduce using rule 32 (id_lvar)
+
+
+State 4
+
+   31 nominal: GVAR . ':'
+
+    ':'  shift, and go to state 22
+
+
+State 5
+
+   25 feature: STRING .
+
+    $default  reduce using rule 25 (feature)
+
+
+State 6
+
+   16 term: '<' . id_lvar '>' term
+   17     | '<' . id_lvar '>'
+
+    ID   shift, and go to state 23
+    VAR  shift, and go to state 24
+
+    id_lvar  go to state 25
+
+
+State 7
+
+   18 term: '(' . GVAR '~' expr ')'
+   19     | '(' . funcall '~' expr ')'
+   27 feature: '(' . expr ')'
+
+    ID      shift, and go to state 26
+    VAR     shift, and go to state 3
+    GVAR    shift, and go to state 27
+    STRING  shift, and go to state 5
+    '<'     shift, and go to state 6
+    '('     shift, and go to state 7
+    ':'     shift, and go to state 8
+    '!'     shift, and go to state 9
+    '='     shift, and go to state 10
+
+    expr     go to state 28
+    eterm    go to state 15
+    term     go to state 16
+    feature  go to state 17
+    nominal  go to state 18
+    id_lvar  go to state 19
+    funcall  go to state 29
+
+
+State 8
+
+   23 feature: ':' . iv_term
+
+    ID   shift, and go to state 23
+    VAR  shift, and go to state 24
+    '('  shift, and go to state 30
+    '!'  shift, and go to state 31
+
+    id_lvar  go to state 32
+    iv_term  go to state 33
+
+
+State 9
+
+   26 feature: '!' . term
+
+    ID      shift, and go to state 2
+    VAR     shift, and go to state 3
+    GVAR    shift, and go to state 4
+    STRING  shift, and go to state 5
+    '<'     shift, and go to state 6
+    '('     shift, and go to state 7
+    ':'     shift, and go to state 8
+    '!'     shift, and go to state 9
+    '='     shift, and go to state 10
+
+    term     go to state 34
+    feature  go to state 17
+    nominal  go to state 18
+    id_lvar  go to state 19
+
+
+State 10
+
+   28 feature: '=' . nominal
+
+    ID    shift, and go to state 35
+    VAR   shift, and go to state 36
+    GVAR  shift, and go to state 4
+
+    nominal  go to state 37
+
+
+State 11
+
+    0 $accept: start . $end
+
+    $end  shift, and go to state 38
+
+
+State 12
+
+    1 start: rules .
+
+    $default  reduce using rule 1 (start)
+
+
+State 13
+
+    2 rules: group . rules
+    3      | group .
+
+    error   shift, and go to state 1
+    ID      shift, and go to state 2
+    VAR     shift, and go to state 3
+    GVAR    shift, and go to state 4
+    STRING  shift, and go to state 5
+    '<'     shift, and go to state 6
+    '('     shift, and go to state 7
+    ':'     shift, and go to state 8
+    '!'     shift, and go to state 9
+    '='     shift, and go to state 10
+
+    $end  reduce using rule 3 (rules)
+
+    rules    go to state 39
+    group    go to state 13
+    expr     go to state 14
+    eterm    go to state 15
+    term     go to state 16
+    feature  go to state 17
+    nominal  go to state 18
+    id_lvar  go to state 19
+
+
+State 14
+
+    4 group: expr . ARROW actions '.'
+    5      | expr . ARROW actions '{' groups '}'
+    6      | expr . '{' groups '}'
+   12 expr: expr . '|' eterm
+
+    ARROW  shift, and go to state 40
+    '{'    shift, and go to state 41
+    '|'    shift, and go to state 42
+
+
+State 15
+
+   13 expr: eterm .
+   14 eterm: eterm . '^' term
+
+    '^'  shift, and go to state 43
+
+    $default  reduce using rule 13 (expr)
+
+
+State 16
+
+   15 eterm: term .
+
+    $default  reduce using rule 15 (eterm)
+
+
+State 17
+
+   20 term: feature .
+
+    $default  reduce using rule 20 (term)
+
+
+State 18
+
+   21 feature: nominal .
+   22        | nominal . iv_term
+
+    ID   shift, and go to state 23
+    VAR  shift, and go to state 24
+    '('  shift, and go to state 30
+    '!'  shift, and go to state 31
+
+    $default  reduce using rule 21 (feature)
+
+    id_lvar  go to state 32
+    iv_term  go to state 44
+
+
+State 19
+
+   24 feature: id_lvar .
+
+    $default  reduce using rule 24 (feature)
+
+
+State 20
+
+   29 nominal: ID ':' .
+
+    $default  reduce using rule 29 (nominal)
+
+
+State 21
+
+   30 nominal: VAR ':' .
+
+    $default  reduce using rule 30 (nominal)
+
+
+State 22
+
+   31 nominal: GVAR ':' .
+
+    $default  reduce using rule 31 (nominal)
+
+
+State 23
+
+   33 id_lvar: ID .
+
+    $default  reduce using rule 33 (id_lvar)
+
+
+State 24
+
+   32 id_lvar: VAR .
+
+    $default  reduce using rule 32 (id_lvar)
+
+
+State 25
+
+   16 term: '<' id_lvar . '>' term
+   17     | '<' id_lvar . '>'
+
+    '>'  shift, and go to state 45
+
+
+State 26
+
+   29 nominal: ID . ':'
+   33 id_lvar: ID .
+   39 funcall: ID . '(' rargs ')'
+   40        | ID . '(' ')'
+
+    '('  shift, and go to state 46
+    ':'  shift, and go to state 20
+
+    $default  reduce using rule 33 (id_lvar)
+
+
+State 27
+
+   18 term: '(' GVAR . '~' expr ')'
+   31 nominal: GVAR . ':'
+
+    '~'  shift, and go to state 47
+    ':'  shift, and go to state 22
+
+
+State 28
+
+   12 expr: expr . '|' eterm
+   27 feature: '(' expr . ')'
+
+    '|'  shift, and go to state 42
+    ')'  shift, and go to state 48
+
+
+State 29
+
+   19 term: '(' funcall . '~' expr ')'
+
+    '~'  shift, and go to state 49
+
+
+State 30
+
+   36 iv_term: '(' . iv_expr ')'
+
+    ID   shift, and go to state 23
+    VAR  shift, and go to state 24
+    '('  shift, and go to state 30
+    '!'  shift, and go to state 31
+
+    id_lvar  go to state 32
+    iv_term  go to state 50
+    iv_expr  go to state 51
+
+
+State 31
+
+   35 iv_term: '!' . iv_term
+
+    ID   shift, and go to state 23
+    VAR  shift, and go to state 24
+    '('  shift, and go to state 30
+    '!'  shift, and go to state 31
+
+    id_lvar  go to state 32
+    iv_term  go to state 52
+
+
+State 32
+
+   34 iv_term: id_lvar .
+
+    $default  reduce using rule 34 (iv_term)
+
+
+State 33
+
+   23 feature: ':' iv_term .
+
+    $default  reduce using rule 23 (feature)
+
+
+State 34
+
+   26 feature: '!' term .
+
+    $default  reduce using rule 26 (feature)
+
+
+State 35
+
+   29 nominal: ID . ':'
+
+    ':'  shift, and go to state 20
+
+
+State 36
+
+   30 nominal: VAR . ':'
+
+    ':'  shift, and go to state 21
+
+
+State 37
+
+   28 feature: '=' nominal .
+
+    $default  reduce using rule 28 (feature)
+
+
+State 38
+
+    0 $accept: start $end .
+
+    $default  accept
+
+
+State 39
+
+    2 rules: group rules .
+
+    $default  reduce using rule 2 (rules)
+
+
+State 40
+
+    4 group: expr ARROW . actions '.'
+    5      | expr ARROW . actions '{' groups '}'
+
+    VAR   shift, and go to state 53
+    GVAR  shift, and go to state 54
+    RVAR  shift, and go to state 55
+    '#'   shift, and go to state 56
+
+    actions  go to state 57
+    action   go to state 58
+    lval     go to state 59
+
+
+State 41
+
+    6 group: expr '{' . groups '}'
+
+    '|'  shift, and go to state 60
+    '^'  shift, and go to state 61
+
+    groups  go to state 62
+
+
+State 42
+
+   12 expr: expr '|' . eterm
+
+    ID      shift, and go to state 2
+    VAR     shift, and go to state 3
+    GVAR    shift, and go to state 4
+    STRING  shift, and go to state 5
+    '<'     shift, and go to state 6
+    '('     shift, and go to state 7
+    ':'     shift, and go to state 8
+    '!'     shift, and go to state 9
+    '='     shift, and go to state 10
+
+    eterm    go to state 63
+    term     go to state 16
+    feature  go to state 17
+    nominal  go to state 18
+    id_lvar  go to state 19
+
+
+State 43
+
+   14 eterm: eterm '^' . term
+
+    ID      shift, and go to state 2
+    VAR     shift, and go to state 3
+    GVAR    shift, and go to state 4
+    STRING  shift, and go to state 5
+    '<'     shift, and go to state 6
+    '('     shift, and go to state 7
+    ':'     shift, and go to state 8
+    '!'     shift, and go to state 9
+    '='     shift, and go to state 10
+
+    term     go to state 64
+    feature  go to state 17
+    nominal  go to state 18
+    id_lvar  go to state 19
+
+
+State 44
+
+   22 feature: nominal iv_term .
+
+    $default  reduce using rule 22 (feature)
+
+
+State 45
+
+   16 term: '<' id_lvar '>' . term
+   17     | '<' id_lvar '>' .
+
+    ID      shift, and go to state 2
+    VAR     shift, and go to state 3
+    GVAR    shift, and go to state 4
+    STRING  shift, and go to state 5
+    '<'     shift, and go to state 6
+    '('     shift, and go to state 7
+    ':'     shift, and go to state 8
+    '!'     shift, and go to state 9
+    '='     shift, and go to state 10
+
+    $default  reduce using rule 17 (term)
+
+    term     go to state 65
+    feature  go to state 17
+    nominal  go to state 18
+    id_lvar  go to state 19
+
+
+State 46
+
+   39 funcall: ID '(' . rargs ')'
+   40        | ID '(' . ')'
+
+    ID      shift, and go to state 66
+    VAR     shift, and go to state 67
+    GVAR    shift, and go to state 68
+    STRING  shift, and go to state 69
+    RVAR    shift, and go to state 70
+    ')'     shift, and go to state 71
+    '#'     shift, and go to state 72
+
+    rargs     go to state 73
+    rarg      go to state 74
+    r_id_var  go to state 75
+
+
+State 47
+
+   18 term: '(' GVAR '~' . expr ')'
+
+    ID      shift, and go to state 2
+    VAR     shift, and go to state 3
+    GVAR    shift, and go to state 4
+    STRING  shift, and go to state 5
+    '<'     shift, and go to state 6
+    '('     shift, and go to state 7
+    ':'     shift, and go to state 8
+    '!'     shift, and go to state 9
+    '='     shift, and go to state 10
+
+    expr     go to state 76
+    eterm    go to state 15
+    term     go to state 16
+    feature  go to state 17
+    nominal  go to state 18
+    id_lvar  go to state 19
+
+
+State 48
+
+   27 feature: '(' expr ')' .
+
+    $default  reduce using rule 27 (feature)
+
+
+State 49
+
+   19 term: '(' funcall '~' . expr ')'
+
+    ID      shift, and go to state 2
+    VAR     shift, and go to state 3
+    GVAR    shift, and go to state 4
+    STRING  shift, and go to state 5
+    '<'     shift, and go to state 6
+    '('     shift, and go to state 7
+    ':'     shift, and go to state 8
+    '!'     shift, and go to state 9
+    '='     shift, and go to state 10
+
+    expr     go to state 77
+    eterm    go to state 15
+    term     go to state 16
+    feature  go to state 17
+    nominal  go to state 18
+    id_lvar  go to state 19
+
+
+State 50
+
+   37 iv_expr: iv_term .
+   38        | iv_term . '|' iv_expr
+
+    '|'  shift, and go to state 78
+
+    $default  reduce using rule 37 (iv_expr)
+
+
+State 51
+
+   36 iv_term: '(' iv_expr . ')'
+
+    ')'  shift, and go to state 79
+
+
+State 52
+
+   35 iv_term: '!' iv_term .
+
+    $default  reduce using rule 35 (iv_term)
+
+
+State 53
+
+   46 lval: VAR .
+
+    $default  reduce using rule 46 (lval)
+
+
+State 54
+
+   49 lval: GVAR . path
+
+    '<'  shift, and go to state 80
+
+    $default  reduce using rule 51 (path)
+
+    path  go to state 81
+
+
+State 55
+
+   47 lval: RVAR .
+
+    $default  reduce using rule 47 (lval)
+
+
+State 56
+
+   48 lval: '#' .
+
+    $default  reduce using rule 48 (lval)
+
+
+State 57
+
+    4 group: expr ARROW actions . '.'
+    5      | expr ARROW actions . '{' groups '}'
+
+    '.'  shift, and go to state 82
+    '{'  shift, and go to state 83
+
+
+State 58
+
+   41 actions: action .
+   42        | action . ',' actions
+
+    ','  shift, and go to state 84
+
+    $default  reduce using rule 41 (actions)
+
+
+State 59
+
+   43 action: lval . '=' rexpr
+   44       | lval . '^' rexpr
+   45       | lval . '!' '<' ID '>'
+
+    '^'  shift, and go to state 85
+    '!'  shift, and go to state 86
+    '='  shift, and go to state 87
+
+
+State 60
+
+    8 groups: '|' . group groups
+   10       | '|' . group
+
+    error   shift, and go to state 1
+    ID      shift, and go to state 2
+    VAR     shift, and go to state 3
+    GVAR    shift, and go to state 4
+    STRING  shift, and go to state 5
+    '<'     shift, and go to state 6
+    '('     shift, and go to state 7
+    ':'     shift, and go to state 8
+    '!'     shift, and go to state 9
+    '='     shift, and go to state 10
+
+    group    go to state 88
+    expr     go to state 14
+    eterm    go to state 15
+    term     go to state 16
+    feature  go to state 17
+    nominal  go to state 18
+    id_lvar  go to state 19
+
+
+State 61
+
+    9 groups: '^' . group groups
+   11       | '^' . group
+
+    error   shift, and go to state 1
+    ID      shift, and go to state 2
+    VAR     shift, and go to state 3
+    GVAR    shift, and go to state 4
+    STRING  shift, and go to state 5
+    '<'     shift, and go to state 6
+    '('     shift, and go to state 7
+    ':'     shift, and go to state 8
+    '!'     shift, and go to state 9
+    '='     shift, and go to state 10
+
+    group    go to state 89
+    expr     go to state 14
+    eterm    go to state 15
+    term     go to state 16
+    feature  go to state 17
+    nominal  go to state 18
+    id_lvar  go to state 19
+
+
+State 62
+
+    6 group: expr '{' groups . '}'
+
+    '}'  shift, and go to state 90
+
+
+State 63
+
+   12 expr: expr '|' eterm .
+   14 eterm: eterm . '^' term
+
+    '^'  shift, and go to state 43
+
+    $default  reduce using rule 12 (expr)
+
+
+State 64
+
+   14 eterm: eterm '^' term .
+
+    $default  reduce using rule 14 (eterm)
+
+
+State 65
+
+   16 term: '<' id_lvar '>' term .
+
+    $default  reduce using rule 16 (term)
+
+
+State 66
+
+   68 r_id_var: ID .
+   72         | ID . '(' rargs ')'
+   73         | ID . '(' ')'
+
+    '('  shift, and go to state 91
+
+    $default  reduce using rule 68 (r_id_var)
+
+
+State 67
+
+   69 r_id_var: VAR .
+
+    $default  reduce using rule 69 (r_id_var)
+
+
+State 68
+
+   70 r_id_var: GVAR . path
+
+    '<'  shift, and go to state 80
+
+    $default  reduce using rule 51 (path)
+
+    path  go to state 92
+
+
+State 69
+
+   66 rarg: STRING .
+
+    $default  reduce using rule 66 (rarg)
+
+
+State 70
+
+   71 r_id_var: RVAR .
+
+    $default  reduce using rule 71 (r_id_var)
+
+
+State 71
+
+   40 funcall: ID '(' ')' .
+
+    $default  reduce using rule 40 (funcall)
+
+
+State 72
+
+   67 rarg: '#' .
+
+    $default  reduce using rule 67 (rarg)
+
+
+State 73
+
+   39 funcall: ID '(' rargs . ')'
+
+    ')'  shift, and go to state 93
+
+
+State 74
+
+   63 rargs: rarg . ',' rargs
+   64      | rarg .
+
+    ','  shift, and go to state 94
+
+    $default  reduce using rule 64 (rargs)
+
+
+State 75
+
+   65 rarg: r_id_var .
+
+    $default  reduce using rule 65 (rarg)
+
+
+State 76
+
+   12 expr: expr . '|' eterm
+   18 term: '(' GVAR '~' expr . ')'
+
+    '|'  shift, and go to state 42
+    ')'  shift, and go to state 95
+
+
+State 77
+
+   12 expr: expr . '|' eterm
+   19 term: '(' funcall '~' expr . ')'
+
+    '|'  shift, and go to state 42
+    ')'  shift, and go to state 96
+
+
+State 78
+
+   38 iv_expr: iv_term '|' . iv_expr
+
+    ID   shift, and go to state 23
+    VAR  shift, and go to state 24
+    '('  shift, and go to state 30
+    '!'  shift, and go to state 31
+
+    id_lvar  go to state 32
+    iv_term  go to state 50
+    iv_expr  go to state 97
+
+
+State 79
+
+   36 iv_term: '(' iv_expr ')' .
+
+    $default  reduce using rule 36 (iv_term)
+
+
+State 80
+
+   50 path: '<' . ID '>' path
+
+    ID  shift, and go to state 98
+
+
+State 81
+
+   49 lval: GVAR path .
+
+    $default  reduce using rule 49 (lval)
+
+
+State 82
+
+    4 group: expr ARROW actions '.' .
+
+    $default  reduce using rule 4 (group)
+
+
+State 83
+
+    5 group: expr ARROW actions '{' . groups '}'
+
+    '|'  shift, and go to state 60
+    '^'  shift, and go to state 61
+
+    groups  go to state 99
+
+
+State 84
+
+   42 actions: action ',' . actions
+
+    VAR   shift, and go to state 53
+    GVAR  shift, and go to state 54
+    RVAR  shift, and go to state 55
+    '#'   shift, and go to state 56
+
+    actions  go to state 100
+    action   go to state 58
+    lval     go to state 59
+
+
+State 85
+
+   44 action: lval '^' . rexpr
+
+    ID      shift, and go to state 66
+    VAR     shift, and go to state 67
+    GVAR    shift, and go to state 68
+    STRING  shift, and go to state 101
+    RVAR    shift, and go to state 70
+    '<'     shift, and go to state 102
+    '('     shift, and go to state 103
+    ':'     shift, and go to state 104
+
+    rexpr     go to state 105
+    rterm     go to state 106
+    rfeat     go to state 107
+    rnominal  go to state 108
+    r_id_var  go to state 109
+
+
+State 86
+
+   45 action: lval '!' . '<' ID '>'
+
+    '<'  shift, and go to state 110
+
+
+State 87
+
+   43 action: lval '=' . rexpr
+
+    ID      shift, and go to state 66
+    VAR     shift, and go to state 67
+    GVAR    shift, and go to state 68
+    STRING  shift, and go to state 101
+    RVAR    shift, and go to state 70
+    '<'     shift, and go to state 102
+    '('     shift, and go to state 103
+    ':'     shift, and go to state 104
+
+    rexpr     go to state 111
+    rterm     go to state 106
+    rfeat     go to state 107
+    rnominal  go to state 108
+    r_id_var  go to state 109
+
+
+State 88
+
+    8 groups: '|' group . groups
+   10       | '|' group .
+
+    '|'  shift, and go to state 60
+    '^'  shift, and go to state 61
+
+    $default  reduce using rule 10 (groups)
+
+    groups  go to state 112
+
+
+State 89
+
+    9 groups: '^' group . groups
+   11       | '^' group .
+
+    '|'  shift, and go to state 60
+    '^'  shift, and go to state 61
+
+    $default  reduce using rule 11 (groups)
+
+    groups  go to state 113
+
+
+State 90
+
+    6 group: expr '{' groups '}' .
+
+    $default  reduce using rule 6 (group)
+
+
+State 91
+
+   72 r_id_var: ID '(' . rargs ')'
+   73         | ID '(' . ')'
+
+    ID      shift, and go to state 66
+    VAR     shift, and go to state 67
+    GVAR    shift, and go to state 68
+    STRING  shift, and go to state 69
+    RVAR    shift, and go to state 70
+    ')'     shift, and go to state 114
+    '#'     shift, and go to state 72
+
+    rargs     go to state 115
+    rarg      go to state 74
+    r_id_var  go to state 75
+
+
+State 92
+
+   70 r_id_var: GVAR path .
+
+    $default  reduce using rule 70 (r_id_var)
+
+
+State 93
+
+   39 funcall: ID '(' rargs ')' .
+
+    $default  reduce using rule 39 (funcall)
+
+
+State 94
+
+   63 rargs: rarg ',' . rargs
+
+    ID      shift, and go to state 66
+    VAR     shift, and go to state 67
+    GVAR    shift, and go to state 68
+    STRING  shift, and go to state 69
+    RVAR    shift, and go to state 70
+    '#'     shift, and go to state 72
+
+    rargs     go to state 116
+    rarg      go to state 74
+    r_id_var  go to state 75
+
+
+State 95
+
+   18 term: '(' GVAR '~' expr ')' .
+
+    $default  reduce using rule 18 (term)
+
+
+State 96
+
+   19 term: '(' funcall '~' expr ')' .
+
+    $default  reduce using rule 19 (term)
+
+
+State 97
+
+   38 iv_expr: iv_term '|' iv_expr .
+
+    $default  reduce using rule 38 (iv_expr)
+
+
+State 98
+
+   50 path: '<' ID . '>' path
+
+    '>'  shift, and go to state 117
+
+
+State 99
+
+    5 group: expr ARROW actions '{' groups . '}'
+
+    '}'  shift, and go to state 118
+
+
+State 100
+
+   42 actions: action ',' actions .
+
+    $default  reduce using rule 42 (actions)
+
+
+State 101
+
+   60 rfeat: STRING .
+
+    $default  reduce using rule 60 (rfeat)
+
+
+State 102
+
+   54 rterm: '<' . ID '>' rterm
+
+    ID  shift, and go to state 119
+
+
+State 103
+
+   61 rfeat: '(' . rexpr ')'
+
+    ID      shift, and go to state 66
+    VAR     shift, and go to state 67
+    GVAR    shift, and go to state 68
+    STRING  shift, and go to state 101
+    RVAR    shift, and go to state 70
+    '<'     shift, and go to state 102
+    '('     shift, and go to state 103
+    ':'     shift, and go to state 104
+
+    rexpr     go to state 120
+    rterm     go to state 106
+    rfeat     go to state 107
+    rnominal  go to state 108
+    r_id_var  go to state 109
+
+
+State 104
+
+   58 rfeat: ':' . r_id_var
+
+    ID    shift, and go to state 66
+    VAR   shift, and go to state 67
+    GVAR  shift, and go to state 68
+    RVAR  shift, and go to state 70
+
+    r_id_var  go to state 121
+
+
+State 105
+
+   44 action: lval '^' rexpr .
+   52 rexpr: rexpr . '^' rterm
+
+    '^'  shift, and go to state 122
+
+    $default  reduce using rule 44 (action)
+
+
+State 106
+
+   53 rexpr: rterm .
+
+    $default  reduce using rule 53 (rexpr)
+
+
+State 107
+
+   55 rterm: rfeat .
+
+    $default  reduce using rule 55 (rterm)
+
+
+State 108
+
+   56 rfeat: rnominal .
+   57      | rnominal . r_id_var
+
+    ID    shift, and go to state 66
+    VAR   shift, and go to state 67
+    GVAR  shift, and go to state 68
+    RVAR  shift, and go to state 70
+
+    $default  reduce using rule 56 (rfeat)
+
+    r_id_var  go to state 123
+
+
+State 109
+
+   59 rfeat: r_id_var .
+   62 rnominal: r_id_var . ':'
+
+    ':'  shift, and go to state 124
+
+    $default  reduce using rule 59 (rfeat)
+
+
+State 110
+
+   45 action: lval '!' '<' . ID '>'
+
+    ID  shift, and go to state 125
+
+
+State 111
+
+   43 action: lval '=' rexpr .
+   52 rexpr: rexpr . '^' rterm
+
+    '^'  shift, and go to state 122
+
+    $default  reduce using rule 43 (action)
+
+
+State 112
+
+    8 groups: '|' group groups .
+
+    $default  reduce using rule 8 (groups)
+
+
+State 113
+
+    9 groups: '^' group groups .
+
+    $default  reduce using rule 9 (groups)
+
+
+State 114
+
+   73 r_id_var: ID '(' ')' .
+
+    $default  reduce using rule 73 (r_id_var)
+
+
+State 115
+
+   72 r_id_var: ID '(' rargs . ')'
+
+    ')'  shift, and go to state 126
+
+
+State 116
+
+   63 rargs: rarg ',' rargs .
+
+    $default  reduce using rule 63 (rargs)
+
+
+State 117
+
+   50 path: '<' ID '>' . path
+
+    '<'  shift, and go to state 80
+
+    $default  reduce using rule 51 (path)
+
+    path  go to state 127
+
+
+State 118
+
+    5 group: expr ARROW actions '{' groups '}' .
+
+    $default  reduce using rule 5 (group)
+
+
+State 119
+
+   54 rterm: '<' ID . '>' rterm
+
+    '>'  shift, and go to state 128
+
+
+State 120
+
+   52 rexpr: rexpr . '^' rterm
+   61 rfeat: '(' rexpr . ')'
+
+    '^'  shift, and go to state 122
+    ')'  shift, and go to state 129
+
+
+State 121
+
+   58 rfeat: ':' r_id_var .
+
+    $default  reduce using rule 58 (rfeat)
+
+
+State 122
+
+   52 rexpr: rexpr '^' . rterm
+
+    ID      shift, and go to state 66
+    VAR     shift, and go to state 67
+    GVAR    shift, and go to state 68
+    STRING  shift, and go to state 101
+    RVAR    shift, and go to state 70
+    '<'     shift, and go to state 102
+    '('     shift, and go to state 103
+    ':'     shift, and go to state 104
+
+    rterm     go to state 130
+    rfeat     go to state 107
+    rnominal  go to state 108
+    r_id_var  go to state 109
+
+
+State 123
+
+   57 rfeat: rnominal r_id_var .
+
+    $default  reduce using rule 57 (rfeat)
+
+
+State 124
+
+   62 rnominal: r_id_var ':' .
+
+    $default  reduce using rule 62 (rnominal)
+
+
+State 125
+
+   45 action: lval '!' '<' ID . '>'
+
+    '>'  shift, and go to state 131
+
+
+State 126
+
+   72 r_id_var: ID '(' rargs ')' .
+
+    $default  reduce using rule 72 (r_id_var)
+
+
+State 127
+
+   50 path: '<' ID '>' path .
+
+    $default  reduce using rule 50 (path)
+
+
+State 128
+
+   54 rterm: '<' ID '>' . rterm
+
+    ID      shift, and go to state 66
+    VAR     shift, and go to state 67
+    GVAR    shift, and go to state 68
+    STRING  shift, and go to state 101
+    RVAR    shift, and go to state 70
+    '<'     shift, and go to state 102
+    '('     shift, and go to state 103
+    ':'     shift, and go to state 104
+
+    rterm     go to state 132
+    rfeat     go to state 107
+    rnominal  go to state 108
+    r_id_var  go to state 109
+
+
+State 129
+
+   61 rfeat: '(' rexpr ')' .
+
+    $default  reduce using rule 61 (rfeat)
+
+
+State 130
+
+   52 rexpr: rexpr '^' rterm .
+
+    $default  reduce using rule 52 (rexpr)
+
+
+State 131
+
+   45 action: lval '!' '<' ID '>' .
+
+    $default  reduce using rule 45 (action)
+
+
+State 132
+
+   54 rterm: '<' ID '>' rterm .
+
+    $default  reduce using rule 54 (rterm)
