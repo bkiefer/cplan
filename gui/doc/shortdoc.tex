@@ -1,0 +1,801 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{a4wide}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\newcommand{\cd}[1]{\texttt{#1}}
+% Use this for the examples which use non-default latin encoding
+\usepackage[latin1]{inputenc}
+
+\begin{titlepage}
+\title{\Large \bf Content Planner Module for Talking Robots}
+\date{Version 1.2, \today}
+\author{Bernd Kiefer, DFKI Saarbr\"ucken}
+\end{titlepage}
+
+\begin{document}
+\maketitle
+\setlength{\parindent}{0em}
+
+\newcounter{myexample}{1}
+\newcommand{\example}{\textbf{\stepcounter{myexample}Example
+    \arabic{myexample}: {}}}
+%\pgfdeclareimage[interpolate=true,height=7cm]{GUIWindow}{GUIWindow}
+\pgfdeclareimage[interpolate=true,height=7cm]{MainWindow}
+{CPlanMainWindow}
+\pgfdeclareimage[interpolate=true,width=\textwidth]{AllWindows}
+{CPlanAllWindows}
+\pgfdeclareimage[interpolate=true,width=.7\textwidth]{TraceWindow}
+{CPlanTraceWindow}
+\pgfdeclareimage[interpolate=true,width=.9\textwidth]{BatchWindow}
+{CPlanBatchWindow}
+
+\section{Installation}
+
+Extract the given \texttt{cplanner-x.tar} file. Everything unpacked is below
+the top-level directory \texttt{utteranceplanner}. That directory contains
+three submodules, a generic visualization component (\texttt{dataviz}), an
+Emacs-Java connection module (\texttt{j2emacs}) and the planning module
+(\texttt{uttplanner}).
+
+The directory \texttt{utteranceplanner/uttplanner} contains a startup script
+(\texttt{updebugger}) and also a \texttt{build.xml} file to recompile the
+sources from scratch. We will call this directory the \emph{application
+  directory} in the following text. Using the build file will also affect the
+\texttt{dataviz} subproject the interactive planner is using. The relevant
+targets are \texttt{clean}, \texttt{cleanall}, and \texttt{compile}.
+
+To use the Emacs features, Mac users have to use AquaMacs. Plain X11 Emacs
+does not seem to provide a server mode.
+
+It is also recommended to compile the Emacs lisp files in \texttt{utteranceplanner/uttplanner/etc}. Either invoke
+\texttt{`make'} in this directory, or compile it with your favorite Emacs
+incarnation manually (e.g., with AquaMacs on the Mac).
+
+\section{Execution}
+
+The utterance planner is started with the following command:
+\begin{verbatim}
+updebugger [-e<macs> [<path-to-emacs-binary>]] [-g|-b <inputfile>]
+           [-t <traceflags>] <projectfile>
+\end{verbatim}
+
+\texttt{projectfile} is a file that contains settings, like the path to a CCG
+grammar, and a list of all rule files that should be loaded. The structure of
+the project file is described in more detail in section \ref{sec:projectfile}.
+
+By default, the planner reads the project file, and the rule files specified
+there, and continues in an interactive console mode with rudimentary readline
+support. The switches \texttt{-g} and \texttt{-b} let the planner run in other
+modes, namely:
+
+\begin{itemize}
+\item batch mode, (\texttt{-b}) processing a set of logical forms that are
+  contained in the file that is given as argument to this flag
+\item GUI interactive mode (\texttt{-g} command line switch)
+\end{itemize}
+
+\noindent{}The \texttt{-t} flag controls tracing onto the console, using a
+bitmask for different phases, bit 1 to trace the match phase and bit 2 to trace
+the application phase. Thus, \texttt{-t 3} will show trace information for the
+matching as well as the applicaton phase. The \texttt{-t} flag can be given
+together with \texttt{-g}.  In this case, tracing to the console will be used
+only when the \emph{process} button is used, and not when the GUI tracing mode
+itself is activated.
+
+In combination with the \texttt{-g} flag, The \texttt{-e} flag connects the GUI
+to a newly started Emacs client that will show the result of rule loading,
+making files and errors mouse sensitive to facilitate the editing and debugging
+of rule files. In Unix/Linux there is usually no need to specify the path to
+the Emacs binary. This is different on Macs, because only AquaMacs works as
+emacs server, the path to the AquaMacs binary must be specified. If the Emacs
+connection is properly set up, the GUI trace window described below allows to
+jump directly to the definition of rules used during processing.
+
+\section{Project File}
+\label{sec:projectfile}
+
+The project file is a plain text file that is divided into different sections.
+The sections are separated by lines specifying the section names, which are
+enclosed in square brackets, i.e., \texttt{[Settings]} for the section
+containing the project settings. Empty lines are skipped, and everything
+following a hash character (\texttt{`\#'}) until the end of line is treated as
+comment and ignored.
+
+\begin{figure}[htbp]
+\centering\framebox{\hspace*{2em}%
+\begin{minipage}{.8\textwidth}\raggedright\ttfamily\vspace*{2ex}
+\# relative paths are relative to the location of this file\\[2ex]
+
+[Settings]\\
+history\_file = history.txt\\
+encoding = ISO-8859-15\\
+ccg\_grammar = ../../resources/grammars/openccg/grammar.xml\\[2ex]
+
+[Rules Stage 1]\\
+attributes.trf\\
+discoursemarkers.trf\\
+infostruct.trf\\
+transitivity.trf\\[2ex]
+
+[Rules Stage 2]\\
+callfun.trf\\
+test.trf\\
+foo.bar
+\vspace*{3ex}
+\end{minipage}}
+  \caption{Sample Project File}
+  \label{fig:projectfile}
+\end{figure}
+
+Currently, the content planner distinguishes two kinds of sections, the
+\texttt{Settings} section and the \texttt{Rules} section, of which there may be
+more than one.
+
+The \texttt{Settings} section contains key-value pairs that are separated by
+the equal sign (\texttt{`='}). Currently, valid settings are the path to the
+corresponding CCG grammar, whose key must be \texttt{ccg\_grammar}, a
+\texttt{history\_file} to store recent inputs, and an \texttt{encoding} for the
+grammar files. If no encoding is specified, \texttt{UTF-8} is taken as a
+default.
+
+The section names for rules have to start with the word \texttt{Rules}, the
+rest before the closing bracket is taken as the stage name for the rule
+list that is following the section separator.
+
+In a rule section, every non-empty line must contain the path to one rule
+file. Paths can be given either as absolute paths, or relative to the location
+where the project file is located. For a description in what order the rules
+are processed and what can be done with different stages, see section
+\ref{sec:procregime}.
+
+%\par\vspace*{2ex}
+
+\section{GUI Mode}
+
+Figure \ref{fig:allguiwindows} shows all windows opened by the GUI in one
+picture. The topmost window is the GUI main window, which is disabled because
+the trace window below it is present and acts as a modal window for this
+processor. In the bottom left corner is the Emacs window that is connected
+to the GUI, with the rule loading output in the lower half and a rule file
+for editing in the upper half.
+
+\begin{figure}[htbp]
+  \centering
+  \pgfuseimage{AllWindows}
+  \caption{Content Planner Windows}
+  \label{fig:allguiwindows}
+\end{figure}
+
+When started in GUI mode, the application looks for the file \texttt{.cplanner}
+in the application directory. This file has the same syntax as the project
+file described above. It also has a \texttt{Settings} section to set two of the
+the command line arguments permanently, so that they do not have to be provided
+on every startup, and a \texttt{RecentFiles} section, which is maintained by
+the application, that contains the recently opened project files.
+
+Figure \ref{fig:preferencesfile} shows a sample \texttt{.cplanner} file.
+
+\begin{figure}[htbp]
+  \centering
+  \centering\framebox{\hspace*{2em}%
+\begin{minipage}{.8\textwidth}\raggedright\ttfamily\vspace*{2ex}
+\# relative paths are relative to the location of this file\\[2ex]
+
+[Settings]\\
+tracing = none \# none / match / action / all\\
+emacs  = /home/kiefer/Applications/AquaMacs/bin/Aquamacs\\[2ex]
+
+[RecentFiles]\\
+Rules/allrules.cpj\\
+\vspace*{3ex}
+\end{minipage}}
+
+  \caption{Sample Preferences File}
+  \label{fig:preferencesfile}
+\end{figure}
+
+
+\subsection{Main Window}
+
+The main window, shown in figure \ref{fig:mainwindow}, consist of the input
+area at the top, and the input and output LF displays below it, and a status
+bar for status and error messages at the bottom. The function of the buttons
+in the tool bar and the menu items will be described in what follows.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[-stealth, thick,
+    every node/.style={font=\sffamily}]
+    \node (0,0) [anchor=center] {\pgfuseimage{MainWindow}};
+    %\draw[help lines] (-5,-5) grid (5,5); \draw[fill] (0,0) circle (2pt);
+    \draw (-4.5, 3.7) node[anchor=south] {Action Buttons} -- (-5, 2.6);
+    \draw (0, 3.7) node[anchor=south] {Input Area} -- (0.8, 1.8);
+    \draw (-4.3, -3.7) node[anchor=north] {Status Bar} -- (-4, -3.4);
+    \draw (-1, -3.7) node[anchor=north] {Input (as Graph)} -- (-2, -1.6);
+    \draw (2.5, -3.7) node[anchor=north] {Output Graph} -- (3, -3);
+  \end{tikzpicture}
+  %\pgfuseimage{GUIWindow}
+  \caption{Content Planner Main Window}
+  \label{fig:mainwindow}
+\end{figure}
+
+\subsubsection{File Menu}
+When running in GUI Mode, it is not necessary (put possible) to specify the
+project file on the command line. The file can also be opened using the
+\texttt{File > Open} menu item. \texttt{New} will open a completely fresh
+planner with empty rule set, which means that a rule file must be opened from
+the new window for the planner to work. The \texttt{File > Recent Files}
+submenu will contain the last project files that have been opened.
+
+\subsubsection{Button Toolbar}
+The button toolbar is located below the menu bar, and contains buttons for, in
+this sequence:
+\begin{itemize}\addtolength{\itemsep}{-.33\itemsep}
+\item Reloading the rule set (if it has been changed in an editor)
+\item Processing the logical form in the input area
+\item Starting processing of the logical form in tracing mode, which opens a
+  new modal trace window that is described below
+\item Emergency Stop in case the process is in an infinite loop
+\item Wipe the input area clean
+\item Running first the planner and then the CCG realizer for the input LF,
+  provided a CCG grammar was given on startup
+\end{itemize}
+
+If the input contains ill-formed input, and the \textit{Process} or
+\textit{Start Trace} button has been pressed, the input area gets red and the
+caret will be located at the point where the error seemingly occured. In
+addition, the status line (at the bottom of the window) contains an error
+message describing the error.
+
+\subsection{Trace Window}
+
+Figure \ref{fig:tracewindow} shows the trace window that will be opened when
+the trace button in the main window is pressed. It allows to follow the
+processing of the content planner in single or larger steps, and even going
+backwards and forwards using the scroll bar at the bottom of the window.
+
+\begin{figure}[htbp]
+  \centering
+  \pgfuseimage{TraceWindow}
+  \caption{Trace Window}
+  \label{fig:tracewindow}
+\end{figure}
+
+The trace window consists of two main sections, the \emph{match} section, which
+is in the upper half and consists of the LF window in the upper left, the
+bindings window in the upper right and the text window below these. This text
+area shows the matching part of the rule that is currently `processed' and
+has been matched successfully against the structure in the window above it.
+
+Since the processor first executes all rule matches pseudo-parallel to the
+structure and after that applies the actions one by one, this window will
+change not as often as the windows in the action section (see also section
+\ref{sec:procregime}).
+
+The second section of the trace window are the two LF windows in the bottom half
+and the text area for the action part of the rule below them. The lower left LF
+window shows the current state of the dag, before the action(s) that are shown
+in the text area are applied, while the lower right LF window shows the new dag
+after application of the action(s).
+
+If an Emacs connection has been established, double-clicking into the match
+or action text area will open the appropriate rule file and jump directly to
+the location of the rule whose application is currently shown.
+
+Additionally, there is a button toolbar at the top of the window, which allows
+you to perform the following actions:
+
+\begin{itemize}\addtolength{\itemsep}{-.7\itemsep}
+\item Jump to the current rule in the editor (the same as double clicking into
+  the text areas)
+\item Suspend processing for very long or infinite runs
+\item Continue suspended processing
+\item Emergency stop (finishes processing)
+\item Close the trace window
+\end{itemize}
+
+\subsection{Batch Test Window}
+
+Figure \ref{fig:batchwindow} shows the batch test window that will be opened
+when the batch button in the main window is pressed. Currently, it is designed
+to be used with subsequent generation. The batch files syntax is a sequence of
+one input form, followed by a set of possible output sentences, each on a
+single line, finished by an empty line. To indicate that no generation is
+expected, the set of output sentences may be empty. A single line with only a
+\texttt{*} on it signals that any generation output is fine, except an empty
+output.
+
+\begin{figure}[htbp]
+  \centering
+  \pgfuseimage{BatchWindow}
+  \caption{Batch Test Window}
+  \label{fig:batchwindow}
+\end{figure}
+
+Failed test items will appear in red (or yellow, if there was a warning
+during processing), successful ones in green or blue. The Buttons in the
+tool area reload the batch file, run the batch test again or close the window,
+respectively.
+
+The row header tabs of column one, four and five can be used to re-sort the
+table. Furthermore, the two check boxes at the bottom of the window can be used
+to filter the table appropriately. Clicking a row will put the input and
+output data into the main window, and open the corresponding line in the batch
+file in the editor window.
+
+%\newpage
+\section{General Description}
+The new utterance planner module is very much like a specialized graph
+rewriting system for logical forms as they are used in OpenCCG. A set of
+rules is specified by the grammar writer which is applied to every part of
+an input logical form, which is interpreted as a directed graph where the
+nominals and feature values are the nodes and the features and relations are
+the (named) edges.
+
+The transfer of nodes is realized using local and global variables, which
+store information either during the application of a single rule, or during
+the whole rewrite process, respectively.
+
+\section{Rules}
+
+A single rule has the following form:
+
+\newcommand{\nt}[1]{\,\mbox{\emph{#1}}\,}
+%\newcommand{\tok}[1]{\texttt{'#1'}}
+\newcommand{\tok}[1]{\,\mbox{\texttt{\textbf{#1}}}\,}
+\newcommand{\id}{\,\mbox{\texttt{ID}}\,}
+\newcommand{\BAR}{\,|\,}
+\begin{center}
+
+$\nt{match}^{+}$ \nt{arrow} \nt{actions} {\tiny$\bullet$}
+\hspace*{1.2em} with
+\nt{arrow}$\rightarrow (\tok{->}\BAR\tok{=>})$ and
+\nt{actions} $\rightarrow$ \mbox{\nt{action}(\tok{,}\nt{action})*}
+\end{center}
+
+When many rules share a lot of the preconditions or actions, you can use
+\emph{rule groups}. The syntax for rule groups (as opposed to a single rule) is
+as follows:
+
+\[
+\begin{array}{lcl}
+\nt{group} & \rightarrow &
+   \nt{match}^{+}\  (\nt{arrow} \nt{actions} )?
+   \ (\tok{\{}
+   \ ((\tok{\^{}} \BAR \tok{|}) \nt{group})
+   \BAR
+   \mbox{\nt{arrow}} \nt{actions} \mbox{\tiny$\bullet$}
+   \tok{\}})^{+}\\
+\end{array}
+\]
+
+All match expressions and actions are recursively collected (connecting with
+the given operator) until a dot is reached, and the collected actions are only
+applied when all the collected match conditions are fulfilled. Rules with
+\tok{=>} arrows will be applied to every node as often as the match conditions
+are fullfilled (and the structure still changes), while rules with \tok{->}
+arrows will be applied only once to a node after a successful match. In a rule
+group, the arrow immediately before the dot (the one that is most deeply
+embedded) will determine the rule type of the resulting rule.
+
+The overall processing strategy will be explained in more detail in chapter~\ref{sec:procregime}.
+
+\subsection{Matching Part}
+\label{matching_part}
+The reduced BNF for one match looks like this:
+\[
+\begin{array}{lcl}
+\nt{match} & \rightarrow &
+  \nt{pathmatch}\ (\tok{\^{}} \BAR  \tok{|} )\  \nt{match} \BAR
+  \nt{pathmatch}\\
+\nt{pathmatch} & \rightarrow &
+  \tok{<} \id \tok{>} [ \nt{pathmatch} ] \BAR \nt{simplematch}\\
+\nt{simplematch} & \rightarrow &
+  \nt{atomic} \tok{:} \BAR
+  \nt{atomic} [ \tok{:} \nt{atomic} ] \BAR
+  \tok{!} \nt{pathmatch} \BAR
+  \tok{(} \nt{match} \tok{)}\\
+& & \BAR \tok{=} ( \nt{var} \BAR \nt{gvar} ) \tok{:} \BAR
+    \tok{(} ( \nt{gvar} \BAR \nt{funcall} ) \tok{\~} \nt{match} \tok{)}\\
+\nt{atomic} & \rightarrow & \id \BAR \nt{var}\\
+\nt{var} & \rightarrow & \tok{\#}\!\!\id \\
+\nt{gvar}  & \rightarrow & \tok{\#\#}\!\!\id \\
+\nt{funcall} & \rightarrow &
+  \id \tok{(} \nt{arg} (\tok{,} \nt{arg})^{*} \tok{)} \BAR
+  \id \tok{( )} \\
+\nt{arg} & \rightarrow &
+  \id \BAR \mbox{\texttt{STRING}} \BAR \tok{\#} \BAR \nt{var}
+  \BAR \nt{gvar} \nt{path} \BAR \nt{funcall}\\
+\nt{path} & \rightarrow & (\tok{<} \id \tok{>})^{*}\\
+\end{array}
+\]
+
+The match part consists of atomic match expressions which can be combined with
+conjunction, disjunction and negation operators to obtain complex match
+expressions:
+
+\begin{itemize}
+\item \cd{nom:} matches the nominal with name \cd{nom}
+\item \cd{:type1} matches if the node has type \cd{type1}
+\item \cd{prop} matches either the proposition value \cd{prop}, or the value
+  under some feature
+\item \cd{<fname>} matches if \cd{fname} either exists as feature or
+  relation
+\end{itemize}
+
+Additionally, \emph{local variables} also form atomic match expressions. They
+can bind either whole nodes, type or proposition values, and can also be used
+several times in a match expression to check that the value of the node is
+(structurally) equal to what is bound to the variable. Local variables start
+with a single hash (\cd{\#}), followed by a valid name. The syntax is as
+follows:
+
+\begin{itemize}
+\item \cd{\#v:} matches a whole node (nominal).
+\item \cd{:\#v} matches the type value of a nominal.
+\item \cd{\#v} matches the proposition value, or the value under a feature.
+\item \cd{= \#var:} checks if the node that is matched is \emph{identical} to
+  what is bound to the variable \emph{var}. An unbound variable will always
+  generate a match failure for this test.
+\end{itemize}
+
+Alternatively, a (bound) global variable can be used for the above checks.
+Global variables, in contrast to local variables, must begin with two hash
+characters, e.g., \texttt{\#\#global\_var}. Global variables can not be bound
+on the match side, but their values can be checked against the local value as
+for local variables.
+
+%\newpage
+There are two binary and one unary combination operator to combine atomic
+matches into more complex match expressions:
+
+\begin{itemize}\addtolength{\itemsep}{-.5\itemsep}
+\item[\textbf{\cd{\^}}] for conjunction
+\item[\textbf{\cd{|}}] for disjunction
+\item[\textbf{\cd{!}}] for negation
+\end{itemize}
+
+Parentheses can be used to group subexpressions.
+%\newpage
+
+There are also some short forms of conjunctions following the logical form
+syntax that do not require the conjunction operator, such as:
+
+\begin{itemize}
+\item[] \cd{<feat>(nom:\#type2)}
+\end{itemize}
+matches a node that has a relation \cd{feat} which points to a node with
+nominal name \cd{nom} and binds the type of that nominal to the local variable
+\cd{\#type2}.
+
+The match conditions, which may be empty, will always be applied to the current
+node that is under consideration, except if a parenthesized condition with the
+\textbf{\~} operator is used. Then, the operand to the left must be either a
+global variable or a function call, and either the value bound to the variable
+or the return value of the function call will be matched against the match
+conditions to the right of the operand. If the global variable is not bound,
+the match is executed as if it were applied to an independent, empty node.
+
+There is a set of build-in functions, but there is also the possibility of
+providing your own custom functions via plugins. For a description of the
+build-in functions and the plug-in interface see sections \ref{sec:build-ins}
+and \ref{sec:plugins}, respectively. For a detailed description of how the
+matching and modification of the dag works, see section \ref{sec:procregime}.
+
+\subsection{Actions}
+
+The BNF for one action looks like this:
+\[
+\begin{array}{lcl}
+\nt{action} & \rightarrow & \nt{appoint} \tok{!} \tok{<}\id \tok{>} \BAR
+\nt{appoint} \tok{=} \nt{rexpr} \BAR  \nt{appoint} \tok{\^{}} \nt{rexpr}\\
+\nt{rexpr} & \rightarrow &
+  \nt{rpathexpr} \tok{\^{}} \nt{rexpr} \BAR
+  \nt{rpathexpr}\\
+\nt{rpathexpr} & \rightarrow &
+  \tok{<}\id \tok{>} \nt{rpathexpr} \BAR
+  \nt{rsimpleexpr}\\
+\nt{rsimpleexpr} & \rightarrow &
+  \nt{atomic} \tok{:} [ \nt{atomic} ] \BAR
+  \nt{atomic} \BAR \ \verb$"STRING"$  \BAR
+  \tok{(} \nt{rexpr} \tok{)} \BAR
+  \id\tok{(}\nt{args}\tok{)}\\
+\nt{atomic} & \rightarrow & \id \ \BAR \nt{var}\\
+\nt{var} & \rightarrow &
+  \tok{\#}\id \ \mbox{\textbar}
+  \ \tok{\#\#}\id [ \tok{<}\id \tok{>} ( \tok{,} \tok{<}\id \tok{>} )* ] \BAR
+  \ \tok{\#\#\#}\id \\
+\nt{appoint} & \rightarrow & \tok{\#}  \ \BAR \nt{var}\\
+\nt{args} & \rightarrow & \epsilon
+  \BAR \nt{atomic} (\tok{,} \nt{atomic})*
+\end{array}
+\]
+
+An action consists of the following elements:
+\begin{itemize}
+\item first the specification of the place it is applied to
+\item an optional feature path
+\item an operator specifying the kind of action that is
+  to be performed (addition, replacement, deletion)
+\item the structure that specifies what is added, replaced or deleted.
+\end{itemize}
+
+The place where to apply the action can be either a local or global variable,
+or a single hash character which represents the node against which the rule is
+matched.
+
+For addition and replacement, full or partial logical forms, also containing
+local variables, can be specified. Deletion can currently only be applied to
+single features or relations.
+\newpage
+
+Minimal examples for the three operations are:
+\begin{list}{}{\setlength{\leftmargin}{3.2cm}\setlength{\labelwidth}{2.6cm}
+\renewcommand{\makelabel}[1]{\textbf{#1}}}
+\item[Addition] \cd{\# \^\  <feat> val}\\ Add a feature / value pair to the current
+  node
+\item[Replacement] \cd{\#var = <feat> \#var}\\ this would place the nominal that
+  was bound to the local variable \cd{var} in the matching part under the
+  feature \cd{feat} instead of its former location.
+\item[Deletion] \cd{\# !\ <p3>}\\ delete feature \cd{p3} from the node that is
+  currently processed
+\end{list}
+
+Assignment and replacement of global variables can also be used to inhibit
+rules, or force a certain ordering on the application of rules (see the
+section about matching, especially against the content of global variables).
+In addition, a global variable can be followed by a nonempty path of features,
+providing a map-like structure. On the match side, these substructures are
+treated like features of structured nodes and have to be extracted for binding
+or testing with the usual conjunction and path syntax.
+
+In addition to the local and global variables, \emph{right hand side local
+  variables} can be used in multi-part action specifications. They start
+with three hash characters and their purpose is three fold:
+\begin{itemize}
+\item provide a means of specifying complex replacements in several steps for
+  clarity
+\item create temporary structured nodes as arguments to functions.
+\item establish coreferences in complex nodes on the right hand side, because
+  you are not allowed to use unbound local variables
+\end{itemize}
+
+If variables are used in the replacement of additions and assignments, no
+matter which kind of variables that is, you have to keep the following in mind:
+
+\begin{itemize}
+\item if you use \texttt{\#var:}, the complete node bound to the variable will
+  be added to the specified point of application (which can be an embedded
+  path)
+\item if you use \texttt{:\#var} or \texttt{\#var} or \texttt{<feat>\#var}, the
+  value bound to the variable must be of a special form, because you use the
+  content of var to specify an atomic value:
+  \begin{enumerate}
+  \item Either it must be a simple (i.e., atomic) value, i.e., a variable bound
+    to a proposition, type, or feature value, \emph{or}
+  \item It contains a complex node that has a feature with the same name as
+    specified in the replacement, that is, a type, proposition or \texttt{feat}
+    feature, respectively
+  \end{enumerate}
+  If the above conditions are not met, an error will be signalled.
+\end{itemize}
+
+This does not mean that you can assign a type value only to a type, you can
+move the atomic values around, if you do it the right way.  So the following
+will always work (you take the type and put it under feature \texttt{x}):
+\begin{verbatim}
+:#var -> # ^ <x> #var.
+\end{verbatim}
+
+This will work only if the node bound to \texttt{var} has a valid type and
+proposition:
+\begin{verbatim}
+#var: -> # ^ <y> ( :#var ^ #var )
+\end{verbatim}
+
+\subsection{Some Simple Examples}
+
+Test for a disjunction of types, and the existence of the \cd{Shape} feature,
+add a new nominal with the feature's value as proposition and delete the
+\cd{Shape} feature itself, to avoid infinite recursion. Since the same
+relation can be added multiple times, the rewriting process would never reach
+a fix point and, consequently, not stop.
+
+\begin{verbatim}
+(:entity | :physical | :e-substance) ^ <Shape> #v
+->
+# ^ <Modifier> (shape:q-shape ^ #v),
+# ! <Shape>.
+\end{verbatim}
+
+A similar example, but now, the whole node under \cd{TopIn} is moved under the
+\cd{Anchor} feature, which specifies with the parentheses and the nominal
+specification with the colon after the variable that it is a relation.
+Note that under \cd{Modifier}, no specification of the nominal name is
+necessary, which results in a new, unique nominal name for that node.
+
+\begin{verbatim}
+(:entity | :physical | :e-substance) ^ <TopIn> ( #topin: )
+->
+# ^ <Modifier> (:m-location ^ in ^ <Anchor> ( #topin: )),
+# ! <TopIn>.
+\end{verbatim}
+
+In the next example, a local variable is used only in the action part multiple
+times to indicate the coreferencing of two nominals. The whole content under
+\cd{Content} will be replaced due to the replacement specification for the
+matched local variable \cd{c1}
+
+\begin{verbatim}
+:dvp ^ <Relation> accept ^ <Content> ( #c1:marker )
+->
+#c1 = (:ascription ^ <Actor>(#i1:person ^ I)
+                   ^ <Patient>(:entity ^ what)
+                   ^ <Subject>( #i1: )).
+\end{verbatim}
+%\newpage
+
+The next example adds the result of a function call to the current node. The
+function gets as argument the structure that is bound to the variable
+\texttt{c1}. A single \texttt{\#} is also a valid argument to a function and
+represents the node that is currently processed, like in the initial place of
+the action specification.
+
+\begin{verbatim}
+:dvp ^ <Relation> accept ^ <Content> ( #c1:marker )
+->
+# ^ <Content> modify_marker(#c1).
+\end{verbatim}
+
+Functions can also be used on the matching side (see section
+\ref{matching_part}), as in the next example:
+
+\begin{verbatim}
+:dvp, random(one, two, three) ^ two
+->
+# = <Content> ( <Answer> positive ).
+\end{verbatim}
+
+Also look into the file \texttt{presentation-examples.trf}, which contains
+much more elaborate examples with explanations attached to it.
+
+\section{Build-in Functions}
+\label{sec:build-ins}
+
+\subsection{Mathematical Functions}
+Mathematical functions expecting \texttt{double} arguments will return
+\verb\NaN\, if one of the arguments is not a valid number.
+\begin{itemize}
+\item \texttt{add}, \texttt{sub}, \texttt{div}, \texttt{mult} expecting two
+  \texttt{double} arguments, returning a \texttt{double} argument, the usual
+  binary operators
+\item \texttt{lt}, \texttt{gt}, \texttt{lteq}, \texttt{gteq}, \texttt{eq}
+  expecting two \texttt{double} arguments, returning either one or zero,
+  representing true and false, for comparison of numbers
+\item \texttt{not} returns zero if the (\texttt{double}) argument is
+  non-zero, one otherwise
+\item \texttt{neg} is unary minus.
+\end{itemize}
+
+\subsection{Other Functions}
+\begin{itemize}
+\item \texttt{concatenate} concatenates an arbitrary number of strings and
+  returns the result
+\item \texttt{clone} clones the argument node, to get independent copies of
+  parts of the current structure
+\item \texttt{random} takes an arbitrary number of arguments and randomly
+  returns one of them
+\item \texttt{throwException} takes an (optional) message argument and throws
+  a \texttt{PlanningException} with the given message. This will end the
+  processing of the current input.
+\item \texttt{warning} logs a warning message on to the
+  \texttt{UtterancePlanner} main logger, and always returns \texttt{true}
+\end{itemize}
+
+\section{Adding New Functions}
+\label{sec:plugins}
+New functions can be added using a lightweight plug-in mechanism. All functions
+must be subclasses of \texttt{Function}, if they work on the internal
+structures of the planner directly, or of \texttt{LFFunction}, if they work
+with \texttt{LogicalForm}, as provided with the separate \texttt{CPlanWrapper}
+class. The methods that must be overwritten for both classes are:
+
+\begin{verbatim}
+public abstract String name();
+public abstract int arity();
+\end{verbatim}
+
+\texttt{name} must return the name as it is used in the rules, and arity the
+expected length of the argument list.
+
+Additionally, the abstract method \verb|Object apply(List args)| must be
+implemented for every subclass of \texttt{Function}, except for
+\texttt{LFFunction}, where \verb|LogicalForm applyLfFunction(List args)|
+must be implemented instead. The length of args matches the arity specified by
+the function.
+
+If the functions are not directly compiled in and registered at the
+\texttt{FuncctionFactory}, they can be provided as plug-ins. The class files
+of the functions have to be added to a jar-archive such that the path where
+they are stored in the archive matches the package prefix.
+
+\begin{figure}[htbp]
+\begin{verbatim}
+$ jar tf plugin-jars/cplan-plugins.jar
+
+META-INF/
+META-INF/MANIFEST.MF
+de/dfki/lt/tr/dialogue/cplanwrapper/ChangePropFunction.class
+\end{verbatim}
+\caption{\texttt{de.dfki.lt.tr.dialogue.cplanwrapper.ChangePropFunction}
+  properly put into a \texttt{.jar} file to use as plug-in function }
+\end{figure}
+
+These jars have to be put into one directory, which is passed to the
+constructor of the \texttt{UtterancePlanner} class as second argument. The
+constructor will then load all appropriate classes (subclasses of
+\texttt{Function}) on startup.
+
+
+\section{Processing Regime\label{sec:procregime}}
+
+Processing is divided into different stages. Every stage has its own set of
+rules, which are loaded from the rule files specified in different sections of
+the project file (see \ref{sec:projectfile} for further information), and
+essentially behaves in the same way.
+
+For every stage, the current processing engine proceeds as follows:
+\begin{itemize}
+\item Traverse the structure in preorder sequence, starting at the root node
+\item At every node, match all rules against the node in the order in which
+  they have been loaded
+
+  \noindent{}If the match was successful, and either it is a \tok{=>} rule or
+  the rule has not been applied to this node before:\\[-3.4ex]
+  \begin{itemize}
+  \item[] store the rule together with the
+    local bindings of the match for later execution of the rule's actions
+  \end{itemize}
+\item Execute the actions for the stored rule / binding pairs in the order in
+  which they were stored, which is the order in which the matches occured.
+\end{itemize}
+
+Since the matches are applied before any changes are made, any applicable match
+will be found. When the changes are applied afterwards, is is possible that
+some of them will not have any effect on the input structure, say, if something
+is added to a node that has previously been deleted.
+
+This process is iterated until a fixpoint is reached, i.e., the structure does
+not change by applying the rules as described. If the current stage was not the
+last stage, the structure is then processed with the next set of rules, until
+all stages have been applied. Every stage is only applied once, there is no
+fixpoint loop around the stages. The stages are applied in the order in which
+they appear in the project file, independent of their names.
+
+\if0
+\section{Future Enhancements}
+\begin{itemize}
+\item Macros to avoid copy and paste duplication of parts of rules
+\item GUI enhancements
+  \begin{itemize}
+  \item Input history, with the possibility to get/write in from/to file
+  \item Save last rule file location/rule file name and possibly other settings
+    to a customization file.
+  \item redirecting console output to a separate window which can be shown or
+    hidden on demand.
+  \end{itemize}
+\end{itemize}
+\fi
+
+\newpage
+\appendix
+\section{More Examples}
+
+The following examples are a \LaTeX{}ed version of the file
+\texttt{examples.trf}, which is used also for testing and can be found in the
+directory \texttt{cplan/src/test/resources/grammars} to try out the things
+in the running system, and to experiment with variations.\\
+
+\input{examples.tex}
+\end{document}

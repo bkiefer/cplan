@@ -1,0 +1,186 @@
+* NOW
+  - batch window not modal, can reload test file
+  - trace window: only result, optionally input / variables / rule
+    rule: nicely formatted!
+  - find features / types functionality
+
+  - plugin_directory config is not described in documentation
+
+// Setting type in current node does not work like this:
+:apology -> # ! <__TYPE>, # ^ <__TYPE>apologize.
+// but:
+:apology -> # ! <__TYPE>, # ^ :apologize.
+
+- neither batch nor trace window block the others
+
+- Re-run batch and trace painlessly: batch processor should be that of the
+  related main window, such that reload of grammar has effect on new batch run,
+  which means the processor must be shielded against double use in threads
+  i.e. the "process" function must be synchronized.
+
+- batch against LFs
+
+- Only batch double click raises emacs window, otherwise, no navigation in
+  batch window possible
+
+- Appearance dialogue / Font selection
+
+- Switch to SWT for native look & feel
+
+- Sorting of items in batch window
+
+- does the batch use the new grammar version after reload? or should reload
+  also reload the grammar?
+
+- batch plan does not use the main window properly: double click has strange
+  effect
+
+- using negation with nested rule contexts dies with NullPointerException
+
+FIX BAD DETECTION OF RULE ERROR FOR THIS RULE:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// 1,  w/ total, count =/= total
+:dvp ^ <SpeechAct>provide
+^ ( <Content>(<About>performanceSession) | ( <Content>(<About>performance) ^ <Context>(<Asker>robot)) )
+^ <Content>( <Noun>#n ^ <Verb>#v  ^ <ScopeRef>#sr: ^ <TotalRef>#tr:
+            ^ <TotalCount>(#t^!1^!one) ^ <Performance>(#p ^ (1|one)))
+^ <Control>(#ctrl:control ^ !<InsertPerformance>)
+->
+###today = #sr,
+###overall = #tr,
+
+###part1 = concatenate(#n, "außerhalb von "),
+
+###parta = random(" richtig ", " korrekt "),
+###fina = random( "war ", " ist"),
+###part2a = concatenate(###fina, ###parta),
+
+###partb = " geraten ",
+###finb = " wurde ",
+###part2b = concatenate(###finb, ###partb),
+
+###part2 = random(###part2a, ###part2a, ###part2a, ###part2b),
+
+###opt1 =  concatenate(###overall, "ein", ###part1, #t, ###part2, ###today),
+###opt2 = concatenate(###overall, ###today, "Du hast ", #v, "eine", ###parta, #n, "außerhalb von ", #t),
+# ^ :canned ^ <stringOutput>random(###opt1,###opt2) ^ <SpeechModus>indicative.
+#ctrl ^ <InsertPerformance>done.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+* SOON
+
+- Change design of trace window: information overload, present information
+  on demand, like variable bindings, rule, etc., maybe in a different (pop up)
+  window
+
+- "Search" in trace window: for first presence/absence of some configuration,
+  which could be marked in the input/output window.
+
+- Make available: List of features | types | feature/value pairs _or_ values,
+  given a specific feature
+  the list of rules where a specific feat | type | f/v occurs
+
+- Better error message when ID contains illegal character
+  --> Console:1:709: syntax error, unexpected $undefined, expecting ')'
+  Have to find a good example for that
+
+- Warning about unclear feature status should point to problem with information
+  contained in the warning
+
+- Error in ext lf parser: coreferences not properly treated
+  - batch disjunctive normal form (COMPLICATED / POSTPONED)
+
+- rules that are only applied once (syntax, execution)
+
+- pretty printing for LF's (and rules) so selected inputs from batch window
+  are readable
+
+- #var variables on RHS which do not occur on LHS should be a syntax error,
+  as well as ###y vars which have not been bound previously!
+
+- Copying of structures (and substructures) into a new window / a text
+  representation to the clipboard
+
+- Applying a selected structure to a selected rule to see matching problems
+  or effects of application --> display of failure!
+
+- "Integrate" j2emacs with dataviz?? or have another project/module that does
+  it, in the spirit of an IDE??
+
+- j2emacs does not work properly on Windows/cygwin
+  --> packaging a lean binary distribution & make bundle available for
+      TNO (mail of 25. Nov '11)
+
+- history does not work properly
+- and not properly saved in project file
+
+- maybe more parsing-like behaviour to be able to generate alternatives to
+  choose from with additional external features (dialogue state / history)??
+  - fuzzy / robust interpretation
+
+- Reverse rules (Dialogue act recognition as reverse operation of generation)
+
+- Learn rules
+
+Today:
+
+- get ASR parsing for AlizE to work
+  * + n-best lattices instead of best only
+    > check with giacomo/heriberto, more general: check interface,
+  * connect parser with Dialogue manager (heriberto) , or directly ASR??
+  * Urbify the parser (Heriberto)
+  * best-first parsing
+- manage partiality for AlizE: return n-best chunks
+- get conversion to FS to work
+
+* DISCUSSIONS
+
+arguments / modifiers to the cplanner process rather in input structure, or
+by access using plugins / to background memory
+
+a) as part of input LF
+   - flexible
+   - no additional machinery
+   - easier (?) to test
+   - to keep it compact, knowledge about arguments must be duplicated
+     (in planner, and somewhere else)
+b) as request to a background process
+   - needs appropriate plugin(s)
+   - less transparent / harder to debug(?)
+   - needs proper stub to be able to debug without running the whole system
+     => needs proper modularization
+   - non-cascaded processing would maybe require this
+
+* Done
+  + Exception catching during batch test?
+  + better logging for generation in urbi system (log4j properties?)
+  + log4j properties: see file components/dialogue-fst/start-dialogue-fst.sh
+  + if there is additional material in the LF input window, there is NO parse
+    error! (fixed: due to batch LFs parsing)
+  + batch reload does not clean items
+  + sorting results in wrong selection in main window and editor
+  + *** FAILURE *** disappeared in batch result window
+  + sorting for batch result window
+
+  + test if rules meant to be applied on substructures really work: OK
+  + generate all sentences for canned text with a large batch run
+  + batch window does not refresh on batch rerun
+  + syntax error in batch file should not break the whole process
+  + progress bar / activity indicator for batch tests (slow generator)
+  + j2emacs pops to front when file is shown (tested in gtk/linux)
+
+  + One-shot rules, the criterion is: has the rule been successfully applied to
+    this node already?
+  + Extend Compounds such that also actions can be shared, maybe like this:
+    cond1, cond2, cond3 ->
+    act1, act2
+    { cond4, cond5 -> act3
+      { cond6 -> act4. cond7 -> act5. }
+      cond8 -> act6.
+    }
+    Alternative: if/then/switch syntax
+  + put "random" into sequential mode to really find all sentences
+  + extended compounds and recurrent vs. non-recurrent rules in shortdoc.tex
+  + Split D-unit lists, add punctuation for CCG generation
+  + generate button does run, too,
+  + make clear that Rules section names MUST start with "Rules"

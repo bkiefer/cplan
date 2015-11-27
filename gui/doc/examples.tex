@@ -1,0 +1,299 @@
+\example A sub-node is replaced with fresh content. Notice the match
+condition for the absence of a feature.
+
+\begin{verbatim}
+/// @d:dvp(<SA>assertion ^ <Rel> accept ^ <Cont> (:conttype ^ <foo> bar))
+:dvp ^ ! <Ackno> ^ <SA> assertion ^ <Rel> accept ^ <Cont> ( #c1: )
+->
+#c1 = (:marker ^ ok).
+\end{verbatim}
+
+\example Selecting a specific relation, and adding to it
+\begin{verbatim}
+/// @aa:bb(<C>(<Mod>(:g ^ <x> y)))
+<C>(<Mod>(#m:g ^ ! <Cont>)) -> #m ^ <Cont>(:new ^ clean).
+\end{verbatim}
+
+\example Add a default in case of feature absence
+\begin{verbatim}
+/// @aa:ascr(<C>d)
+:ascr ^ !<Tense> -> # ^ <Tense>pres.
+\end{verbatim}
+
+\example Set a global variable as marker, and test in the second rule
+\begin{verbatim}
+/// @d:dvp(<SpeechAct>assertion ^ <w>(:foo ^ <Tense>pres))
+:dvp ^ <SpeechAct>#v -> ##speechact = #v.
+
+:foo ^ <Tense> ^ (##speechact ~ assertion) -> # ^ <Mood>ind.
+\end{verbatim}
+
+
+\example type disjunction, variable \texttt{t} matching the whole node
+add two relations, delete \texttt{Target} feature (multiple actions)
+\begin{verbatim}
+/// @d:disj(<T>(:entity ^ <Tense>pres))
+/// @d:disj(<T>(:thing ^ <Tense>pres))
+:disj ^ <T> #t:(entity | thing)
+->
+# ^ <CR>(#t:) ^ <Subject>(#t:),
+# ! <T>.
+\end{verbatim}
+
+\example Less preferable rewrite of the last example, the same variable
+name has to be used twice! Works only because of disjunction.
+\begin{verbatim}
+/// @d:disj2(<T>(:entity ^ <Tense>pres))
+/// @d:disj2(<T>(:thing ^ <Tense>pres))
+:disj2 ^ (<T> (#t:entity) | <T> (#t:thing))
+->
+# ^ <CR>(#t:), # ^ <Subject>(#t:),
+# ! <T>.
+\end{verbatim}
+
+\example Using \tok{=>} rules to walk through a list
+\begin{verbatim}
+///@d:dvp(<c>0 ^ <l>(:li ^ <f>1 ^ <r>(:li ^ <f>2 ^ <r>(:li ^ <f>3 ^ <r>()))))
+///will become: @d:dvp(<c>0123 ^ <l>(:li))
+
+<c>#c: ^ <l>(#l: ^ <f>#f ^ <r>#r:)
+=>
+#l = #r:,
+#c = concatenate(#c, #f).
+\end{verbatim}
+
+\example Rule groups
+\begin{verbatim}
+:dvp ^ <SpeechAct>greeting
+^ <Context>(<Familiarity>yes ^ <Encounter>notfirst ^ <Expressive>yes)
+->
+###greet = random("ciao ", "buongiorno ", "ehi , ciao "),
+###polite = random(", come stai ? ", "! "),
+###init=concatenate(###greet, ###polite)
+###pleasure1 = "sono contento di rivederti ",
+###pleasure2 = "sono felice di rivederti ",
+# ^ :canned ^ <SpeechModus>indicative
+{
+^ <Context>(!<ChildGender> | <ChildGender>unknown)
+->
+# ^ <stringOutput>concatenate(###init, random(###pleasure1, ###pleasure2)).
+
+^ <Context>(<ChildGender>m)
+->
+# ^ <stringOutput>concatenate(###init,
+                     random(###pleasure1, ###pleasure2, "bentornato ")).
+
+^ <Context>(<ChildGender>f)
+->
+# ^ <stringOutput>concatenate(###init,
+                     random(###pleasure1, ###pleasure2, "bentornata ")).
+}
+\end{verbatim}
+
+\example Randomizing with complex values
+\begin{verbatim}
+/// @d:rand(<SpeechAct>opening ^ <Content>(:top ^ <X> y))
+:rand ^ <SpeechAct>opening ^ <Content> (#c1:top)
+->
+###opening1 = :opening ^ "hi, dude",
+###opening2 = :opening ^ hello,
+###opening3 = :opening ^ "nice to see you" ^ <form> polite,
+# ! <SpeechAct>,
+/// Note the colon after the function call! It means that the whole node is the
+/// value, not just the proposition.
+#c1 = random(###opening1, ###opening2, ###opening3): .
+
+/// @d:rand2(<SpeechAct>opening ^ <Content>(:top ^ <X> y))
+:rand2 ^ <SpeechAct>opening ^ <Content> (#c1:top)
+->
+###opening1 = "hi, dude",
+###opening2 = hello,
+###opening3 = "nice to see you" ^ <form> polite,
+# ! <SpeechAct>,
+#c1 = random(###opening1, ###opening2, ###opening3):opening .
+
+\end{verbatim}
+
+\example Alternative randomization, maybe not very convenient
+\begin{verbatim}
+/// @d:dvp(<SpeechAct>closing ^ <Content> (foo))
+:dvp ^ <SpeechAct>closing -> ##randomclosing = random(1,2).
+
+:dvp ^ <SpeechAct>closing ^ <Content> (#c1:) ^
+(##randomclosing ~ 1)
+->
+#c1 = :closing ^ bye.
+
+:dvp ^ <SpeechAct>closing ^ <Content> (#c1:) ^
+(##randomclosing ~ 2)
+->
+#c1 = :closing ^ see_you.
+\end{verbatim}
+
+\example Using global variable as node store.
+
+After application of these rules \texttt{Target} and \texttt{PointToTarget}
+point to the same node.
+
+\begin{verbatim}
+/// @d:dvp(<Speechact>assertion ^ <Content>(a:ascription))
+:ascription ^ #t: -> ##fromStore = #t:.
+
+:ascription ^ ! <PointToTarget>
+->
+Again, note the colon after the global variable in the addition
+# ^ <PointToTarget> ##fromStore:.
+\end{verbatim}
+
+
+\subsection{
+ Adding to relations the wrong way
+}
+
+\begin{verbatim}
+/* Test input
+@a:dvp(foo ^ <SpeechAct>question ^
+             <Content>(c1:ascription ^
+                 <Subject>(s1:entity ^ <Delimitation>unique) ^
+                 <Cop-Scope>(s2:gaga ^ prop ^ <Questioned>true)))
+ */
+\end{verbatim}
+\example
+This will not add to the existing \texttt{Subject} and \texttt{Cop-Scope},
+but introduce new ones.
+\begin{verbatim}
+:dvp ^ <SpeechAct>question
+     ^ <Content>(#cont:ascription ^
+                 <Subject>(:entity ^ <Delimitation>unique) ^
+                 <Cop-Scope>(#cop-scope: ^ <Questioned>true))
+->
+#cont ^ <Wh-Restr>(:specifier ^ what ^ <Scope> #cop-scope:)
+      ^ <Subject>( context ^ <Proximity> proximal )
+      ^ <Cop-Scope>(<Delimitation>unique ^ <Num> sg),
+#cop-scope ! <Questioned>.
+\end{verbatim}
+
+Adding to relations: the correct alternative:\\
+This adds the new information to the previously matched nodes.
+\begin{verbatim}
+:dvp ^ <SpeechAct>question
+     ^ <Content>(#cont:ascription ^
+                 <Subject>(#subj:entity ^ <Delimitation>unique) ^
+                 <Cop-Scope>(#cop-scope: ^ <Questioned>true))
+->
+#cont ^ <Wh-Restr>(:specifier ^ what ^ <Scope> #cop-scope:),
+#subj ^ context ^ <Proximity> proximal,
+#cop-scope ! <Questioned>,
+#cop-scope ^ <Delimitation>unique ^ <Num> sg.
+\end{verbatim}
+\newpage
+\subsection{
+ Global variable ``maps''
+}
+\example Global variables can be used with path expressions to get
+dictionary-like structures
+\begin{verbatim}
+/// @d:dvp2(<Cont> (x:y ^ z) ^ <S>x)
+:dvp2 ^ <Cont> #c: ^ <S>#s: -> ##gvar<cont> = #c:, ##gvar<s><t> = #s:.
+
+:dvp2 ^ !<SpeechAct> ^ !<Cont2> ^ ( ##gvar ~ <cont> #v: )
+->
+# ^ <Cont2> ( #v: ^ <S> ##gvar<s><t>: ).
+
+/// or, alternatively for the second rule (uncomment to test)
+/*
+:dvp2 ^ !<SpeechAct> ^ !<Cont2> ^ ( ##gvar ~ <cont> )
+->
+# ^ <Cont2> ( ##gvar<cont>: ^ <S> ##gvar<s><t>:).
+*/
+\end{verbatim}
+
+\subsection{
+ All you can do with variables
+}
+\example Bind values to global variables and use them in another rule
+\begin{verbatim}
+/// @d:dvp(<foo>(:a ^ <F>(b:c ^ d)))
+:a ^ <F> (#i:#t ^ #p) -> ##partial = :#t ^ #p, ##whole = #i:.
+
+:a ^ !<W> -> # ^ <W> ##whole: ^ <P> ##partial:.
+\end{verbatim}
+
+
+ \example Be careful that you use bound variables correctly! If you use
+ them as simple (type or proposition) values on the right hand side, you
+ must have bound them to simple values, or complex values containing the
+ appropriate edge!
+
+The second rule illustrates how to get type and prop out of a complex node
+in a global variable
+\begin{verbatim}
+/// @d:test(<Actor>(:type ^ prop ^ <foo> bar))
+<Actor>(#a:) -> ##s = #a:.
+
+:test ^ ! <Subject> ^ (##s ~ (:#type ^ #prop))
+->
+# ^ <Subject> ##s: ^ <Prop> #prop ^ <Type> :#type.
+\end{verbatim}
+
+Right hand local variables can also be used to establish coreferences in the
+replacement part. \vspace*{1.0ex}
+
+\example Check for structural equality (will also succeed if coreferent)
+\begin{verbatim}
+/// @d:dvp(<Content>(:bar ^ baz) ^ <Wh-Restr>(:bar ^ baz))
+:dvp ^ <Content>#c: ^ <Wh-Restr>#c: -> # ^ :equals.
+\end{verbatim}
+
+\example Check for identity (will only succeed if coreferent)
+\begin{verbatim}
+/// @d:coref(<Content>(:bar ^ baz) ^ <Wh-Restr>(:bar ^ baz))
+/// @d:coref(<Content>(a:bar ^ baz) ^ <Wh-Restr>(a:bar))
+/// @d:coref(<Content>(a:bar ^ baz) ^ <Wh-Restr>a:)
+:coref ^ <Content>#c: ^ <Wh-Restr> = #c: -> # ^ identical.
+\end{verbatim}
+
+\subsection{
+ Use of functions for tests and results
+}
+\example Bind values to global variables and use them in another rule
+\begin{verbatim}
+/// @d:dvp(<SpeechAct>provideQuestion ^ <Context>(<Question> "question " ^ <Count> "1" ))
+:dvp ^ <SpeechAct>provideQuestion
+     ^ <Context>(<Question> #q ^ <Count> #x: ) ^
+( eq(#x, 1) ~ 1 )
+->
+###part1 = random("La prima domanda ט: ",
+                  "Ecco la prima domanda: ",
+                  "Qui viene la prima domanda: ",
+                  "Puoi rispondere a la prima domanda: "),
+# = :canned ^ <string>concatenate(###part1, #q, "?").
+\end{verbatim}
+
+\example Non-integer numbers must be passed to functions as strings. Boolean functions
+return zero or one.
+\begin{verbatim}
+/// @m:math(<arg1>9 ^ <arg2>2)
+/// @m:math(<arg1>9 ^ <arg2>"30.33")
+
+:math ^ <arg1>#arg1 ^ <arg2>#arg2 ^ (lteq("0.3", div(#arg1, #arg2)) ~ 1)
+->
+# ^ <res> div(#arg1, #arg2).
+
+:math ^ <arg1>#arg1 ^ <arg2>#arg2
+->
+# ^ <bool> lteq("0.3", div(#arg1, #arg2)).
+\end{verbatim}
+
+\example You can use arbitrary encodings in your grammar files,
+but if it's not UTF-8, you have to specify as `encoding' setting in the
+grammar file, and, consequently, you can only have one encoding per project.
+\begin{verbatim}
+/// @e:enc(<enc> iso-8859-15 ^ <val> "הײלגי")
+<enc> iso-8859-15 ^ <val> "הײלגי" -> # ^ <right> true.
+\end{verbatim}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "shortdoc"
+%%% End:

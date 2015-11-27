@@ -1,0 +1,19 @@
+Instructions
+
+alza la palla nella la tua mano sinistra (not a salient object -> full NP)
+@d:dvp(<SpeechAct>nextInstruction ^ <Content> (<Goal>(<Action> up ^ <Obj> left)) ^ <Context> (<PrevGoal>(<Action> down ^ <Obj> right ^ <VerbLexChoice>alzare ^ <NounLexChoice> ball ^ <AttrLexChoice>position)))
+
+alzala (salient objec expressed as a verbal morpheme)
+@d:dvp(<SpeechAct>nextInstruction ^ <Content> (<Goal>(<Action> up ^ <Obj> left)) ^ <Context> (<PrevGoal>(<Action> down ^ <Obj> left ^ <VerbLexChoice>alzare ^ <NounLexChoice> ball ^ <AttrLexChoice>position)))
+
+Clarificaions
+
+lancia la palla nella tua mano sinistra (change the verb)
+@d:dvp(<SpeechAct>provideClarification ^ <Content> (<Goal>(<Action> up ^ <Obj> left ^ <Focus>verb)) ^ <Context> (<PrevGoal>(<Action> down ^ <Obj> right ^ <VerbLexChoice>alzare ^ <NounLexChoice> ball ^ <AttrLexChoice>position)))
+
+alza la palla rossa (re-phrasing needed because the reference that used position was misunderstood)
+@d:dvp(<SpeechAct>provideClarification ^ <Content> (<Goal>(<Action> up ^ <Obj> left ^ <Focus>attr)) ^ <Context> (<PrevGoal>(<Action> down ^ <Obj> right ^ <VerbLexChoice>alzare ^ <NounLexChoice> ball ^ <AttrLexChoice>position)))
+
+alza la palla nella la tua mano sinistra (needed a full NP, because a previous pronominal reference was not understood)
+@d:dvp(<SpeechAct>provideClarification ^ <Content> (<Goal>(<Action> up ^ <Obj> left ^ <Focus>object)) ^ <Context> (<PrevGoal>(<Action> down ^ <Obj> left ^ <VerbLexChoice>alzare ^ <NounLexChoice> ball ^ <AttrLexChoice>position)))
+
