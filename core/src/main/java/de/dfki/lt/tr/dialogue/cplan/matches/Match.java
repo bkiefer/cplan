@@ -74,11 +74,5 @@ public abstract class Match {
     m._negated = _negated;
     return m;
   }
-
-public DagEdge getBinding(DagEdge input, Bindings bindings) {
-	// TODO Auto-generated method stub
-	return null;
-}
-
 }
 

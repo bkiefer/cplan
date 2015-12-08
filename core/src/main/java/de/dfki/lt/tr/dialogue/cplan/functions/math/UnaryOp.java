@@ -6,10 +6,8 @@ import de.dfki.lt.tr.dialogue.cplan.DagNode;
 
 public abstract class UnaryOp extends MathOp {
 
-  @Override
   public int arity() { return 1; }
 
-  @Override
   public Object apply(List<DagNode> args) {
     double result;
     try {

@@ -87,9 +87,25 @@ public class FunCall extends Match implements MatchLVal {
   public boolean match(DagEdge input, Bindings bindings) {
     throw new UnsupportedOperationException("Not yet implemented");
   }
+  /*
+  @Override
+  public boolean match(DagEdge input, Bindings bindings) {
+    // throw new UnsupportedOperationException("Not yet implemented");
+    Object result =
+        _fn.apply(FunCallDagNode.getActualParameters(_args, null, bindings));
+    if (result != null) {
+      if (result instanceof Boolean) return (Boolean)result;
+      if (result instanceof String)
+        return "true".equals(((String) result).toLowerCase());
+      if (result instanceof Double)
+        return (Double) result != 0;
+      return true;
+    }
+    return false;
+  }
+  */
 
   /** The implementation of MatchLVal */
-  @Override
   public DagEdge getBinding(DagEdge input, Bindings bindings) {
     Object result =
       _fn.apply(FunCallDagNode.getActualParameters(_args, null, bindings));

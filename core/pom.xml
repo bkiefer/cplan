@@ -4,10 +4,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>de.dfki.tarot.nlp</groupId>
+    <groupId>de.dfki.mlt</groupId>
     <artifactId>cplan</artifactId>
     <version>0.1-SNAPSHOT</version>
-    <relativePath>../../pom.xml</relativePath>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>cplan-core</artifactId>
@@ -40,6 +40,7 @@
 
   </dependencies>
 
+  <!-- 
   <build>
     <plugins>
       <plugin>
@@ -59,7 +60,6 @@
                        srcdir="${test.classes.dir}/plugins"
                        destdir="${test.classes.dir}/plugins"
                        includeantruntime="false">
-                  <!-- <patternset refid="sources"/> -->
                   <classpath>
                     <path refid="maven.test.classpath"/>
                     <pathelement path="${classes.dir}"/>
@@ -72,7 +72,7 @@
                   <fileset dir="${test.classes.dir}/plugins/"
                            includes="**/*.class"/>
                 </jar>
-                <!-- clean up so that the .class files don't confuse the test runner -->
+                - clean up so that the .class files don't confuse the test runner -
                 <delete failonerror="true">
                   <fileset dir="${test.classes.dir}/plugins/"
                            includes="**/*.class"/>
@@ -87,5 +87,5 @@
       </plugin>
     </plugins>
   </build>
-
+  -->
 </project>

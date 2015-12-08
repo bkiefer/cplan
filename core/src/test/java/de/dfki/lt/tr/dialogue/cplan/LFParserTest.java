@@ -70,6 +70,7 @@ public class LFParserTest {
     DagNode res = null;
     if (lfparser.parse())
       res = lfparser.getResultLF();
+    DagNode.usePrettyPrinter();
     String lfString = (res == null) ? null : res.toString();
     if (PRINT) { System.out.println(lf); System.out.println(lfString); }
     assertEquals("Run "+ i + " " + lf, lf, lfString);

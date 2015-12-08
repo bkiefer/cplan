@@ -6,10 +6,8 @@ import de.dfki.lt.tr.dialogue.cplan.DagNode;
 
 public abstract class BinaryOp extends MathOp {
 
-  @Override
   public int arity() { return 2; }
 
-  @Override
   public Object apply(List<DagNode> args) {
     double result;
     try {
@@ -25,8 +23,4 @@ public abstract class BinaryOp extends MathOp {
 
   protected abstract double mathApply(double x, double y);
 
-public String name() {
-	// TODO Auto-generated method stub
-	return null;
-}
 }

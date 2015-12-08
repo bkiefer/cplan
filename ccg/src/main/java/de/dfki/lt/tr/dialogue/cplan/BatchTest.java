@@ -392,7 +392,8 @@ public class BatchTest {
 
 
   public boolean validGenericAnswer(String in) {
-    return ! in.replaceAll("[:;,?. ]", "").isEmpty();
+    String red = in.replaceAll("[:;,?. ]", "");
+    return ! (red.isEmpty() || "and".equals(red));
   }
 
   public ResultItem realizeOneItem(RealizationTestItem item, int i) {

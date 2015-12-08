@@ -14,12 +14,6 @@ public class IniFileReader {
 
   private interface MyHandler extends IniFileHandler {
     public PairList<String, PairList<String, String>> getResult();
-
-	void sectionStart(String name);
-
-	void sectionEnd(String name);
-
-	void keyValuePair(String key, String value);
   }
 
   /** This provides a minimalistic interface for those who don't want to bother
@@ -32,7 +26,7 @@ public class IniFileReader {
   public static
   PairList<String, PairList<String, String>> readIniFile(File f)
   throws FileNotFoundException, IOException {
-    IniFileHandler handler = new MyHandler() {
+    MyHandler handler = new MyHandler() {
       private PairList<String, PairList<String, String>> _result =
           new PairList<String, PairList<String, String>>();
 
@@ -58,7 +52,7 @@ public class IniFileReader {
 
     readFile(f, handler);
 
-    return ((MyHandler)handler).getResult();
+    return handler.getResult();
   }
 
   /** Reads the file contents using the handler given in the constructor, or

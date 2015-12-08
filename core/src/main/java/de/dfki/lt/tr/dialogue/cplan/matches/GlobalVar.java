@@ -40,7 +40,6 @@ public class GlobalVar extends Match implements MatchLVal {
 
   /** Return the binding associated with this global variable, if there is any
    */
-  @Override
   public DagEdge getBinding(DagEdge input, Bindings bindings) {
     return bindings.getBinding(_varName, Bindings.GLOBAL);
   }

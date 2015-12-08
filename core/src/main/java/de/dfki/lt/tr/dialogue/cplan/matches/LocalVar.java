@@ -42,7 +42,6 @@ public class LocalVar extends Match implements MatchLVal {
 
   /** Return the binding associated with this local variable, if there is any
    */
-  @Override
   public DagEdge getBinding(DagEdge input, Bindings bindings) {
     if (_varName == null) return input;
     return bindings.getBinding(_varName, Bindings.LOCAL);
