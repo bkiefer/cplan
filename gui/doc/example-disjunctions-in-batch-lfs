@@ -1,0 +1,33 @@
+@d:dvp(
+<SpeechAct>( greeting | closing | acknowledgementName | confirmName | provideQuestion | provideChoiceAnswersQuiz  | provideChoiceAnswersQuiz | provideChoiceAnswersQuiz) ^
+
+<currentGame>(unknown | quiz | imitation | dance) ^
+<gameImitation>(unknown | first | notfirst) ^
+<gameQuiz>(unknown | first | notfirst) ^
+<gameDance>(unknown | first | notfirst) ^
+<childName>(unknown | Gianni)^
+<childGender>(unknown | m | f) ^
+<robotName>(unknown | Nao) ^
+<robotGender>(unknown | m | f) ^
+<familiarityCond>(unknown | yes | no) ^
+<asrResult>(unknown | empty)  ^
+
+<frameOfReference>unknown ^
+<systemGesture>unknown ^
+<moveAction>unknown ^
+<moveObject>unknown ^
+<performanceMovements>unknown ^
+
+<questionQuiz>unknown ^
+ <answerQuiz1>unknown ^
+ <answerQuiz2>unknown ^
+ <answerQuiz3>unknownm ^
+ <answerQuiz4>unknown ^
+<correctAnswerQuiz>unknown | 1 | 2 | 3 | 4 | 5 ^
+<performanceQuestions>unknown | 1 | 2 ^
+<selectedAnswer>unknown | 1 | 2 | 3 | 4 | 5 ^
+<questionCount>unknown | 1 | 2 | 3
+)
+
+
+
