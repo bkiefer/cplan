@@ -20,6 +20,24 @@
     </license>
   </licenses>
 
+  <build>
+  <plugins>
+    <plugin>
+      <artifactId>maven-assembly-plugin</artifactId>
+      <configuration>
+        <archive>
+          <manifest>
+            <mainClass>de.dfki.lt.tr.dialogue.cplan.InteractivePlanner</mainClass>
+          </manifest>
+        </archive>
+        <descriptorRefs>
+          <descriptorRef>jar-with-dependencies</descriptorRef>
+        </descriptorRefs>
+      </configuration>
+    </plugin>
+  </plugins>
+  </build>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -52,13 +70,13 @@
     <dependency>
       <groupId>de.dfki.mlt</groupId>
       <artifactId>dataviz</artifactId>
-      <version>0.1-SNAPSHOT</version>
+      <version>0.1</version>
     </dependency>
 
     <dependency>
       <groupId>de.dfki.mlt</groupId>
       <artifactId>j2emacs</artifactId>
-      <version>0.1-SNAPSHOT</version>
+      <version>0.1</version>
     </dependency>
 
   </dependencies>
