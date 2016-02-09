@@ -51,17 +51,6 @@ public class LFParserTest {
     // next line is needed to initialize static fields
     @SuppressWarnings("unused")
     UtterancePlanner up = new UtterancePlanner();
-    // DagNode.registerPrinter(null); // return to default printer
-    String[] features = { "Aspect", "Mood", "Tense", "Delimitation", "Num", "Quantification", "List" };
-    String[] relations = { "Actor", "Event", "Patient", "Subject", "First", "Next" };
-    Arrays.sort(features);
-    Arrays.sort(relations);
-    for (String feature : features) {
-      DagNode.mapFeatureToNumber(feature);
-    }
-    for (String feature : relations) {
-      DagNode.mapFeatureToNumber(feature);
-    }
   }
 
   private void testOne(String lf, int i) throws IOException {
@@ -73,7 +62,12 @@ public class LFParserTest {
     DagNode.usePrettyPrinter();
     String lfString = (res == null) ? null : res.toString();
     if (PRINT) { System.out.println(lf); System.out.println(lfString); }
-    assertEquals("Run "+ i + " " + lf, lf, lfString);
+    lfparser = new LFParser(new Lexer(new StringReader(lf)));
+    lfparser.setErrorVerbose(true);
+    DagNode resOut = null;
+    if (lfparser.parse())
+      resOut = lfparser.getResultLF();
+    assertEquals("Run "+ i + " " + lf, res, resOut);
   }
 
   @Test public void testLFs() throws IOException {
@@ -114,7 +108,13 @@ public class LFParserTest {
       res = lfparser.getResultLFs().get(0);
     String lfString = (res == null) ? null : res.toString();
     if (PRINT) { System.out.println(lf); System.out.println(lfString); }
-    assertEquals("Run "+ i + " " + lf, lf, lfString);
+    lfparser = new LFParser(new Lexer(new StringReader(lfString)));
+    lfparser.setExtMode(true);
+    lfparser.setErrorVerbose(true);
+    DagNode resOut = null;
+    if (lfparser.parse())
+      resOut = lfparser.getResultLFs().get(0);
+    assertEquals("Run "+ i + " " + lf, res, resOut);
   }
 
   @Test public void testExtLFs() throws IOException {

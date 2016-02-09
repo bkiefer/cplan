@@ -20,26 +20,6 @@
     </license>
   </licenses>
 
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifest>
-              <mainClass>de.dfki.lt.tr.dialogue.cplan.InteractivePlanner</mainClass>
-            </manifest>
-          </archive>
-          <finalName>cplan-gui</finalName>
-          <appendAssemblyId>false</appendAssemblyId>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
   <modules>
     <module>core</module>
     <module>ccg</module>
@@ -53,14 +33,12 @@
   </properties>
 
   <dependencies>
-
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.8.1</version>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
 </project>

@@ -4,15 +4,14 @@
 
 MAINCLASS=de.dfki.lt.tr.dialogue.cplan.InteractivePlanner
 # if DEBUG is set and non-empty, remote debugging is enabled
-# if BINARY is set and non-empty, the compilation step is skipped
-#BINARY=true
+# if COMPILE is set and non-empty, the compilation step is skipped
+COMPILE="FALSE"
 
 here="`pwd`"
 cd "`dirname $0`"
-APP_HOME="`pwd`"
-BINARY="FALSE"
-if test -z "$BINARY" -a -d src ; then
-    mvn clean assembly:single > /dev/null 2>&1
+APP_HOME="`pwd`/gui"
+if test -z "$COMPILE" ; then
+    build.sh
 fi
 cd "$here"
 export APP_HOME
