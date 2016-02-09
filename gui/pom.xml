@@ -11,6 +11,7 @@
   </parent>
 
   <artifactId>cplan-gui</artifactId>
+  <packaging>jar</packaging>
 
   <licenses>
     <license>
@@ -19,24 +20,6 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
-  <build>
-  <plugins>
-    <plugin>
-      <artifactId>maven-assembly-plugin</artifactId>
-      <configuration>
-        <archive>
-          <manifest>
-            <mainClass>de.dfki.lt.tr.dialogue.cplan.InteractivePlanner</mainClass>
-          </manifest>
-        </archive>
-        <descriptorRefs>
-          <descriptorRef>jar-with-dependencies</descriptorRef>
-        </descriptorRefs>
-      </configuration>
-    </plugin>
-  </plugins>
-  </build>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

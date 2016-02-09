@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+# set -x
 # java start script version 1.0
 
 MAINCLASS=de.dfki.lt.tr.dialogue.cplan.InteractivePlanner
@@ -10,8 +10,9 @@ MAINCLASS=de.dfki.lt.tr.dialogue.cplan.InteractivePlanner
 here="`pwd`"
 cd "`dirname $0`"
 APP_HOME="`pwd`"
+BINARY="FALSE"
 if test -z "$BINARY" -a -d src ; then
-    ant all > /dev/null 2>&1
+    mvn clean assembly:single > /dev/null 2>&1
 fi
 cd "$here"
 export APP_HOME
