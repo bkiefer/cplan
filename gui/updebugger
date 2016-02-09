@@ -1,5 +1,5 @@
 #!/bin/bash
-#set -x
+set -x
 # java start script version 1.0
 
 MAINCLASS=de.dfki.lt.tr.dialogue.cplan.InteractivePlanner
@@ -87,7 +87,7 @@ cygwinify_path() {
     fi
 }
 
-JAVA_OPTS="${JAVA_OPTS}-cp \"`dozify_path "$APP_HOME/target/lib/java/*"`\" "
+JAVA_OPTS="${JAVA_OPTS}-cp \"`dozify_path "$APP_HOME/target/*"`\" "
 
 if test -f "log4j.properties" ; then
     L4JSETUP="log4j.properties"
@@ -112,5 +112,5 @@ if test -n "$L4JSETUP" ; then
     JAVA_OPTS="$JAVA_OPTS -Dlog4j.configuration=file:${L4JSETUP}"
 fi
 if test -z "$*"; then opts="-g"; fi
-eval "$JAVA_BIN $JAVA_OPTS -Dapp.dir=\"$APP_HOME\" $MAINCLASS $opts $*" \
+eval "$JAVA_BIN $JAVA_OPTS -Dapp.dir=\"$APP_HOME\" $MAINCLASS $opts $@" \
   || echo "$usage"

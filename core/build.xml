@@ -5,7 +5,7 @@
 
 <project name="cplan" basedir="." default="compile">
 
-  <import file="../buildsys/build-skeleton.xml" as=""/>
+  <import file="../../buildsys/build-skeleton.xml" as=""/>
 
   <!-- ================================================================= -->
   <!-- Build plugin for special test                                     -->

@@ -5,7 +5,7 @@
 
 <project name="cplan-ccg" basedir="." default="compile">
 
-  <import file="../buildsys/build-skeleton.xml" as=""/>
+  <import file="../../buildsys/build-skeleton.xml" as=""/>
 
   <!-- ================================================================= -->
   <!-- SUBMODULES                                                        -->
@@ -13,10 +13,10 @@
 
   <target name="modules" description="make submodules">
     <antcall target="subant">
-      <param name="dir" value="../cplan-core"/>
+      <param name="dir" value="../core"/>
     </antcall>
     <antcall target="subant">
-      <param name="dir" value="../openccg-dfki"/>
+      <param name="dir" value="../../openccg-dfki"/>
     </antcall>
   </target>
 

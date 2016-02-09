@@ -5,7 +5,7 @@
 
 <project name="cplan-gui" basedir="." default="compile">
 
-  <import file="../buildsys/build-skeleton.xml" as=""/>
+  <import file="../../buildsys/build-skeleton.xml" as=""/>
 
   <!-- ================================================================= -->
   <!-- SUBMODULES                                                        -->
@@ -13,13 +13,13 @@
 
   <target name="modules" description="make submodules">
     <antcall target="subant">
-      <param name="dir" value="../cplan-ccg"/>
+      <param name="dir" value="../ccg"/>
     </antcall>
     <antcall target="subant">
-      <param name="dir" value="../dataviz"/>
+      <param name="dir" value="../../dataviz"/>
     </antcall>
     <antcall target="subant">
-      <param name="dir" value="../j2emacs"/>
+      <param name="dir" value="../../j2emacs"/>
     </antcall>
   </target>
 
