@@ -25,6 +25,14 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
+  <repositories>
+    <repository>
+      <id>BSNSOFT</id>
+      <name>BSNSOFT</name>
+      <url>http://www.bsnsoft.de/nexus/content/groups/public/</url>
+    </repository>
+  </repositories>
+
   <build>
     <plugins>
       <plugin>
