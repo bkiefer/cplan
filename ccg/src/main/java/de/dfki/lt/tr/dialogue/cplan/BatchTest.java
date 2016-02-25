@@ -29,7 +29,13 @@ public class BatchTest {
 
   public enum Status { BAD , GOOD };
 
-  public enum BatchType { GENERATION, PARSING, PLANNING };
+  /** PLANNING_ALL generates all variants, not attempting CCG generation,
+   *  GENERATION_ALL generates all variants with CCG generation.
+   *  The other three do one-shot batch processing
+   */
+  public enum BatchType {
+    PARSING, GENERATION, PLANNING, GENERATION_ALL, PLANNING_ALL, NONE
+  };
 
   private BatchType _realizationTest = BatchType.GENERATION;
 

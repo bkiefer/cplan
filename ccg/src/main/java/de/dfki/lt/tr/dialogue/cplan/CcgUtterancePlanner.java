@@ -1,15 +1,18 @@
 package de.dfki.lt.tr.dialogue.cplan;
 
-import static de.dfki.lt.tr.dialogue.cplan.Constants.SECTION_SETTINGS;
 import static de.dfki.lt.tr.dialogue.cplan.CcgPlannerConstants.KEY_CCG_GRAMMAR;
+import static de.dfki.lt.tr.dialogue.cplan.Constants.SECTION_SETTINGS;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.io.*;
+import java.util.*;
+import java.util.regex.Pattern;
 
+import de.dfki.lt.tr.dialogue.cplan.BatchTest.BatchType;
+import de.dfki.lt.tr.dialogue.cplan.BatchTest.RealizationTestItem;
+import de.dfki.lt.tr.dialogue.cplan.BatchTest.ResultItem;
+import de.dfki.lt.tr.dialogue.cplan.functions.DeterministicRandomFunction;
+import de.dfki.lt.tr.dialogue.cplan.functions.FunctionFactory;
+import de.dfki.lt.tr.dialogue.cplan.util.PairList;
 import opennlp.ccg.grammar.Grammar;
 import opennlp.ccg.hylo.HyloHelper;
 import opennlp.ccg.hylo.Nominal;
@@ -20,7 +23,6 @@ import opennlp.ccg.realize.Realizer;
 import opennlp.ccg.synsem.Category;
 import opennlp.ccg.synsem.LF;
 import opennlp.ccg.synsem.Sign;
-import de.dfki.lt.tr.dialogue.cplan.util.PairList;
 
 public class CcgUtterancePlanner extends UtterancePlanner {
 
@@ -121,17 +123,6 @@ public class CcgUtterancePlanner extends UtterancePlanner {
     // reset global status
     _grammar = null;
     super.readProjectFile(projectFile);
-    /*
-    String grammarFile = _settings.get(KEY_CCG_GRAMMAR);
-    if (grammarFile != null) {
-      File ccgPath = resolvePath(projectFile, grammarFile);
-      readCCGGrammar(ccgPath);
-      if (_grammar != null) {
-        _realizer = new Realizer(_grammar);
-        _parser = new Parser(_grammar);
-      }
-    }
-    */
   }
 
   /** Return true if this utterance planner has a valid grammar, and should
@@ -304,6 +295,57 @@ public class CcgUtterancePlanner extends UtterancePlanner {
     });
     bt.runBatch();
     return bt;
+  }
+
+
+  private static final int MAX_EQUAL_TURNS = 10000;
+
+
+  /** Systematically generate all possibilities for the test items in batchFile,
+   *  writing the results to out.
+   */
+  public void batchGenerateAllPossibilities(File batchFile,
+      Writer out, boolean useCcgRealizer)
+  throws IOException {
+    final String nl = System.getProperty("line.separator");
+    Pattern punctRegex = Pattern.compile("\\s*(?:[;:,.?]\\s*)*([;:,.?])");
+    Pattern spaceRegex = Pattern.compile("\\s+");
+
+    DeterministicRandomFunction drf = new DeterministicRandomFunction();
+    FunctionFactory.register(drf, this);
+
+    // this.setTracing(new MiniLogTracer(RuleTracer.ALL));
+    Realizer realizerSave = _realizer;
+    if (! useCcgRealizer) {
+      _realizer = null; // Don't attempt to do CCG realization
+    }
+
+    BatchTest bt = this.loadBatch(batchFile, BatchType.GENERATION);
+    for (int i = 0; i < bt.itemSize(); ++i) {
+      drf.newInput();
+      RealizationTestItem item = (RealizationTestItem) bt.getItem(i);
+      HashSet<String> sents = new HashSet<String>();
+      out.append("### ").append(item.lf.toString()).append(nl);
+      out.flush();
+      int equalTurns = 0;
+      while (drf.newRound() && ++equalTurns < MAX_EQUAL_TURNS) {
+        ResultItem res = bt.realizeOneItem(item, i);
+        if (res.itemStatus == BatchTest.Status.GOOD) {
+          String result = punctRegex.matcher(res.realized).replaceAll("$1");
+          result = spaceRegex.matcher(result).replaceAll(" ");
+          if (result.isEmpty()) break;
+          if (! sents.contains(result)) {
+            equalTurns = 0;
+            sents.add(result);
+            out.append(result).append(nl);
+            out.flush();
+          }
+        }
+      }
+      System.err.println(sents.size()
+          + ((equalTurns >= MAX_EQUAL_TURNS)?" *":""));
+    }
+    _realizer = realizerSave;
   }
 
 }

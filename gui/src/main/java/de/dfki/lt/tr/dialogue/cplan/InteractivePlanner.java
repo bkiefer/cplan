@@ -1,37 +1,21 @@
 package de.dfki.lt.tr.dialogue.cplan;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import jline.console.ConsoleReader;
-import joptsimple.OptionException;
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
-
-import org.apache.log4j.Appender;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.SimpleLayout;
+import org.apache.log4j.*;
 
 import de.dfki.lt.j2emacs.J2Emacs;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest.BatchType;
-import de.dfki.lt.tr.dialogue.cplan.BatchTest.RealizationTestItem;
-import de.dfki.lt.tr.dialogue.cplan.BatchTest.ResultItem;
-import de.dfki.lt.tr.dialogue.cplan.functions.DeterministicRandomFunction;
 import de.dfki.lt.tr.dialogue.cplan.functions.FunctionFactory;
 import de.dfki.lt.tr.dialogue.cplan.gui.LFModelAdapter;
 import de.dfki.lt.tr.dialogue.cplan.gui.UPMainFrame;
 import de.dfki.lt.tr.dialogue.cplan.util.Position;
+import jline.console.ConsoleReader;
+import joptsimple.OptionException;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
 
 public class InteractivePlanner extends CcgUtterancePlanner
 implements UPMainFrame.CloseAllListener {
@@ -205,6 +189,7 @@ implements UPMainFrame.CloseAllListener {
     }
   }
 
+  /*
   public void batchGenerateRandom(String optionArg, File projectFile,
     File initialSentences)
   throws IOException {
@@ -250,7 +235,7 @@ implements UPMainFrame.CloseAllListener {
       }
       initSents.close();
     }
-    */
+    /
 
     BatchTest bt = this.loadBatch(batchFile, BatchType.GENERATION);
     for (int i = 0; i < bt.itemSize(); ++i) {
@@ -275,63 +260,58 @@ implements UPMainFrame.CloseAllListener {
       }
       System.err.println(sents.size());
     }
-  }
+  }*/
 
-  private static final int MAX_EQUAL_TURNS = 10000;
 
-  /** Systematically generate all possibilities for the test items in batchFile,
-   *  writing the results to out.
-   */
-  public void batchGenerate(File projectFile, File batchFile, Writer out)
-  throws IOException {
-    final String nl = System.getProperty("line.separator");
-    Pattern punctRegex = Pattern.compile("\\s*(?:[;:,.?]\\s*)*([;:,.?])");
-    Pattern spaceRegex = Pattern.compile("\\s+");
+  /** Run one of the batch processing steps */
+  public void runSomeBatch(String project, String batchName, BatchType type,
+      String outfile) {
+    if (null == project) {
+      usage("No project file specified");
+    }
 
-    DeterministicRandomFunction drf = new DeterministicRandomFunction();
-    FunctionFactory.register(drf, this);
-
-    this.readProjectFile(projectFile);
-    // this.setTracing(new MiniLogTracer(RuleTracer.ALL));
-    super._realizer = null; // Don't attempt to do CCG realization
-
-    BatchTest bt = this.loadBatch(batchFile, BatchType.GENERATION);
-    for (int i = 0; i < bt.itemSize(); ++i) {
-      drf.newInput();
-      RealizationTestItem item = (RealizationTestItem) bt.getItem(i);
-      HashSet<String> sents = new HashSet<String>();
-      out.append("### ").append(item.lf.toString()).append(nl);
-      out.flush();
-      int equalTurns = 0;
-      while (drf.newRound() && ++equalTurns < MAX_EQUAL_TURNS) {
-        ResultItem res = bt.realizeOneItem(item, i);
-        if (res.itemStatus == BatchTest.Status.GOOD) {
-          String result = punctRegex.matcher(res.realized).replaceAll("$1");
-          result = spaceRegex.matcher(result).replaceAll(" ");
-          if (result.isEmpty()) break;
-          if (! sents.contains(result)) {
-            equalTurns = 0;
-            sents.add(result);
-            out.append(result).append(nl);
-            out.flush();
-          }
+    File batchFile = new File(batchName);
+    if (! batchFile.exists()) {
+      usage("Batch input file not found:" + batchFile);
+    } else {
+      readProjectFile(new File(project));
+      Writer out = new PrintWriter(System.out);
+      try {
+        if (outfile != null) {
+          out = new FileWriter(outfile);
         }
+        if (type == BatchType.PLANNING_ALL
+            || type == BatchType.GENERATION_ALL) {
+          batchGenerateAllPossibilities(batchFile, out,
+              type == BatchType.GENERATION_ALL);
+        } else {
+          BatchTest bt = batchProcess(batchFile, type);
+          bt.save(out);
+        }
+      } catch (IOException ex) {
+        logger.error("Problem during batch processing: " +  ex);
+      } finally {
+        try {
+          if (outfile != null)
+            out.close();
+        } catch (Exception ex) { throw new RuntimeException(ex); }
       }
-      System.err.println(sents.size()
-          + ((equalTurns >= MAX_EQUAL_TURNS)?" *":""));
+      allClosed();
     }
   }
 
-
   private static void usage(String msg) {
     String[] usage = {
-        "Usage: UPDebugger [-[r]<ealize batch> batchfile]",
-        "                  [-[R]<ealize all sentences> batchfile] ",
-        "                  [-[p]<arse batch> inputfile]",
+        "Usage: UPDebugger [-[g]<enerate batch> batchfile]",
+        "                  [-[G]<enerate all sentences> batchfile] ",
+        "                  [-[a]<nalyze batch> inputfile]",
+        "                  [-[p]<lan batch> inputfile]",
+        "                  [-[P]<lan all batch> inputfile]",
         "                  [-c<ompileonly>] [-d<ebugdags>]",
-        "                  [-g<ui>] [-t<race>={1,2,3}] [-e<macs>]",
+        "                  [-i<nteractive shell>] [-t<race>={1,2,3}] [-e<macs>]",
         "                  <projectfile> [batchoutput]",
-        "      -t : bit 1: trace match, bit 2 : trace modification"
+        "      -t : bit 1: trace match, bit 2 : trace modification",
+        "  The GUI will is started by default"
     };
     System.out.println(msg);
     for (String us : usage) System.out.println(us);
@@ -351,7 +331,7 @@ implements UPMainFrame.CloseAllListener {
       // Logger.getRootLogger().setLevel(Level.ERROR);
     }
 
-    OptionParser parser = new OptionParser("R:r:p:P:cdgt:e::A:");
+    OptionParser parser = new OptionParser("a:g:p:G:P:icdt:e::");
     OptionSet options = null;
     try {
       options = parser.parse(args);
@@ -370,15 +350,26 @@ implements UPMainFrame.CloseAllListener {
 
     String optionArg = null;
 
-    char what = 'i';
+    BatchType type = BatchType.NONE;
+    char what = '_';
     // x and T are only for test purposes
-    String[] actionOptions = { "R", "r", "p", "P", "c", "g" };
-    for (String action : actionOptions) {
+    String actionOptions = "agpGPi";
+    for (int i = 0; i < actionOptions.length(); ++i) {
+      char c = actionOptions.charAt(i);
+      String action = "" + c;
       if (options.has(action)) {
-        if (what != 'i')
-          usage("Only one of -R, -r, -p, -P, -c or -g allowed.") ;
-        what = action.charAt(0);
+        if (what != '_') {
+          StringBuilder sb = new StringBuilder();
+          sb.append("Only one of");
+          for (i = 0; i < actionOptions.length(); ++i)
+            sb.append(" -" + actionOptions.charAt(i));
+          sb.append(" allowed.");
+          usage(sb.toString());
+        }
+        what = c;
         optionArg = (String) options.valueOf(action);
+        if (i < BatchType.values().length)
+          type = BatchType.values()[i];
       }
     }
 
@@ -397,137 +388,37 @@ implements UPMainFrame.CloseAllListener {
     } else {
       DagNode.usePrettyPrinter();
     }
-    switch (what) {
-    case 'r': // Run a batch planning + generation test
-      try {
-        if (nonOptionArgs.size() == 0) {
-          usage("No project file specified");
-        } else {
-          File batchFile = new File(optionArg);
-          if (! batchFile.exists()) {
-            usage("Batch input file not found:" + batchFile);
-          } else {
-            ip.readProjectFile(new File(nonOptionArgs.get(0)));
-            BatchTest bt = ip.batchProcess(batchFile, BatchType.PARSING);
-            try {
-              File batchSave =
-                  new File(batchFile.getParent(), batchFile.getName() + ".out");
-              bt.save(new FileWriter(batchSave));
-            } catch (IOException ioex) {
-              bt.save(new PrintWriter(System.out));
-            }
-            ip.logger.info(bt.percentageGood());
-            ip.allClosed();
-          }
+
+    String project = nonOptionArgs.size() > 0 ? nonOptionArgs.get(0) : null;
+    String outfile = nonOptionArgs.size() > 1 ? nonOptionArgs.get(1) : null;
+
+    if (type != BatchType.NONE) {
+      ip.runSomeBatch(project, optionArg, type, outfile);
+    } else {
+      switch (what) {
+      case 'c': // only "compile" resp. check rules
+        ip.readProjectFile(new File(project));
+        break;
+      case 'i': {
+        // trace flags
+        int traceFlags = 0;
+        if (options.has("t")) {
+          traceFlags = Integer.parseInt((String) options.valueOf("t"));
         }
-      }
-      catch (IOException ex) {
-        ip.logger.error("Problem during batch processing: " +  ex);
-      }
-      break;
-    case 'R': // batch generate sentences from the given parameters
-      try {
-        if (nonOptionArgs.size() == 0) {
+
+        if (null == project) {
           usage("No project file specified");
         } else {
-          Logger.getRootLogger().setLevel(Level.ERROR);
-          File outputFile = null;
-          if (nonOptionArgs.size() > 1) {
-            outputFile = new File(nonOptionArgs.get(1));
-          }
-          File batchFile = new File(optionArg);
-          if (! batchFile.exists()) {
-            usage("Batch input file not found:" + batchFile);
-            return;
-          }
-          Writer out = (outputFile != null ? new FileWriter(outputFile)
-              : new PrintWriter(System.out));
-          ip.batchGenerate(new File(nonOptionArgs.get(0)), batchFile, out);
-          if (outputFile != null)
-            out.close();
+          ip.readProjectFile(new File(project));
+          ip.interactive(traceFlags);
           ip.allClosed();
         }
+        break;
       }
-      catch (IOException ex) {
-        ip.logger.error("Problem during batch processing: " +  ex);
+      default:
+        ip.startGui(project);
+        break;
       }
-      break;
-    case 'p':
-      try {
-        if (nonOptionArgs.size() == 0) {
-          usage("No project file specified");
-        } else {
-          File batchFile = new File(optionArg);
-          if (! batchFile.exists()) {
-            usage("Batch input file not found:" + batchFile);
-          } else {
-            ip.readProjectFile(new File(nonOptionArgs.get(0)));
-            BatchTest bt = ip.batchProcess(batchFile, BatchType.GENERATION);
-            try {
-              File batchSave =
-                  new File(batchFile.getParent(), batchFile.getName() + ".out");
-              bt.save(new FileWriter(batchSave));
-            } catch (IOException ioex) {
-              bt.save(new PrintWriter(System.out));
-            }
-            ip.logger.info(bt.percentageGood());
-            ip.allClosed();
-          }
-        }
-      }
-      catch (IOException ex) {
-        ip.logger.error("Problem during batch processing: " +  ex);
-      }
-      break;
-    case 'P':
-      // do a "planning" batch test
-      try {
-        if (nonOptionArgs.size() == 0) {
-          usage("No project file specified");
-        } else {
-          File batchFile = new File(optionArg);
-          if (! batchFile.exists()) {
-            usage("Batch input file not found:" + batchFile);
-          } else {
-            ip.readProjectFile(new File(nonOptionArgs.get(0)));
-            BatchTest bt = ip.batchProcess(batchFile, BatchType.PLANNING);
-            try {
-              File batchSave =
-                  new File(batchFile.getParent(), batchFile.getName() + ".out");
-              bt.save(new FileWriter(batchSave));
-            } catch (IOException ioex) {
-              bt.save(new PrintWriter(System.out));
-            }
-            ip.logger.info(bt.percentageGood());
-            ip.allClosed();
-          }
-        }
-      }
-      catch (IOException ex) {
-        ip.logger.error("Problem during batch processing: " +  ex);
-      }
-      break;
-    case 'g':
-      ip.startGui(nonOptionArgs.size() > 0 ? nonOptionArgs.get(0) : null);
-      break;
-    case 'c': // only "compile" rules
-      break;
-    default: {
-      // trace flags
-      int traceFlags = 0;
-      if (options.has("t")) {
-        traceFlags = Integer.parseInt((String) options.valueOf("t"));
-      }
-
-      if (nonOptionArgs.size() == 0) {
-        usage("No project file specified");
-      } else {
-        ip.readProjectFile(new File(nonOptionArgs.get(0)));
-        ip.interactive(traceFlags);
-        ip.allClosed();
-      }
-      break;
-    }
     }
   }
 }
