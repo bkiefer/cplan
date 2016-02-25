@@ -282,6 +282,7 @@ implements UPMainFrame.CloseAllListener {
         }
         if (type == BatchType.PLANNING_ALL
             || type == BatchType.GENERATION_ALL) {
+          Logger.getRootLogger().setLevel(Level.ERROR);
           batchGenerateAllPossibilities(batchFile, out,
               type == BatchType.GENERATION_ALL);
         } else {
