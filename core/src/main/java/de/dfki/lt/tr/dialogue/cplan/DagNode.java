@@ -1285,6 +1285,72 @@ public class DagNode {
   }
   */
 
+  /** TODO: This will work only for the simple cases !!! */
+  @SuppressWarnings("null")
+  private boolean subsumesRec(DagNode in2) {
+    { DagNode fs1 = this._forward;
+      if (fs1 == null) {
+        this.setForward(in2);
+      } else {
+        return (fs1 == in2);
+      }
+    }
+
+    int type1 = this.getType();
+    int type2 = in2.getType();
+    if (type1 != type2) {
+      if (! subsumesType(type1, type2)) {
+        return false;
+      }
+    }
+
+    List<DagEdge> edges1 = this.getEdges();
+    List<DagEdge> edges2 = in2.getEdges();
+    if (edges2 == null) {
+      return (edges1 == edges2);
+    }
+    if (edges1 == null) {
+      return true;
+    }
+
+    Iterator<DagEdge> arc1It = edges1.iterator();
+    Iterator<DagEdge> arc2It = edges2.iterator();
+    DagEdge arc1 = null, arc2 = null;
+    int feat1 = (arc1It.hasNext() ? (arc1 = arc1It.next()).getFeature() : NO_FEAT);
+    int feat2 = (arc2It.hasNext() ? (arc2 = arc2It.next()).getFeature() : NO_FEAT);
+    while (feat1 != NO_FEAT && feat2 != NO_FEAT) {
+      if (feat1 < feat2) { // feature in 1 missing in 2: no forward
+        return false;
+      }
+      if (feat1 > feat2) { // feature in 2 missing in 1: no backward
+        while (feat1 > feat2) {
+          feat2 = (arc2It.hasNext() ? (arc2 = arc2It.next()).getFeature() : NO_FEAT);
+        }
+      }
+      if (feat1 == feat2 && feat1 != NO_FEAT) {
+        if (! arc1.getValue().subsumesRec(arc2.getValue())) return false;
+        feat1 = (arc1It.hasNext() ? (arc1 = arc1It.next()).getFeature() : NO_FEAT);
+        feat2 = (arc2It.hasNext() ? (arc2 = arc2It.next()).getFeature() : NO_FEAT);
+      }
+    }
+    return ((feat1 == feat2) || (feat1 == NO_FEAT));
+  }
+
+  /** Return true if `this' is more general than fs */
+  public boolean subsumes(DagNode fs) {
+    boolean result = subsumesRec(fs);
+    invalidate();
+    return result;
+  }
+
+
+  /** return true if fs is more general than `this' */
+  public boolean isSubsumedBy(DagNode fs) {
+    boolean result = (fs).subsumesRec(this);
+    invalidate();
+    return result;
+  }
+
 
   // *************************************************************************
   // Begin construct jxchg string representation from (permanent) dag

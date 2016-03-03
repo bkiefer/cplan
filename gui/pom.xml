@@ -1,3 +1,4 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -6,7 +7,7 @@
   <parent>
     <groupId>de.dfki.mlt</groupId>
     <artifactId>cplan</artifactId>
-    <version>0.9</version>
+    <version>0.9-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -37,14 +38,23 @@
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>make-assembly</id> <!-- this is used for inheritance merges -->
+            <phase>package</phase> <!-- bind to the packaging phase -->
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
         <configuration>
+          <finalName>cplan-gui</finalName>
+          <appendAssemblyId>false</appendAssemblyId>
           <archive>
             <manifest>
               <mainClass>de.dfki.lt.tr.dialogue.cplan.InteractivePlanner</mainClass>
             </manifest>
           </archive>
-          <finalName>cplan-gui</finalName>
-          <appendAssemblyId>false</appendAssemblyId>
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
@@ -75,7 +85,7 @@
     <dependency>
       <groupId>de.dfki.mlt</groupId>
       <artifactId>cplan-ccg</artifactId>
-      <version>0.9</version>
+      <version>${project.parent.version}</version>
     </dependency>
 
     <dependency>
@@ -91,5 +101,7 @@
     </dependency>
 
   </dependencies>
+
+
 
 </project>
