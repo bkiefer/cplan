@@ -301,6 +301,10 @@ public class DagNode {
     _forward = fs;
   }
 
+  private DagNode getForward() {
+    return (_generation != copyGeneration) ? null : this._copy;
+  }
+
   private void setCopy(DagNode fs) {
     _copyGeneration = copyGeneration;
     _copy = fs;
@@ -1288,7 +1292,7 @@ public class DagNode {
   /** TODO: This will work only for the simple cases !!! */
   @SuppressWarnings("null")
   private boolean subsumesRec(DagNode in2) {
-    { DagNode fs1 = this._forward;
+    { DagNode fs1 = this.getForward();
       if (fs1 == null) {
         this.setForward(in2);
       } else {

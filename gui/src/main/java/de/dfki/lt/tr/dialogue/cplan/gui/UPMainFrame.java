@@ -1,44 +1,29 @@
 package de.dfki.lt.tr.dialogue.cplan.gui;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.plaf.FontUIResource;
 import javax.swing.text.BadLocationException;
 
 import org.apache.log4j.Logger;
 
 import de.dfki.lt.loot.gui.DrawingPanel;
 import de.dfki.lt.loot.gui.MainFrame;
+import de.dfki.lt.loot.gui.Style;
 import de.dfki.lt.loot.gui.adapters.EmptyModelAdapter;
 import de.dfki.lt.loot.gui.adapters.ModelAdapter;
 import de.dfki.lt.loot.gui.util.FileAssociation;
 import de.dfki.lt.loot.gui.util.FileProcessor;
 import de.dfki.lt.loot.gui.util.FileProcessorAdapter;
-import de.dfki.lt.tr.dialogue.cplan.BasicRule;
-import de.dfki.lt.tr.dialogue.cplan.BatchTest;
+import de.dfki.lt.tr.dialogue.cplan.*;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest.BatchType;
-import de.dfki.lt.tr.dialogue.cplan.CcgUtterancePlanner;
-import de.dfki.lt.tr.dialogue.cplan.CollectEventsTracer;
-import de.dfki.lt.tr.dialogue.cplan.DagNode;
-import de.dfki.lt.tr.dialogue.cplan.InteractivePlanner;
-import de.dfki.lt.tr.dialogue.cplan.LoggingTracer;
-import de.dfki.lt.tr.dialogue.cplan.PlanningException;
-import de.dfki.lt.tr.dialogue.cplan.ProgressListener;
-import de.dfki.lt.tr.dialogue.cplan.RuleTracer;
-import de.dfki.lt.tr.dialogue.cplan.SuspendableTracer;
-import de.dfki.lt.tr.dialogue.cplan.TraceEvent;
 import de.dfki.lt.tr.dialogue.cplan.util.ListRangeModel;
 import de.dfki.lt.tr.dialogue.cplan.util.Position;
 
@@ -267,6 +252,10 @@ public class UPMainFrame extends MainFrame {
       .warn("specified history size is not a number");
     }
     _history = new de.dfki.lt.loot.gui.util.InputHistory(historySize);
+
+    _textFont = new Font("Liberation Mono", Font.PLAIN, 18);
+    super.setUIFont(new FontUIResource(_textFont));
+    Style.increaseDefaultFontSize((double)_textFont.getSize() / 12.0);
 
     _preferredSize = new Dimension(800, 500);
     initFrame();
