@@ -344,7 +344,7 @@ public class UtterancePlanner {
     StringReader sr = new StringReader(input);
     _lfParser.reset("Console", sr);
     try {
-      if (_lfParser.parse()) {
+      if (_lfParser.parse() && _lfParser.correct()) {
         return _lfParser.getResultLF();
       }
     }

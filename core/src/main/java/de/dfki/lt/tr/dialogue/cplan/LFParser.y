@@ -21,6 +21,8 @@ import java.util.LinkedList;
 
 %code {
   private boolean extMode = false;
+  
+  private boolean _correct = true;
 
   private DagNode _lf;
 
@@ -68,6 +70,7 @@ import java.util.LinkedList;
   public void reset() {
     _lf = null;
     _nodes.clear();
+    _correct = true;
   }
 
   /** extMode == true allows to parse multiple LFs in a row, while false will
@@ -82,6 +85,8 @@ import java.util.LinkedList;
     ((de.dfki.lt.tr.dialogue.cplan.Lexer)this.yylexer)
       .setInputReader(inputDescription, input);
   }
+
+  public boolean correct() { return _correct; }
 
 }
 
@@ -102,7 +107,7 @@ import java.util.LinkedList;
 
 start : lf               { $$ = null; _lf = $1; if (extMode) return YYACCEPT; }
       | rawlf            { $$ = null; _lf = $1; if (extMode) return YYACCEPT; }
-      | error            { $$ = null; _lf = null; }
+      | error            { $$ = null; _lf = null; _correct = false; }
       ;
 
 // plain logical forms
