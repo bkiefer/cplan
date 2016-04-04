@@ -205,7 +205,7 @@ public class CcgUtterancePlanner extends UtterancePlanner {
         } else {
           LF lf = DagToLF.convertToLF(d);
           // System.out.println(lf);
-          Edge resEdge = _realizer.realize(lf);
+          Edge resEdge = _realizer.realize(lf, null, 1000, true);
           result.append(resEdge.getSign().getOrthography());
         }
 
