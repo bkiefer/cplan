@@ -36,6 +36,7 @@ import de.dfki.lt.tr.dialogue.cplan.BatchTest.ParsingTestItem;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest.RealizationTestItem;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest.ResultItem;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest.TestItem;
+import java.awt.event.WindowAdapter;
 
 public class ItemsTableWindow extends JFrame {
   private static final long serialVersionUID = 1L;
@@ -84,6 +85,33 @@ public class ItemsTableWindow extends JFrame {
   };
 
   //private static String[] names = { "Input LF", "Expected Output" };
+
+    /** <code>Terminator</code> defines action to be done when closing a frame.
+   */
+  private class Terminator extends WindowAdapter {
+    /** This creates a new instance of <code>Terminator</code>. */
+    public Terminator() {
+      super();
+    }
+
+    /** This overrides the <code>windowClosing</code> method of the super class.
+     * @param we a <code>WindowEvent</code>
+     * @see java.awt.event.WindowAdapter#windowClosing(java.awt.event.WindowEvent)
+     */
+    @Override
+    public void windowClosing(WindowEvent we) {
+      we.getWindow().dispose();
+    }
+
+    /** This overrides the <code>windowClosed</code> method of the super class.
+     * @param we a <code>WindowEvent</code>
+     * @see java.awt.event.WindowAdapter#windowClosed(java.awt.event.WindowEvent)
+     */
+    @Override
+    public void windowClosed(WindowEvent we) {
+      assert(we.getWindow() == ItemsTableWindow.this);
+    }
+  }
 
   /** A read-only model to display the test items in a JTable.
    *  Depending on the _bad field of {@link ItemsTableWindow}, this will
@@ -394,6 +422,7 @@ public class ItemsTableWindow extends JFrame {
     // use native windowing system to position new frames
     this.setLocationByPlatform(true);
     this.setPreferredSize(new Dimension(800, 400));
+    this.addWindowListener(new Terminator());
     // set handler for closing operations
     // CLOSE_ON_EXIT
     // this.addWindowListener(new Terminator());

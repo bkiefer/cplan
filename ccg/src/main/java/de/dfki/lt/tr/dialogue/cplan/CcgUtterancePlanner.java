@@ -74,7 +74,6 @@ public class CcgUtterancePlanner extends UtterancePlanner {
         ! _lastGrammarLocation.equals(grammarFile)) {
       try {
         _grammar = new Grammar(grammarFile.getCanonicalPath());
-        DagNode.setHierarchy(new CcgHierarchy(_grammar));
         _lastGrammarLocation = grammarFile;
       } catch (IOException e) {
         _lastGrammarLocation = null;
@@ -83,6 +82,11 @@ public class CcgUtterancePlanner extends UtterancePlanner {
         throw e;
       }
     }
+  }
+
+  /** Called by super.finishProject(). */
+  protected void initDagNode() {
+    DagNode.init(new CcgHierarchy(_grammar));
   }
 
   protected void finishProject(
@@ -110,7 +114,7 @@ public class CcgUtterancePlanner extends UtterancePlanner {
     _firstFeatId = DagNode.getFeatureId("First");
     _nextFeatId = DagNode.getFeatureId("Next");
     _modeFeatId = DagNode.getFeatureId("Mode");
-    }
+  }
 
   /** Read the project file for this content planner. In addition to the super
    *  class' method, read the specified CCG grammar, if any.

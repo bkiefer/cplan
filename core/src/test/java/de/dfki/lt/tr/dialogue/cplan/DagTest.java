@@ -58,10 +58,10 @@ public class DagTest {
     Arrays.sort(features);
     Arrays.sort(relations);
     for (String feature : features) {
-      DagNode.mapFeatureToNumber(feature);
+      DagNode.getFeatureId(feature);
     }
     for (String feature : relations) {
-      DagNode.mapFeatureToNumber(feature);
+      DagNode.getFeatureId(feature);
     }
     DagNode.invalidate();
     DagNode.useDebugPrinter();

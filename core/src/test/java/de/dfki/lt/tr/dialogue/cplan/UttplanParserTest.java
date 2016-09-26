@@ -721,6 +721,7 @@ public class UttplanParserTest {
     // next line is needed to initialize static fields
     @SuppressWarnings("unused")
     UtterancePlanner up = new UtterancePlanner();
+    DagNode.init(new FlatHierarchy());
     DagNode.usePrettyPrinter();
     // DagNode.registerPrinter(null); // return to default printer
   }

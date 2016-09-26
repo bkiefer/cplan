@@ -64,10 +64,6 @@ public class UtterancePlanner {
   /** The tracer that is currently used to trace rules */
   private RuleTracer _currentTracer;
 
-  static {
-    DagNode.init();
-  }
-
   protected void init() {
     FunctionFactory.init(this);
     _errors = new ArrayList<Position>();
@@ -177,6 +173,9 @@ public class UtterancePlanner {
     return basicRules;
   }
 
+  protected void initDagNode() {
+    DagNode.init(new FlatHierarchy());
+  }
 
   /** This uses the data in the project file to initialize the processor
    *  The first call to this function gets non-null settings and null rules,
@@ -194,6 +193,7 @@ public class UtterancePlanner {
       HashMap<String, String> settings,
       PairList<String, List<File>> ruleSections)
           throws FileNotFoundException, IOException {
+    initDagNode();
     //ProjectFileHandler handler = new ProjectFileHandler(projectFile);
     PairList<String, String> localSettings = project.find(SECTION_SETTINGS);
 

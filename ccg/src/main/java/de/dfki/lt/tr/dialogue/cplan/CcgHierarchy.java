@@ -6,7 +6,7 @@ import opennlp.ccg.grammar.Grammar;
 import opennlp.ccg.unify.SimpleType;
 import opennlp.ccg.unify.UnifyFailure;
 
-public class CcgHierarchy implements Hierarchy {
+public class CcgHierarchy extends FlatHierarchy {
 
   /** The CCG grammar whose type system i'm adapting */
   private Grammar _g;
@@ -18,13 +18,23 @@ public class CcgHierarchy implements Hierarchy {
     _typeMap = new HashMap<Integer, SimpleType>();
   }
 
-  public void registerType(String name, int id) {
+  private void registerType(String name, int id) {
     if (! _typeMap.containsKey(id)) {
       SimpleType newType = null;
       if (_g.types.containsSimpleType(name)) {
         newType = _g.types.getSimpleType(name);
       }
       _typeMap.put(id, newType);
+    }
+  }
+
+  public int getTypeId(String name) {
+    if (nameToType.contains(name))
+      return nameToType.getId(name);
+    else {
+      int newId = nameToType.register(name);
+      registerType(name, newId);
+      return newId;
     }
   }
 

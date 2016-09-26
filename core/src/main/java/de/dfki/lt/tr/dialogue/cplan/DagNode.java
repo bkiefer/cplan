@@ -17,8 +17,6 @@ import org.apache.log4j.Logger;
 import de.dfki.lt.tr.dialogue.cplan.io.DagPrinter;
 import de.dfki.lt.tr.dialogue.cplan.io.LFDagPrinter;
 import de.dfki.lt.tr.dialogue.cplan.io.LFDebugPrinter;
-import de.dfki.lt.tr.dialogue.cplan.util.IntIDMap;
-import de.dfki.lt.tr.dialogue.cplan.util.ShortIDMap;
 
 public class DagNode {
 
@@ -40,7 +38,7 @@ public class DagNode {
   protected static short NO_FEAT = Short.MAX_VALUE;
 
   public static final String TOP_TYPE = "top";
-  public static final int TOP_ID = 0;
+  public static int TOP_ID = 0;
   public static final int BOTTOM_ID = -1;
 
   // We decided to overwrite instead of unify, which has the nice side effect
@@ -61,14 +59,15 @@ public class DagNode {
 
   private static final int _useLfPrinter = 1;
 
-  public static void init() {
-    mapTypeToNumber(TOP_TYPE);
+  public static void init(Hierarchy h) {
+    _types = h;
+    TOP_ID = getTypeId(TOP_TYPE);
     for (String feat : featureOrder) {
-      mapFeatureToNumber(feat);
+      getFeatureId(feat);
     }
-    ID_FEAT_ID = mapFeatureToNumber(featureOrder[0]);
-    TYPE_FEAT_ID = mapFeatureToNumber(featureOrder[1]);
-    PROP_FEAT_ID = mapFeatureToNumber(featureOrder[2]);
+    ID_FEAT_ID = getFeatureId(featureOrder[0]);
+    TYPE_FEAT_ID = getFeatureId(featureOrder[1]);
+    PROP_FEAT_ID = getFeatureId(featureOrder[2]);
     switch (_useLfPrinter) {
     case 1: usePrettyPrinter(); break;
     case 2: useDebugPrinter(); break;
@@ -83,22 +82,10 @@ public class DagNode {
     registerPrinter(new LFDebugPrinter());
   }
 
-  public static void setHierarchy(Hierarchy h) {
-    _types = h;
-    for (int id : nameToType.getIds()) {
-      _types.registerType(nameToType.fromId(id), id);
-    }
-  }
-
-
   public static int totalNoNodes = 0, totalNoArcs = 0;
 
   static int copyGeneration = 1;
   static int currentGeneration = 1;
-
-  private static IntIDMap<String> nameToType = new IntIDMap<String>();
-
-  private static ShortIDMap<String> nameToFeature = new ShortIDMap<String>();
 
   /** A printer used to change the default toString method to print the right
    *  format
@@ -106,7 +93,7 @@ public class DagNode {
   private static DagPrinter _DEFAULT_PRINTER = null;
 
   /** An object that performs subsumption checks on types */
-  private static Hierarchy _types = null;
+  static Hierarchy _types = null;
 
   /* ******************** PUBLIC CONSTANTS ******************** */
 
@@ -206,7 +193,7 @@ public class DagNode {
 
   public DagNode(String string, DagNode dagNode) {
     this(TOP_ID);
-    addEdge(new DagEdge(mapFeatureToNumber(string), dagNode));
+    addEdge(new DagEdge(getFeatureId(string), dagNode));
   }
 
   public DagNode(short featureId, DagNode dagNode) {
@@ -215,7 +202,7 @@ public class DagNode {
   }
 
   public DagNode(String type) {
-    this(mapTypeToNumber(type));
+    this(getTypeId(type));
   }
 
   public DagNode() {
@@ -232,41 +219,20 @@ public class DagNode {
   // Grammar interface
   // *************************************************************************
 
-  public static int getTypeId(String value) {
-    return mapTypeToNumber(value);
-  }
-
   public static short getFeatureId(String name) {
-    return mapFeatureToNumber(name);
+    return _types.getFeatureId(name);
   }
 
-  protected static short mapFeatureToNumber(String name) {
-    if (nameToFeature.contains(name))
-      return nameToFeature.getId(name);
-    else
-      return nameToFeature.register(name);
+  public static String getFeatureName(short id) {
+    return _types.getFeatureName(id);
   }
 
-  protected static int mapTypeToNumber(String name) {
-    if (nameToType.contains(name))
-      return nameToType.getId(name);
-    else {
-      int newId = nameToType.register(name);
-      if (_types != null) {
-        _types.registerType(name, newId);
-      }
-      return newId;
-    }
+  public static int getTypeId(String name) {
+    return _types.getTypeId(name);
   }
 
-  public static String getFeatureName(short feature) {
-    if (feature >= 0)
-      return nameToFeature.fromId(feature);
-    else
-      return "ILL";
-  }
-  public static String getTypeName(int type) {
-    return nameToType.fromId(type);
+  public static String getTypeName(int id) {
+    return _types.getTypeName(id);
   }
 
   protected static int unifyTypes(int type1, int type2) {
