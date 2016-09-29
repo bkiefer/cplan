@@ -45,7 +45,7 @@ public class CcgUtterancePlanner extends UtterancePlanner {
   public CcgUtterancePlanner(CcgUtterancePlanner toClone)
       throws FileNotFoundException, IOException {
     super();
-    readProjectFile(toClone._projectFile);
+    readProjectFile(toClone.getProjectFile());
   }
 
   private int _dUnitTypeId;
@@ -84,49 +84,51 @@ public class CcgUtterancePlanner extends UtterancePlanner {
     }
   }
 
-  /** Called by super.finishProject(). */
-  protected void initDagNode() {
-    DagNode.init(new CcgHierarchy(_grammar));
-  }
-
-  protected void finishProject(
-      File projectFile,
+  protected String readLocalSettings(File projectFile,
       PairList<String, PairList<String, String>> project,
-      HashMap<String, String> settings,
-      PairList<String, List<File>> ruleSections)
-          throws FileNotFoundException, IOException {
+      String encoding) {
     PairList<String, String> localSettings = project.find(SECTION_SETTINGS);
     if (localSettings != null) {
       String grammarFile = localSettings.find(KEY_CCG_GRAMMAR);
       if (grammarFile != null) {
-        settings.put(KEY_CCG_GRAMMAR, grammarFile);
         File ccgPath = resolvePath(projectFile, grammarFile);
+        _configuration.settings.put(KEY_CCG_GRAMMAR, ccgPath);
+      }
+    }
+    return super.readLocalSettings(projectFile, project, encoding);
+  }
+
+  /** Load the project content for this content planner. In addition
+   *  to the super class' method, read the specified CCG grammar, if any.
+   *
+   *  @see UtterancePlanner
+   */
+  protected void load () {
+    _grammar = null;
+    File ccgPath = (File) getSetting(KEY_CCG_GRAMMAR);
+    if (ccgPath != null) {
+      try {
         readCCGGrammar(ccgPath);
         if (_grammar != null) {
           _realizer = new Realizer(_grammar);
           _parser = new Parser(_grammar);
+          DagNode.init(new CcgHierarchy(_grammar));
+          _dUnitTypeId = DagNode.getTypeId("d-units");
+          // _markerTypeId = DagNode.getTypeId("marker");
+          _firstFeatId = DagNode.getFeatureId("First");
+          _nextFeatId = DagNode.getFeatureId("Next");
+          _modeFeatId = DagNode.getFeatureId("Mode");
         }
       }
+      catch (IOException ex) {
+        logger.error("Failed to load CCG grammar: " + ex);
+        initHierachy();
+      }
+    } else {
+      initHierachy();
     }
-    super.finishProject(projectFile, project, settings, ruleSections);
-    _dUnitTypeId = DagNode.getTypeId("d-units");
-    // _markerTypeId = DagNode.getTypeId("marker");
-    _firstFeatId = DagNode.getFeatureId("First");
-    _nextFeatId = DagNode.getFeatureId("Next");
-    _modeFeatId = DagNode.getFeatureId("Mode");
-  }
-
-  /** Read the project file for this content planner. In addition to the super
-   *  class' method, read the specified CCG grammar, if any.
-   *
-   *  @see UtterancePlanner
-   */
-  @Override
-  public void readProjectFile(File projectFile)
-  throws FileNotFoundException, IOException {
-    // reset global status
-    _grammar = null;
-    super.readProjectFile(projectFile);
+    loadPlugins();
+    loadRules();
   }
 
   /** Return true if this utterance planner has a valid grammar, and should

@@ -29,4 +29,8 @@ public class Pair<KEYTYPE, VALUETYPE> {
   public int hashCode() {
     return _first.hashCode() * 2053 + _second.hashCode();
   }
+
+  public String toString() {
+    return String.format("<%s, %s>", _first, _second);
+  }
 }

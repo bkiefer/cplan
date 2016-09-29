@@ -264,9 +264,11 @@ implements UPMainFrame.CloseAllListener {
   }*/
 
 
-  /** Run one of the batch processing steps */
+  /** Run one of the batch processing steps
+   * @throws IOException
+   * @throws FileNotFoundException */
   public void runSomeBatch(String project, String batchName, BatchType type,
-      String outfile) {
+      String outfile) throws FileNotFoundException, IOException {
     if (null == project) {
       usage("No project file specified");
     }
@@ -321,7 +323,7 @@ implements UPMainFrame.CloseAllListener {
   }
 
   @SuppressWarnings("unchecked")
-  public static void main(String[] args) {
+  public static void main(String[] args) throws FileNotFoundException, IOException {
     Logger uplogger = Logger.getLogger("UtterancePlanner");
     Enumeration<Appender> apps = uplogger.getAllAppenders();
     Enumeration<Appender> rapps = Logger.getRootLogger().getAllAppenders();

@@ -245,7 +245,7 @@ public class UPMainFrame extends MainFrame {
     int historySize = 0;
     try {
       if (_planner.hasSetting("history_size")) {
-        historySize = Integer.parseInt(_planner.getSetting("history_size"));
+        historySize = Integer.parseInt((String)_planner.getSetting("history_size"));
       }
     } catch (NumberFormatException nex) {
       Logger.getLogger("UtterancePlanner")
@@ -359,6 +359,7 @@ public class UPMainFrame extends MainFrame {
                                   errs, (errs == 1 ? "" : "s")),
                     Color.RED);
     }
+    LFMapFacetLayout.init();
     this.setTitle(_projectFile.getPath());
   }
 

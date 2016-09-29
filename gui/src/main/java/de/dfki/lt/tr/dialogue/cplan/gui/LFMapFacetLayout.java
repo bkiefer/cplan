@@ -25,13 +25,11 @@ public class LFMapFacetLayout extends FacetLayoutBase {
   public static short[] _excludedFeatures = null;
 
   public static void init() {
-    if (_excludedFeatures == null) {
-      // ModelAdapterFactory.register(DagNode.class, LFModelAdapter.class);
-      _excludedFeatures = new short[3];
-      _excludedFeatures[0] = DagNode.ID_FEAT_ID;
-      _excludedFeatures[1] = DagNode.TYPE_FEAT_ID;
-      _excludedFeatures[2] = DagNode.PROP_FEAT_ID;
-    }
+    // ModelAdapterFactory.register(DagNode.class, LFModelAdapter.class);
+    _excludedFeatures = new short[3];
+    _excludedFeatures[0] = DagNode.ID_FEAT_ID;
+    _excludedFeatures[1] = DagNode.TYPE_FEAT_ID;
+    _excludedFeatures[2] = DagNode.PROP_FEAT_ID;
   }
 
   public int facet() {

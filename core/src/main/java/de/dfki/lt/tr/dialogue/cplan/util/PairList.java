@@ -29,4 +29,17 @@ public class PairList<K, V> implements Iterable<Pair<K, V>> {
   public int size() {
     return _impl.size();
   }
+
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append('[');
+    boolean first = true;
+    for(Pair p : _impl) {
+      if (! first) sb.append(", ");
+      else first = false;
+      sb.append(p);
+    }
+    sb.append(']');
+    return sb.toString();
+  }
 }

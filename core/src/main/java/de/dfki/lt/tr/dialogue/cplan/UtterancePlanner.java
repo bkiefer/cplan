@@ -25,6 +25,35 @@ import de.dfki.lt.tr.dialogue.cplan.util.Position;
 
 public class UtterancePlanner {
 
+  protected class RuleSection {
+    public RuleSection(String sectionName, String sectionEncoding, List<File> sectionFiles) {
+      name = sectionName;
+      encoding = sectionEncoding;
+      files = sectionFiles;
+    }
+
+    public String encoding, name;
+    public List<File> files;
+  }
+
+  protected class ProjectConfiguration {
+    public ProjectConfiguration(File rootFile) { _projectRootFile = rootFile; }
+
+    /** The current project file */
+    public File _projectRootFile;
+
+    /** some settings, like location of the history file and the CCG grammar */
+    public HashMap<String, Object> settings = new HashMap<>();
+
+    /** All the files from the rule reading, in sections. A section is a pair
+     *  of section name / rule list
+     */
+    public List<RuleSection> ruleSections = new ArrayList<>();
+
+    /** The list of directories containing plugins */
+    public List<File> pluginDirectories = new ArrayList<>();
+  }
+
   /** This logger should be used only for messages concerning rule loading and
    *  processing issues. It is meant to be the console/error output of this
    *  content planner.
@@ -44,16 +73,8 @@ public class UtterancePlanner {
   /** All the errors from the last round of rule reading */
   private List<Position> _errors;
 
-  /** All the files from the rule reading, in sections. A section is a pair
-   *  of section name / rule list
-   */
-  private PairList<String, List<File>> _ruleSections;
-
-  /** The current project file */
-  protected File _projectFile;
-
-  /** some settings, like location of the history file and the CCG grammar */
-  protected HashMap<String, String> _settings;
+  /** The current project configuration */
+  ProjectConfiguration _configuration;
 
   /** A flag that indicates that processing should be stopped immediately.
    *
@@ -67,7 +88,6 @@ public class UtterancePlanner {
   protected void init() {
     FunctionFactory.init(this);
     _errors = new ArrayList<Position>();
-    _ruleSections = new PairList<String, List<File>>();
 
     _ruleLexer = new Lexer();
     _ruleLexer.setErrorLogger(logger);
@@ -75,7 +95,6 @@ public class UtterancePlanner {
     _lfLexer = new Lexer();
     _lfParser = new LFParser(_lfLexer);
     _lfParser.setErrorVerbose(true);
-    _settings = new HashMap<String, String>();
   }
 
   public UtterancePlanner() {
@@ -101,14 +120,14 @@ public class UtterancePlanner {
     return _currentTracer;
   }
 
-  /** Return the directory that contains the current project file */
-  public File getProjectDir() {
-    return _projectFile.getParentFile();
-  }
-
   /** Return the current project file */
   public File getProjectFile() {
-    return _projectFile;
+    return _configuration._projectRootFile;
+  }
+
+  /** Return the directory that contains the current project file */
+  public File getProjectDir() {
+    return getProjectFile().getParentFile();
   }
 
   public static File resolvePath(File baseFile, String dependentFileName) {
@@ -120,16 +139,16 @@ public class UtterancePlanner {
   }
 
   public boolean hasSetting(String key) {
-    return _settings.containsKey(key);
+    return _configuration == null ? false : _configuration.settings.containsKey(key);
   }
 
-  public String getSetting(String key) {
-    return _settings.get(key);
+  public Object getSetting(String key) {
+    return _configuration == null ? null : _configuration.settings.get(key);
   }
 
   public File getHistoryFile() {
     if (hasSetting(KEY_HISTORY_FILE)) {
-      return resolvePath(_projectFile, getSetting(KEY_HISTORY_FILE));
+      return resolvePath(getProjectFile(), (String)getSetting(KEY_HISTORY_FILE));
     }
     return null;
   }
@@ -173,8 +192,87 @@ public class UtterancePlanner {
     return basicRules;
   }
 
-  protected void initDagNode() {
+
+  protected String readLocalSettings(File projectFile,
+      PairList<String, PairList<String, String>> project,
+      String encoding) {
+    //ProjectFileHandler handler = new ProjectFileHandler(projectFile);
+    PairList<String, String> localSettings = project.find(SECTION_SETTINGS);
+
+    if (localSettings != null) {
+      // when processed like this, there's no need to propagate this
+      String pluginDirectory = localSettings.find(KEY_PLUGIN_DIR);
+      if (pluginDirectory != null) {
+        // TODO: ACCOMODATE FOR A LIST OF PLUGIN DIRECTORIES
+        File pluginPath = resolvePath(projectFile, pluginDirectory);
+        _configuration.pluginDirectories.add(pluginPath);
+      }
+      // only needed locally to read rules (no propagation to global settings)
+      String localEncoding = localSettings.find(KEY_ENCODING);
+      if (localEncoding != null) {
+        encoding = localEncoding;
+      }
+      String history = localSettings.find(KEY_HISTORY_FILE);
+      if (history != null) {
+        _configuration.settings.put(KEY_HISTORY_FILE, history);
+      }
+    }
+    return encoding;
+  }
+
+  protected void readRuleSection(File projectFile,
+      PairList<String, PairList<String, String>> project,
+      String encoding) throws FileNotFoundException, IOException {
+    for (Pair<String, PairList<String, String>> section : project) {
+      String sectionName = section.getFirst();
+      if (sectionName.startsWith(SECTION_RULES)) {
+        List<File> ruleFiles = new ArrayList<File>(section.getSecond().size());
+        _configuration.ruleSections.add(new RuleSection(sectionName, encoding, ruleFiles));
+        for (Pair<String, String> fileName : section.getSecond()) {
+          File ruleFile = resolvePath(projectFile, fileName.getFirst());
+          ruleFiles.add(ruleFile);
+        }
+      } else if (sectionName.equals(SECTION_INCLUDE)) {
+        for (Pair<String, String> fileName : section.getSecond()) {
+          readOneProjectFile(resolvePath(projectFile, fileName.getFirst()), encoding);
+        }
+      }
+    }
+  }
+
+  protected void readOneProjectFile(File projectFile, String encoding)
+      throws FileNotFoundException, IOException {
+    PairList<String, PairList<String, String>> project =
+        IniFileReader.readIniFile(projectFile);
+    String localEncoding = readLocalSettings(projectFile, project, encoding);
+    readRuleSection(projectFile, project, localEncoding);
+  }
+
+  protected void initHierachy() {
     DagNode.init(new FlatHierarchy());
+  }
+
+  protected void loadPlugins() {
+    for (File pluginPath : _configuration.pluginDirectories) {
+      FunctionFactory.registerPlugins(pluginPath, this);
+    }
+  }
+
+  protected void loadRules() {
+    for (RuleSection section : _configuration.ruleSections) {
+      for (File ruleFile : section.files) {
+        List<Rule> sectionRules = readRules(ruleFile, section.encoding);
+        addProcessor(sectionRules);
+      }
+    }
+  }
+
+  /** Load all things contained in the configuration in the right way */
+  protected void load() {
+    initHierachy();
+    /** First load the plugins, then the rules */
+    loadPlugins();
+    loadRules();
   }
 
   /** This uses the data in the project file to initialize the processor
@@ -186,14 +284,13 @@ public class UtterancePlanner {
    * @throws IOException
    * @throws FileNotFoundException
    *
-   */
+   *
   protected void finishProject(
       File projectFile,
       PairList<String, PairList<String, String>> project,
       HashMap<String, String> settings,
       PairList<String, List<File>> ruleSections)
           throws FileNotFoundException, IOException {
-    initDagNode();
     //ProjectFileHandler handler = new ProjectFileHandler(projectFile);
     PairList<String, String> localSettings = project.find(SECTION_SETTINGS);
 
@@ -243,7 +340,7 @@ public class UtterancePlanner {
     PairList<String, PairList<String, String>> project =
         IniFileReader.readIniFile(projectFile);
     finishProject(projectFile, project, settings, ruleSections);
-  }
+  }*/
 
   /** Read a content planner project file.
    *
@@ -258,18 +355,14 @@ public class UtterancePlanner {
    *  @throws FileNotFoundException if the file can not be found.
    *          IOException if reading the file fails
    */
-  public void readProjectFile(File projectFile)
-  throws FileNotFoundException, IOException {
+  public void readProjectFile(File rootFile)
+      throws FileNotFoundException, IOException {
     // reset global status
-    _ruleSections.clear();
-    _settings.clear();
+    _configuration = new ProjectConfiguration(rootFile.getAbsoluteFile());
     _processors = null;
     _errors.clear();
-
-    _projectFile = projectFile.getAbsoluteFile();
-
-    readProjectFileInner(_projectFile, _settings, _ruleSections);
-    // addProcessor(allrules);
+    readOneProjectFile(rootFile, "UTF-8");
+    load();
   }
 
   public List<Position> getErrors() {
@@ -278,8 +371,8 @@ public class UtterancePlanner {
 
   public List<File> getAllRuleFiles() {
     List<File> result = new ArrayList<File>();
-    for (Pair<String, List<File>> section : _ruleSections) {
-      result.addAll(section.getSecond());
+    for (RuleSection section : _configuration.ruleSections) {
+      result.addAll(section.files);
     }
     return result;
   }
