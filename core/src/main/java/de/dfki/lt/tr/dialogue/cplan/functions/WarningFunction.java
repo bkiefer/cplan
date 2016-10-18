@@ -2,20 +2,21 @@ package de.dfki.lt.tr.dialogue.cplan.functions;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
 import de.dfki.lt.tr.dialogue.cplan.UtterancePlanner;
-
-import org.apache.log4j.Logger;
 
 /** This will throw a java exception, taking the exception message as argument
  */
 public class WarningFunction implements Function {
 
-  protected Logger logger = Logger.getLogger("UtterancePlanner");
+  protected Logger logger = LoggerFactory.getLogger("UtterancePlanner");
 
   public Object apply(List<DagNode> args) {
     if (args != null && args.size() >= 1) {
-      logger.warn(args.get(0).getTypeName());
+      logger.warn("{}", args.get(0).getTypeName());
     }
     return "true";
   }

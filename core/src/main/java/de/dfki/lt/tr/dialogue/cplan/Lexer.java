@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 
 import de.dfki.lt.tr.dialogue.cplan.RuleParser.Location;
 import de.dfki.lt.tr.dialogue.cplan.util.Position;
@@ -108,7 +108,7 @@ implements RuleParser.Lexer, LFParser.Lexer  {
       System.out.println(getLastErrorPosition().msg);
     }
     else if (_logger != null) {
-      _logger.error(getLastErrorPosition().msg);
+      _logger.error("{}", getLastErrorPosition().msg);
     }
   }
 
@@ -121,7 +121,7 @@ implements RuleParser.Lexer, LFParser.Lexer  {
       System.out.println(getLastErrorPosition().msg);
     }
     else if (_logger != null) {
-      _logger.error(getLastErrorPosition().msg);
+      _logger.error("{}", getLastErrorPosition().msg);
     }
   }
 

@@ -82,7 +82,7 @@ implements UPMainFrame.CloseAllListener {
       super.readProjectFile(projectFile);
     }
     catch (IOException ioex) {
-      logger.warn(ioex);
+      logger.warn("{}", ioex);
     }
     if (isEmacsAlive()) {
       _j2e.markAsProjectFiles(getProjectDir(), getAllRuleFiles());
@@ -118,7 +118,7 @@ implements UPMainFrame.CloseAllListener {
     }
     String input = getInputFromTerminal();
     while(! input.isEmpty()) {
-      DagNode lf = parseLfString(input);
+      DagNode lf = DagNode.parseLfString(input);
       if (lf != null) {
         System.out.println(lf);
         DagNode result = process(lf);

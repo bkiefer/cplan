@@ -1,6 +1,7 @@
 package de.dfki.lt.tr.dialogue.cplan.actions;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.dfki.lt.tr.dialogue.cplan.Bindings;
 import de.dfki.lt.tr.dialogue.cplan.DagEdge;
@@ -10,7 +11,7 @@ import de.dfki.lt.tr.dialogue.cplan.VarDagNode;
 
 public class Addition extends Action {
 
-  private static final Logger logger = Logger.getLogger("UtterancePlanner");
+  private static final Logger logger = LoggerFactory.getLogger("UtterancePlanner");
 
   public Addition(VarDagNode lval, DagNode dagNode) {
     super(lval, dagNode);
@@ -49,7 +50,7 @@ public class Addition extends Action {
       }
     }
     catch (UnificationException uex) {
-      Logger.getLogger("UtterancePlanner").error(uex);
+      logger.error("{}", uex);
       return false;
     }
     return true;

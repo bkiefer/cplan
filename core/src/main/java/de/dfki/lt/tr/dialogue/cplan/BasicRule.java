@@ -3,7 +3,8 @@ package de.dfki.lt.tr.dialogue.cplan;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.dfki.lt.tr.dialogue.cplan.actions.Action;
 import de.dfki.lt.tr.dialogue.cplan.matches.Match;
@@ -13,7 +14,7 @@ public class BasicRule implements Rule {
 
   private static boolean WARN_APPLY_FAILURE = true;
 
-  private static Logger logger = Logger.getLogger("UtterancePlanner");
+  private static Logger logger = LoggerFactory.getLogger("UtterancePlanner");
 
   /** The left hand side of the rule */
   //private List<VarMatch> _matches;
@@ -90,8 +91,8 @@ public class BasicRule implements Rule {
       if (! action.apply(curr, bindings)) {
         DagNode.invalidate();
         if (WARN_APPLY_FAILURE) {
-          logger.warn("Unification failure in application phase of " + this
-              + " to " + curr);
+          logger.warn("Unification failure in application phase of {} to {}"
+              , this, curr);
         }
         assert(false);
         return false;

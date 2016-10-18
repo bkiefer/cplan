@@ -15,7 +15,8 @@ import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.dfki.lt.tr.dialogue.cplan.functions.FunctionFactory;
 import de.dfki.lt.tr.dialogue.cplan.util.IniFileReader;
@@ -54,18 +55,16 @@ public class UtterancePlanner {
     public List<File> pluginDirectories = new ArrayList<>();
   }
 
+
+
   /** This logger should be used only for messages concerning rule loading and
    *  processing issues. It is meant to be the console/error output of this
    *  content planner.
    */
-  protected Logger logger = Logger.getLogger("UtterancePlanner");
+  protected Logger logger = LoggerFactory.getLogger("UtterancePlanner");
 
   /** The processing engine of this content planner */
   private ArrayList<Processor> _processors;
-  /** The lexer to use in logical form parsing */
-  private Lexer _lfLexer;
-  /** The parser for logical forms. */
-  private LFParser _lfParser;
 
   /** The lexer to use in rule and logical form parsing */
   private Lexer _ruleLexer;
@@ -91,10 +90,6 @@ public class UtterancePlanner {
 
     _ruleLexer = new Lexer();
     _ruleLexer.setErrorLogger(logger);
-
-    _lfLexer = new Lexer();
-    _lfParser = new LFParser(_lfLexer);
-    _lfParser.setErrorVerbose(true);
   }
 
   public UtterancePlanner() {
@@ -181,13 +176,13 @@ public class UtterancePlanner {
     try {
       Reader r = new InputStreamReader(new FileInputStream(ruleFile), encoding);
       basicRules.addAll(readRules(r, ruleFile.getPath()));
-      logger.info("Reading rule file: " + ruleFile);
+      logger.info("Reading rule file: {}", ruleFile);
     }
     catch (FileNotFoundException fnfex) {
-      logger.warn("Could not find rule file: " + ruleFile);
+      logger.warn("Could not find rule file: {}", ruleFile);
     }
     catch (IOException ioex) {
-      logger.warn("Could not read rule file: " + ruleFile + " (" + ioex +")");
+      logger.warn("Could not read rule file: {} ({})", ruleFile, ioex);
     }
     return basicRules;
   }
@@ -425,37 +420,4 @@ public class UtterancePlanner {
   synchronized public void interruptProcessing() {
     _interrupted = true;
   }
-
-
-  /** Convert the given input string, which contains a (partial) logical form,
-   *  into an internal data structure for processing.
-   */
-  public DagNode parseLfString(String input) {
-    input = input.trim();
-    if (input.isEmpty())
-      return null;
-    StringReader sr = new StringReader(input);
-    _lfParser.reset("Console", sr);
-    try {
-      if (_lfParser.parse() && _lfParser.correct()) {
-        return _lfParser.getResultLF();
-      }
-    }
-    catch (IOException ioex) {
-      // this will hardly ever been thrown
-      ioex.printStackTrace();
-    }
-    catch (ArrayIndexOutOfBoundsException ex) {
-      // may occur during parsing of LF in LFParser. Just die silently.
-    }
-    return null;
-  }
-
-  /** Get the error position of the last LF parse, or null, if there is no
-   *  such error.
-   */
-  public Position getLastLFErrorPosition() {
-    return _lfLexer.getLastErrorPosition();
-  }
-
 }

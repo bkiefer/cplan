@@ -13,10 +13,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
-import org.apache.log4j.WriterAppender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.dfki.lt.tr.dialogue.cplan.util.Position;
 
@@ -25,7 +23,7 @@ import de.dfki.lt.tr.dialogue.cplan.util.Position;
  */
 public class BatchTest {
 
-  private static Logger logger = Logger.getLogger(BatchTest.class);
+  private static Logger logger = LoggerFactory.getLogger(BatchTest.class);
 
   public enum Status { BAD , GOOD };
 
@@ -406,9 +404,9 @@ public class BatchTest {
     DagNode result = _planner.process(item.lf);
     String generated = "";
     StringWriter sw = new StringWriter();
-    Appender sentinel = new WriterAppender(new SimpleLayout(), sw);
-    Logger plannerLogger = Logger.getLogger("UtterancePlanner");
-    plannerLogger.addAppender(sentinel);
+    //Appender sentinel = new WriterAppender(new SimpleLayout(), sw);
+    Logger plannerLogger = LoggerFactory.getLogger("UtterancePlanner");
+    //plannerLogger.addAppender(sentinel);
     Status resultStatus = Status.GOOD;
     boolean warnings = false;
     try {
@@ -428,7 +426,7 @@ public class BatchTest {
       } catch (IOException e) { // will never happen
       }
       warnings = ! sw.toString().isEmpty();
-      plannerLogger.removeAppender(sentinel);
+      //plannerLogger.removeAppender(sentinel);
     }
     if (resultStatus == Status.GOOD &&
         ! ((item.answers.contains("*") && validGenericAnswer(generated))
@@ -447,9 +445,9 @@ public class BatchTest {
   public ResultItem parseOneItem(ParsingTestItem item, int i) {
     StringWriter sw = new StringWriter();
     String generated = "";
-    Appender sentinel = new WriterAppender(new SimpleLayout(), sw);
-    Logger plannerLogger = Logger.getLogger("UtterancePlanner");
-    plannerLogger.addAppender(sentinel);
+    //Appender sentinel = new WriterAppender(new SimpleLayout(), sw);
+    Logger plannerLogger = LoggerFactory.getLogger("UtterancePlanner");
+    //plannerLogger.addAppender(sentinel);
     Status resultStatus = Status.GOOD;
     boolean warnings = false;
     DagNode result = null;
@@ -470,7 +468,7 @@ public class BatchTest {
       } catch (IOException e) { // will never happen
       }
       warnings = ! sw.toString().isEmpty();
-      plannerLogger.removeAppender(sentinel);
+      // plannerLogger.removeAppender(sentinel);
     }	//
     if (result == null) {
       resultStatus = Status.BAD;
@@ -497,9 +495,9 @@ public class BatchTest {
   public ResultItem planOneItem(PlanningTestItem item, int i) {
     String generated = "";
     StringWriter sw = new StringWriter();
-    Appender sentinel = new WriterAppender(new SimpleLayout(), sw);
-    Logger plannerLogger = Logger.getLogger("UtterancePlanner");
-    plannerLogger.addAppender(sentinel);
+    //Appender sentinel = new WriterAppender(new SimpleLayout(), sw);
+    Logger plannerLogger = LoggerFactory.getLogger("UtterancePlanner");
+    //plannerLogger.addAppender(sentinel);
     Status resultStatus = Status.GOOD;
     boolean warnings = false;
     DagNode result = null;
@@ -520,7 +518,7 @@ public class BatchTest {
       } catch (IOException e) { // will never happen
       }
       warnings = ! sw.toString().isEmpty();
-      plannerLogger.removeAppender(sentinel);
+      //plannerLogger.removeAppender(sentinel);
     } //
     if (result == null || ! item.answers.iterator().next().equals(result)) {
       resultStatus = Status.BAD;

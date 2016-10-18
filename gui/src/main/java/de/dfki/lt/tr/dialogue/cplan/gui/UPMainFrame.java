@@ -546,7 +546,7 @@ public class UPMainFrame extends MainFrame {
       return false;
     }
 
-    _input = _planner.parseLfString(currentText);
+    _input = DagNode.parseLfString(currentText);
     setOutputDisplay(null);
     if (_input != null) {
       setInputDisplay(_input);
@@ -558,7 +558,7 @@ public class UPMainFrame extends MainFrame {
       return true;
     }
     else {
-      Position errPos = _planner.getLastLFErrorPosition();
+      Position errPos = DagNode.getLastLFErrorPosition();
       _inputArea.setBackground(ERROR_COLOR);
       if (errPos.line >= 0) {
         setStatusLine(errPos.msg);

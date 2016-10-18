@@ -1,5 +1,7 @@
 package de.dfki.lt.tr.dialogue.cplan;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,15 +14,29 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.dfki.lt.tr.dialogue.cplan.io.DagPrinter;
 import de.dfki.lt.tr.dialogue.cplan.io.LFDagPrinter;
 import de.dfki.lt.tr.dialogue.cplan.io.LFDebugPrinter;
+import de.dfki.lt.tr.dialogue.cplan.util.Position;
 
 public class DagNode {
+  /** The lexer to use in logical form parsing */
+  private static final Lexer _lfLexer;
+  /** The parser for logical forms. */
+  private static final LFParser _lfParser;
 
-  public static Logger logger = Logger.getLogger("DagNode");
+  static {
+    /** The lexer to use in logical form parsing */
+    _lfLexer = new Lexer();
+    /** The parser for logical forms. */
+    _lfParser = new LFParser(_lfLexer);
+    _lfParser.setErrorVerbose(true);
+  }
+
+  public static Logger logger = LoggerFactory.getLogger("DagNode");
 
   public static Map<DagNode, FailType> forwardFailures =
     new HashMap<DagNode, FailType>();
@@ -217,6 +233,41 @@ public class DagNode {
     DagNode result = new DagNode(type);
     result._isNominal = _isNominal;
     return result;
+  }
+
+  // *************************************************************************
+  // Parsing Strings to Dags
+  // *************************************************************************
+
+  /** Convert the given input string, which contains a (partial) logical form,
+   *  into an internal data structure for processing.
+   */
+  public static DagNode parseLfString(String input) {
+    input = input.trim();
+    if (input.isEmpty())
+      return null;
+    StringReader sr = new StringReader(input);
+    _lfParser.reset("Console", sr);
+    try {
+      if (_lfParser.parse() && _lfParser.correct()) {
+        return _lfParser.getResultLF();
+      }
+    }
+    catch (IOException ioex) {
+      // this will hardly ever been thrown
+      ioex.printStackTrace();
+    }
+    catch (ArrayIndexOutOfBoundsException ex) {
+      // may occur during parsing of LF in LFParser. Just die silently.
+    }
+    return null;
+  }
+
+  /** Get the error position of the last LF parse, or null, if there is no
+   *  such error.
+   */
+  public static Position getLastLFErrorPosition() {
+    return _lfLexer.getLastErrorPosition();
   }
 
   // *************************************************************************
@@ -502,7 +553,7 @@ public class DagNode {
           // "relation" arcs
           if (! (subThis._isNominal && subArg._isNominal)) {
             logger.warn("Status of relation/feature unclear " +
-                "during unification: " + getFeatureName(feat1));
+                "during unification: {}", getFeatureName(feat1));
           }
           arc1It.add(arc2);
         }

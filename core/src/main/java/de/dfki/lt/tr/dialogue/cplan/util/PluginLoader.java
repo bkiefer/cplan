@@ -18,13 +18,14 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.dfki.lt.tr.dialogue.cplan.functions.Function;
 
 public class PluginLoader{
 
-  private static Logger logger = Logger.getLogger("UtterancePlanner");
+  private static Logger logger = LoggerFactory.getLogger("UtterancePlanner");
 
   private URLClassLoader classloader = null;
 
@@ -46,11 +47,11 @@ public class PluginLoader{
         }
       }
     } catch (ClassNotFoundException e) {
-      logger.warn(e);
+      logger.warn("{}", e);
     } catch (InstantiationException e) {
-      logger.warn(e);
+      logger.warn("{}", e);
     } catch (IllegalAccessException e) {
-      logger.warn(e);
+      logger.warn("{}", e);
     }
 
 
@@ -70,13 +71,13 @@ public class PluginLoader{
         if (className.endsWith((".class"))) {
           Function plugin = getPlugin(className);
           if (plugin != null) {
-            logger.info("Added " + plugin.getClass().getSimpleName());
+            logger.info("Added {}", plugin.getClass().getSimpleName());
             result.add(plugin);
           }
         }
       }
     } catch (IOException e) {
-      logger.warn(e.getMessage());
+      logger.warn("{}", e.getMessage());
     } finally {
       if (jarFile != null) {
         try {
@@ -108,12 +109,12 @@ public class PluginLoader{
       try {
         url[i] = jarFile.toURI().toURL();
       } catch (MalformedURLException ex) {
-        logger.warn(ex.getMessage());
+        logger.warn("{}", ex.getMessage());
       }
     }
     classloader = new URLClassLoader(url);
     for (int i = 0; i < jar.length; i++) {
-      logger.info("Loading " + jar[i]);
+      logger.info("Loading {}", jar[i]);
       loadAllPlugins(new File(pluginsPath, jar[i]), result);
     }
     return result;

@@ -14,10 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.spi.RootLogger;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -715,9 +711,9 @@ public class UttplanParserTest {
   };
 
   @Before public void setUp() {
-    BasicConfigurator.resetConfiguration();
-    RootLogger.getRootLogger().addAppender(
-        new ConsoleAppender(new PatternLayout("%m%n")));
+    //BasicConfigurator.resetConfiguration();
+    //RootLogger.getRootLogger().addAppender(
+    //    new ConsoleAppender(new PatternLayout("%m%n")));
     // next line is needed to initialize static fields
     @SuppressWarnings("unused")
     UtterancePlanner up = new UtterancePlanner();
@@ -938,8 +934,8 @@ public class UttplanParserTest {
   private void testApplyOne(UtterancePlanner up, String[] testPattern,
     boolean value, int i, boolean embedded) {
     for (int j = 1; j < testPattern.length; j += 2) {
-      DagNode in = up.parseLfString(testPattern[j]);
-      DagNode out = up.parseLfString(testPattern[j+1]);
+      DagNode in = DagNode.parseLfString(testPattern[j]);
+      DagNode out = DagNode.parseLfString(testPattern[j+1]);
       if (embedded) {
         in = embed(embed(in, "XXX"), "YYY");
         out = embed(embed(out, "XXX"), "YYY");
@@ -952,7 +948,7 @@ public class UttplanParserTest {
         System.out.println("<< "+in);
       }
       // remove invisible prop coreferences by printing and re-reading
-      in = up.parseLfString(in.toString());
+      in = DagNode.parseLfString(in.toString());
       if (_print) {
         System.out.println("< "+in);
         System.out.println(out);
@@ -1028,8 +1024,8 @@ public class UttplanParserTest {
     up.addProcessor(up.readRulesFromString(testPattern[0]));
     up.setTracing(rt);
     for (int j = 1; j < testPattern.length; j += 2) {
-      DagNode in = up.parseLfString(testPattern[j]);
-      DagNode out = up.parseLfString(testPattern[j+1]);
+      DagNode in = DagNode.parseLfString(testPattern[j]);
+      DagNode out = DagNode.parseLfString(testPattern[j+1]);
       in = up.process(in);
       assertEquals("Matching pattern " + 17 + "(" + j + ")", out, in);
     }
@@ -1037,8 +1033,8 @@ public class UttplanParserTest {
 
     up.setTracing(null);
     for (int j = 1; j < testPattern.length; j += 2) {
-      DagNode in = up.parseLfString(testPattern[j]);
-      DagNode out = up.parseLfString(testPattern[j+1]);
+      DagNode in = DagNode.parseLfString(testPattern[j]);
+      DagNode out = DagNode.parseLfString(testPattern[j+1]);
       in = up.process(in);
       assertEquals("Matching pattern " + 3 + "(" + j + ")", out, in);
     }
@@ -1085,13 +1081,13 @@ public class UttplanParserTest {
     UtterancePlanner up = new UtterancePlanner();
     up.addProcessor(up.readRulesFromString(rule));
     DagNode.usePrettyPrinter();
-    DagNode in = up.parseLfString(inSpec);
-    DagNode out = up.parseLfString(outSpec);
+    DagNode in = DagNode.parseLfString(inSpec);
+    DagNode out = DagNode.parseLfString(outSpec);
     int runs = 0;
     do {
       DagNode res = up.process(in);
       // remove invisible prop coreferences by printing and re-reading
-      res = up.parseLfString(res.toString());
+      res = DagNode.parseLfString(res.toString());
       ++ runs;
       if (res.equals(out)) {
         System.out.println(runs); break;

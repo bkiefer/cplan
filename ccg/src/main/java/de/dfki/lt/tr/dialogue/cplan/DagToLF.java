@@ -9,7 +9,8 @@ import java.util.List;
 import opennlp.ccg.realize.Realizer;
 import opennlp.ccg.synsem.LF;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jdom2.DocType;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -233,7 +234,7 @@ public class DagToLF {
 			root1 = root1.addContent(targetElt);
 			// call ccg.Realizer with XML-document to extract the contained LF and
 			// return it
-			Logger.getLogger(DagToLF.class).debug(doc.toString());
+			LoggerFactory.getLogger(DagToLF.class).debug("{}", doc);
 			lf = Realizer.getLfFromDoc(doc);
 		} catch (Exception e) {
 			System.err.println("error in LF: " + e.getMessage());
