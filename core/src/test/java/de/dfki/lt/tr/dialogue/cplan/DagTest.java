@@ -50,8 +50,8 @@ public class DagTest {
 
   @Before public void setUp() {
     // next line is needed to initialize static fields
-    @SuppressWarnings("unused")
     UtterancePlanner up = new UtterancePlanner();
+    up.initHierachy();
     // DagNode.registerPrinter(null); // return to default printer
     String[] features = { "Aspect", "Mood", "Tense", "Delimitation", "Num", "Quantification", "List" };
     String[] relations = { "Actor", "Event", "Patient", "Subject", "First", "Next" };

@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -49,8 +48,8 @@ public class LFParserTest {
 
   @Before public void setUp() {
     // next line is needed to initialize static fields
-    @SuppressWarnings("unused")
     UtterancePlanner up = new UtterancePlanner();
+    up.initHierachy();
   }
 
   private void testOne(String lf, int i) throws IOException {
