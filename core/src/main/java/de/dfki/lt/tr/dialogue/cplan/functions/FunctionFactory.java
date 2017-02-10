@@ -17,7 +17,10 @@ import de.dfki.lt.tr.dialogue.cplan.functions.math.Neg;
 import de.dfki.lt.tr.dialogue.cplan.functions.math.Not;
 import de.dfki.lt.tr.dialogue.cplan.functions.math.Sub;
 import de.dfki.lt.tr.dialogue.cplan.functions.string.Concatenate;
+import de.dfki.lt.tr.dialogue.cplan.functions.string.Contains;
+import de.dfki.lt.tr.dialogue.cplan.functions.string.Endswith;
 import de.dfki.lt.tr.dialogue.cplan.functions.string.Length;
+import de.dfki.lt.tr.dialogue.cplan.functions.string.Substring;
 import de.dfki.lt.tr.dialogue.cplan.functions.string.WordCount;
 import de.dfki.lt.tr.dialogue.cplan.util.PluginLoader;
 
@@ -63,6 +66,9 @@ public class FunctionFactory {
     register(new Concatenate(), planner);
     register(new WordCount(), planner);
     register(new Length(), planner);
+    register(new Contains(), planner);
+    register(new Endswith(), planner);
+    register(new Substring(), planner);
   }
 
   public static void registerPlugins(File pluginDirectory,

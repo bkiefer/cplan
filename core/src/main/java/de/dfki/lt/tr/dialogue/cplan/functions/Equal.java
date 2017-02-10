@@ -8,7 +8,7 @@ import de.dfki.lt.tr.dialogue.cplan.UtterancePlanner;
 public class Equal implements Function {
 
   public Object apply(List<DagNode> args) {
-    return args.get(0).equals(args.get(1));
+    return args.get(0).equals(args.get(1)) ? 1 : 0;
   }
 
   public String name() {

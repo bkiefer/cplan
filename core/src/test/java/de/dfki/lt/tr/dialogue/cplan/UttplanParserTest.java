@@ -410,6 +410,21 @@ public class UttplanParserTest {
       "@d1:dvp( <a> b )", "@d1:dvp( <a> b ^ <hit>hit)"
     },
 
+    // 57 test contains
+    { ":foo ^ <Feat>#f ^ (contains(#f, \"bla\") ~ 1) -> # ^ <Success> \"1\".",
+      "@f: foo(<Feat>\"blabla\")", "@f: foo(<Feat>\"blabla\" ^ <Success>\"1\")"
+    },
+
+    // 58 test endswith
+    { ":foo ^ <Feat>#f ^ (endswith(#f, \"bla\") ~ 1) -> # ^ <Success>\"1\".",
+      "@f: foo(<Feat>\"blabla\")", "@f: foo(<Feat>\"blabla\" ^ <Success>\"1\")"
+    },
+
+    // 59 test substring
+    { ":foo ^ <Feat>#f -> # ^ <Success> substring(#f, 1, 3).",
+      "@f: foo(<Feat>\"01234\")", "@f: foo(<Feat>\"01234\" ^ <Success>\"12\")"
+    }
+
     /* not legal
     // 56 check rule groups with shared actions
     { ":dvp  { ^ <foo> bar -> # ^ <bar> foo, # ! <foo> { ^ <a>b {} }"+

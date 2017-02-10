@@ -8,7 +8,7 @@ import de.dfki.lt.tr.dialogue.cplan.UtterancePlanner;
 public class Bound implements Function {
 
   public Object apply(List<DagNode> args) {
-    return args.get(0) != null;
+    return args.get(0) != null ? 1 : 0;
   }
 
   public String name() {
