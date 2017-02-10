@@ -556,6 +556,17 @@ public class UttplanParserTest {
       "@d:special(<foo>(:b ^ <bar>baz))"
     },
 
+    // 17 test if edge does not exist
+    { ":a ^ <foo>!<bar> -> # ^ <works_not>2.",
+      "@b:a(<foo>(2 ^ <bar>1))", "@b:a(<foo>(2 ^ <bar>1))"
+    },
+
+    // 18 test if edge does not exist
+    { ":dvp ^ <Time> #time ^ <Sammeln>(#s: ^ !<Time>) -> #s ^ <Time> #time.",
+      "@b:dvp(<Time>2 ^ <Sammeln>(1 ^ <foo>1 ^ <Time>0))",
+      "@b:dvp(<Time>2 ^ <Sammeln>(1 ^ <foo>1 ^ <Time>0))",
+    }
+
   };
 
   private static String[][] otherPatterns =
@@ -707,6 +718,16 @@ public class UttplanParserTest {
       "@d:dv(<c>123 ^<l>(:li))"
     },
 
+    // 19 strange error test
+    // BEWARE: THIS IS A GOOD EXAMPLE WHERE THE PARALLEL APPLICATION OF RULES
+    // SHOWS UP: IN THE MATCHING PHASE, BOTH ARE APPLICABLE, SO 2 OVERWRITES 1
+    /*
+    { ":dvp ^ <Time> (todayP|todayF) ^ <Sammeln>#s: -> #s ^ <Time> \"today\"." +
+      ":dvp ^ <Time> #time ^ <Sammeln>(#s: ^ !<Time>) -> #s ^ <Time> #time.",
+      "@d:dvp(<Time>todayP ^ <Sammeln>(<Agent>null))",
+      "@d:dvp(<Time>todayP ^ <Sammeln>(<Agent>null ^ <Time>\"today\"))"
+    }
+    */
 
   };
 
@@ -852,10 +873,11 @@ public class UttplanParserTest {
 
   @Test public void testMatchSpecial() throws IOException {
     int i = -1;
-    _print = true;
-    if (i >= 0)
+    if (i >= 0) {
+      _print = true;
       testMatchOneSet(matchTestPatternsPositive[i], true, i);
-    _print = false;
+      _print = false;
+    }
   }
 
   @Test public void testMatchesPositve() throws IOException {
@@ -917,10 +939,12 @@ public class UttplanParserTest {
 
   @Test public void testRuleApplicationNegative() throws IOException {
     int i = 0;
+    //_print = true;
     for (String[] testPattern : matchTestPatternsNegative) {
       testApplyOneSet(testPattern, false, i);
       ++i;
     }
+    //_print = false;
   }
 
   private DagNode embed(DagNode toEmbed, String edgeName) {
