@@ -244,7 +244,8 @@ public class UtterancePlanner {
   }
 
   protected void initHierachy() {
-    DagNode.init(new FlatHierarchy());
+    if (! DagNode.isInitialized())
+      DagNode.init(new FlatHierarchy());
   }
 
   protected void loadPlugins() {

@@ -54,7 +54,7 @@ public class DagNode {
   protected static short NO_FEAT = Short.MAX_VALUE;
 
   public static final String TOP_TYPE = "top";
-  public static int TOP_ID = -2;
+  public static int TOP_ID = 0;
   public static final int BOTTOM_ID = -1;
 
   // We decided to overwrite instead of unify, which has the nice side effect
@@ -77,7 +77,7 @@ public class DagNode {
 
   public static void init(Hierarchy h) {
     _types = h;
-    // TOP_ID = getTypeId(TOP_TYPE);
+    assert(TOP_ID == getTypeId(TOP_TYPE));
     for (String feat : featureOrder) {
       getFeatureId(feat);
     }
@@ -92,6 +92,10 @@ public class DagNode {
 
   public static boolean isInitialized() {
     return _types != null;
+  }
+
+  public static Hierarchy getHierarchy() {
+    return _types;
   }
 
   public static void usePrettyPrinter() {
@@ -301,7 +305,7 @@ public class DagNode {
 
   /** does typeId1 subsumes (is more general than or equal to) typeId2 */
   public static boolean subsumesType(int typeId1, int typeId2) {
-    if (typeId1 == typeId2 || typeId1 == 0) {
+    if (typeId1 == typeId2 || typeId1 == DagNode.TOP_ID) {
       return true;
     }
     return (_types != null && _types.subsumes(typeId1, typeId2));

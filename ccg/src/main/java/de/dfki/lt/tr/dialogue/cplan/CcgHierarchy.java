@@ -14,6 +14,14 @@ public class CcgHierarchy extends FlatHierarchy {
   private HashMap<Integer, SimpleType> _typeMap;
 
   public CcgHierarchy(Grammar g) {
+    super();
+    _g = g;
+    _typeMap = new HashMap<Integer, SimpleType>();
+  }
+
+  public CcgHierarchy(Grammar g, FlatHierarchy h) {
+    this.nameToFeature = h.nameToFeature;
+    this.nameToType = h.nameToType;
     _g = g;
     _typeMap = new HashMap<Integer, SimpleType>();
   }

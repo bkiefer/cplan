@@ -112,7 +112,19 @@ public class CcgUtterancePlanner extends UtterancePlanner {
         if (_grammar != null) {
           _realizer = new Realizer(_grammar);
           _parser = new Parser(_grammar);
-          DagNode.init(new CcgHierarchy(_grammar));
+          CcgHierarchy h;
+          if (DagNode.isInitialized()) {
+            Hierarchy e = DagNode.getHierarchy();
+            if (e instanceof FlatHierarchy) {
+              h = new CcgHierarchy(_grammar, (FlatHierarchy)e);
+            } else {
+              logger.error("Only a Flat hierarchy can be integrated");
+              h = new CcgHierarchy(_grammar);
+            }
+          } else {
+            h = new CcgHierarchy(_grammar);
+          }
+          DagNode.init(h);
           _dUnitTypeId = DagNode.getTypeId("d-units");
           // _markerTypeId = DagNode.getTypeId("marker");
           _firstFeatId = DagNode.getFeatureId("First");

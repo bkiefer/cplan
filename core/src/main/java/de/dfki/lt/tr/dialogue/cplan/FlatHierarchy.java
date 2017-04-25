@@ -10,6 +10,12 @@ public class FlatHierarchy implements Hierarchy {
 
   protected ShortIDMap<String> nameToFeature = new ShortIDMap<String>();
 
+  public FlatHierarchy() {
+    // reserve the mapping to zero for the "top" type
+    nameToType.register(DagNode.TOP_TYPE);
+    assert(nameToType.getId(DagNode.TOP_TYPE) == DagNode.TOP_ID);
+  }
+
   /** Tell me if type1 subsumes type2, i.e., is equal to or more general
    *  than type2
    */
