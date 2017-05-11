@@ -27,8 +27,8 @@
   </modules>
 
   <properties>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
     <encoding>UTF-8</encoding>
   </properties>
 
@@ -44,13 +44,13 @@
     <snapshotRepository>
       <id>FORSCHUNGSSOFTWARE</id>
       <name>FORSCHUNGSSOFTWARE</name>
-      <url>http://www.forschungssoftware.de/nexus/content/repositories/snapshots/</url>
+      <url>https://www.forschungssoftware.de/nexus/content/repositories/snapshots/</url>
     </snapshotRepository>
 
     <repository>
       <id>FORSCHUNGSSOFTWARE</id>
       <name>FORSCHUNGSSOFTWARE</name>
-      <url>http://www.forschungssoftware.de/nexus/content/repositories/releases/</url>
+      <url>https://www.forschungssoftware.de/nexus/content/repositories/releases/</url>
     </repository>
   </distributionManagement>
 

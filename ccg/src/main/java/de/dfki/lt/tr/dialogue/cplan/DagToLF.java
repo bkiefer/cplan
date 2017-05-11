@@ -234,7 +234,6 @@ public class DagToLF {
 			root1 = root1.addContent(targetElt);
 			// call ccg.Realizer with XML-document to extract the contained LF and
 			// return it
-			LoggerFactory.getLogger(DagToLF.class).debug("{}", doc);
 			lf = Realizer.getLfFromDoc(doc);
 		} catch (Exception e) {
 			System.err.println("error in LF: " + e.getMessage());
