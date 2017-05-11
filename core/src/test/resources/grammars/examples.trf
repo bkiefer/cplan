@@ -253,3 +253,17 @@
 /// @e:enc(<enc> iso-8859-15 ^ <val> "הײלגי")
 <enc> iso-8859-15 ^ <val> "הײלגי" -> # ^ <right> true.
 //]
+
+// \example{19} turn a number into a string representing the number
+// (language dependent).
+//[
+/// @s:string(<number>303)
+:string ^ <number>#number: -> # ^ <numberAsString> spell_number(#number).
+//]
+
+// \example{20} Append an ordinal number suffix to the number.
+// (language dependent).
+//[
+/// @s:string(<ordinal>303)
+:string ^ <ordinal>#number: -> # ^ <numberAsString> spell_ordinal(#number).
+//]

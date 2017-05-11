@@ -10,4 +10,6 @@ public class Constants {
   public static final String KEY_PLUGIN_DIR = "plugin_directory";
   public static final String KEY_ENCODING = "encoding";
   public static final String KEY_HISTORY_FILE = "history_file";
+  public static final String KEY_LANGUAGE = "language";
+
 }

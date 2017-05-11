@@ -41,6 +41,12 @@
       <version>4.8.1</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>com.ibm.icu</groupId>
+      <artifactId>icu4j</artifactId>
+      <version>57.1</version>
+    </dependency>
   </dependencies>
 
   <build>
