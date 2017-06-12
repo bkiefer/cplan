@@ -12,9 +12,11 @@ public class Substring implements Function {
     String str = args.get(0).toString(false);
     String from = args.get(1).toString(false);
     String to = args.get(2).toString(false);
-    return str.substring(Integer.parseInt(from), Integer.parseInt(to));
+    int toIndex = Integer.parseInt(to);
+    if (toIndex < 0) toIndex = str.length() - toIndex;
+    return str.substring(Integer.parseInt(from), toIndex);
   }
-  
+
   /** java operation arg1.substring(arg2, arg3) */
   public String name() {
     return "substring";
