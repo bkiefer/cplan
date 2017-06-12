@@ -172,9 +172,22 @@ implements UPMainFrame.RunStateListener {
   }
 
   class ValueChangeListener implements ChangeListener {
+
+    private JScrollBar scrollBar;
+
+    ValueChangeListener(JScrollBar sb) { scrollBar = sb; }
+
     /** Called when the trace scrollbar is moved.
      *  Display the state for the new value */
     public void stateChanged(ChangeEvent e) {
+      /* TODO ADAPT IF PAGE SCROLL DOES NOT FEEL RIGHT */
+      int blockInc = 10;
+      if (_current.getMaximum() < 10) {
+        blockInc = ((int) _current.getMaximum() / 3);
+      } else {
+        blockInc = Math.min(10, (int) _current.getMaximum() / 6);
+      }
+      scrollBar.setBlockIncrement(blockInc);
       displayState(_current.getValue());
     }
   }
@@ -447,9 +460,8 @@ implements UPMainFrame.RunStateListener {
 
     contentPane.add(displayPane, BorderLayout.CENTER);
     JScrollBar traceScroller = new JScrollBar(JScrollBar.HORIZONTAL);
-    traceScroller.setBlockIncrement(Math.min(10, _current.getMaximum()));
     traceScroller.setModel(_current);
-    _current.addChangeListener(new ValueChangeListener());
+    _current.addChangeListener(new ValueChangeListener(traceScroller));
     contentPane.add(traceScroller, BorderLayout.PAGE_END);
 
     // use native windowing system to position new frames
