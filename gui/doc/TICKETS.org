@@ -1,8 +1,15 @@
+- Why is this not working: ! ##intro -> # ^ foo.
+- complete predef functions in documentation
+- boolean function doc better explanation (bla() ~ 1)
+- Die syntax ist sch***
+- Not well suited for canned generation , too many cumbersome string
+  operations with lengthy typing
+
 * NOW
-  - batch window not modal, can reload test file
+  + batch window not modal, can reload test file
   - trace window: only result, optionally input / variables / rule
     rule: nicely formatted!
-  - find features / types functionality
+  - find features / types functionality & refactoring
 
   - plugin_directory config is not described in documentation
 
@@ -11,7 +18,9 @@
 // but:
 :apology -> # ! <__TYPE>, # ^ :apologize.
 
-- neither batch nor trace window block the others
++ neither batch nor trace window block the others, almost too much so
+
+- Quit quits ALL windows
 
 - Re-run batch and trace painlessly: batch processor should be that of the
   related main window, such that reload of grammar has effect on new batch run,
@@ -27,7 +36,7 @@
 
 - Switch to SWT for native look & feel
 
-- Sorting of items in batch window
++ Sorting of items in batch window
 
 - does the batch use the new grammar version after reload? or should reload
   also reload the grammar?
