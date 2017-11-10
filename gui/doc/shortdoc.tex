@@ -17,7 +17,7 @@
 \maketitle
 \setlength{\parindent}{0em}
 
-\newcounter{myexample}{1}
+\newcounter{myexample}
 \newcommand{\example}{\textbf{\stepcounter{myexample}Example
     \arabic{myexample}: {}}}
 %\pgfdeclareimage[interpolate=true,height=7cm]{GUIWindow}{GUIWindow}
@@ -32,33 +32,43 @@
 
 \section{Installation}
 
-Extract the given \texttt{cplanner-x.tar} file. Everything unpacked is below
-the top-level directory \texttt{utteranceplanner}. That directory contains
-three submodules, a generic visualization component (\texttt{dataviz}), an
-Emacs-Java connection module (\texttt{j2emacs}) and the planning module
-(\texttt{uttplanner}).
+You obviously already have cloned the project from github. To build it, you
+have to install Java 8 and Maven on your machine. Then, in the best case,
+a simple
 
-The directory \texttt{utteranceplanner/uttplanner} contains a startup script
-(\texttt{updebugger}) and also a \texttt{build.xml} file to recompile the
-sources from scratch. We will call this directory the \emph{application
-  directory} in the following text. Using the build file will also affect the
-\texttt{dataviz} subproject the interactive planner is using. The relevant
-targets are \texttt{clean}, \texttt{cleanall}, and \texttt{compile}.
+\begin{verbatim}
+mvn install
+\end{verbatim}
+
+should fetch all dependencies needed and build the project. If you experience
+problems downloading the dependencies, you may have to clone and build some
+other projects manually first:
+
+\begin{verbatim}
+git clone https://github.com/bkiefer/dataviz.git
+git clone https://github.com/bkiefer/openccg.git
+git clone https://github.com/bkiefer/j2emacs.git
+\end{verbatim}
 
 To use the Emacs features, Mac users have to use AquaMacs. Plain X11 Emacs
-does not seem to provide a server mode.
-
-It is also recommended to compile the Emacs lisp files in \texttt{utteranceplanner/uttplanner/etc}. Either invoke
-\texttt{`make'} in this directory, or compile it with your favorite Emacs
-incarnation manually (e.g., with AquaMacs on the Mac).
+does not seem to provide a server mode. Windows Emacs should work, but has not
+been tested lately.
 
 \section{Execution}
 
 The utterance planner is started with the following command:
 \begin{verbatim}
-updebugger [-e<macs> [<path-to-emacs-binary>]] [-g|-b <inputfile>]
-           [-t <traceflags>] <projectfile>
+cplanner [-[g]<enerate batch> batchfile]
+         [-[G]<enerate all sentences> batchfile]
+         [-[a]<nalyze batch> inputfile]
+         [-[p]<lan batch> inputfile]
+         [-[P]<lan all batch> inputfile]
+         [-i<nteractive shell>] [-t<race>={1,2,3}] [-e<macs>]
+         <projectfile> [batchoutput]
 \end{verbatim}
+
+Simply typing \texttt{cplanner} will open an empty main window and an Emacs, if
+installed.
 
 \texttt{projectfile} is a file that contains settings, like the path to a CCG
 grammar, and a list of all rule files that should be loaded. The structure of
@@ -66,14 +76,13 @@ the project file is described in more detail in section \ref{sec:projectfile}.
 
 By default, the planner reads the project file, and the rule files specified
 there, and continues in an interactive console mode with rudimentary readline
-support. The switches \texttt{-g} and \texttt{-b} let the planner run in other
-modes, namely:
-
-\begin{itemize}
-\item batch mode, (\texttt{-b}) processing a set of logical forms that are
-  contained in the file that is given as argument to this flag
-\item GUI interactive mode (\texttt{-g} command line switch)
-\end{itemize}
+support. The switches \texttt{-g}, \texttt{-G}, \texttt{-p}, and \texttt{-P}
+let the planner run in batch modes, where the uppercase versions try to come up
+with all possible variants when the \texttt{random} function is used in the
+rules. The difference between \texttt{-g} and \texttt{-p} is that \texttt{-g}
+attempts to do text generation (with a CCG grammar, if available), while
+\texttt{-p} stops after the graph rewriting process and outputs the result
+graph.
 
 \noindent{}The \texttt{-t} flag controls tracing onto the console, using a
 bitmask for different phases, bit 1 to trace the match phase and bit 2 to trace
@@ -83,14 +92,15 @@ together with \texttt{-g}.  In this case, tracing to the console will be used
 only when the \emph{process} button is used, and not when the GUI tracing mode
 itself is activated.
 
-In combination with the \texttt{-g} flag, The \texttt{-e} flag connects the GUI
-to a newly started Emacs client that will show the result of rule loading,
-making files and errors mouse sensitive to facilitate the editing and debugging
-of rule files. In Unix/Linux there is usually no need to specify the path to
-the Emacs binary. This is different on Macs, because only AquaMacs works as
-emacs server, the path to the AquaMacs binary must be specified. If the Emacs
-connection is properly set up, the GUI trace window described below allows to
-jump directly to the definition of rules used during processing.
+The \texttt{-i} and \texttt{-e} flags are the default mode when running without
+giving any arguments and will open the GUI and connect it to a newly started
+Emacs client that will show the result of rule loading, making files and errors
+mouse sensitive to facilitate the editing and debugging of rule files. In
+Unix/Linux there is usually no need to specify the path to the Emacs
+binary. This is different on Macs, because only AquaMacs works as emacs server,
+the path to the AquaMacs binary must be specified. If the Emacs connection is
+properly set up, the GUI trace window described below allows to jump directly
+to the definition of rules used during processing.
 
 \section{Project File}
 \label{sec:projectfile}
@@ -794,7 +804,7 @@ they appear in the project file, independent of their names.
 
 The following examples are a \LaTeX{}ed version of the file
 \texttt{examples.trf}, which is used also for testing and can be found in the
-directory \texttt{cplan/src/test/resources/grammars} to try out the things
+directory \texttt{core/src/test/resources/grammars} to try out the things
 in the running system, and to experiment with variations.\\
 
 \input{examples.tex}
