@@ -2,7 +2,7 @@
 #set -x
 # java start script version 1.0
 APP_HOME=`readlink -f $0`
-APP_HOME=`dirname $0`/gui
+APP_HOME=`dirname $APP_HOME`/gui
 MAINJAR=target/cplan-gui.jar
 
 if test -n "$DEBUG"; then
