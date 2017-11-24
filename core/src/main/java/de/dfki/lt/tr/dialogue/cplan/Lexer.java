@@ -182,8 +182,14 @@ implements RuleParser.Lexer, LFParser.Lexer  {
     case '\n': _column = 0; ++_line; // fall through is intended
     case ' ':
     case '\t':
-    case '\u000C':
-    case '\r': _nextChar = ' ' ; break;
+    case '\u000C':_nextChar = ' ' ; break;
+    case '\r':
+      _column = 0; ++_line;
+      _nextChar = _in.read();
+      if (_nextChar != '\n')
+        _pushBack = _nextChar;
+      _nextChar = ' ';
+      break;
     }
   }
 
