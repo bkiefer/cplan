@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper]{article}
+\documentclass[11pt,a4paper]{report}
 
 \usepackage{a4wide}
 \usepackage{tikz}
@@ -15,6 +15,7 @@
 
 \begin{document}
 \maketitle
+\tableofcontents
 \setlength{\parindent}{0em}
 
 \newcounter{myexample}
@@ -30,7 +31,7 @@
 \pgfdeclareimage[interpolate=true,width=.9\textwidth]{BatchWindow}
 {CPlanBatchWindow}
 
-\section{Installation}
+\chapter{Installation}
 
 You obviously already have cloned the project from github. To build it, you
 have to install Java 8 and Maven on your machine. Then, in the best case,
@@ -54,7 +55,7 @@ To use the Emacs features, Mac users have to use AquaMacs. Plain X11 Emacs
 does not seem to provide a server mode. Windows Emacs should work, but has not
 been tested lately.
 
-\section{Execution}
+\chapter{Execution}
 
 The utterance planner is started with the following command:
 \begin{verbatim}
@@ -102,7 +103,7 @@ the path to the AquaMacs binary must be specified. If the Emacs connection is
 properly set up, the GUI trace window described below allows to jump directly
 to the definition of rules used during processing.
 
-\section{Project File}
+\chapter{Project File}
 \label{sec:projectfile}
 
 The project file is a plain text file that is divided into different sections.
@@ -161,7 +162,7 @@ are processed and what can be done with different stages, see section
 
 %\par\vspace*{2ex}
 
-\section{GUI Mode}
+\chapter{GUI Mode}
 
 Figure \ref{fig:allguiwindows} shows all windows opened by the GUI in one
 picture. The topmost window is the GUI main window, which is disabled because
@@ -206,7 +207,7 @@ Rules/allrules.cpj\\
 \end{figure}
 
 
-\subsection{Main Window}
+\section{Main Window}
 
 The main window, shown in figure \ref{fig:mainwindow}, consist of the input
 area at the top, and the input and output LF displays below it, and a status
@@ -258,7 +259,7 @@ caret will be located at the point where the error seemingly occured. In
 addition, the status line (at the bottom of the window) contains an error
 message describing the error.
 
-\subsection{Trace Window}
+\section{Trace Window}
 
 Figure \ref{fig:tracewindow} shows the trace window that will be opened when
 the trace button in the main window is pressed. It allows to follow the
@@ -305,7 +306,7 @@ you to perform the following actions:
 \item Close the trace window
 \end{itemize}
 
-\subsection{Batch Test Window}
+\section{Batch Test Window}
 
 Figure \ref{fig:batchwindow} shows the batch test window that will be opened
 when the batch button in the main window is pressed. Currently, it is designed
@@ -335,7 +336,7 @@ output data into the main window, and open the corresponding line in the batch
 file in the editor window.
 
 %\newpage
-\section{General Description}
+\chapter{General Description}
 The new utterance planner module is very much like a specialized graph
 rewriting system for logical forms as they are used in OpenCCG. A set of
 rules is specified by the grammar writer which is applied to every part of
@@ -347,7 +348,7 @@ The transfer of nodes is realized using local and global variables, which
 store information either during the application of a single rule, or during
 the whole rewrite process, respectively.
 
-\section{Rules}
+\chapter{Rules}
 
 A single rule has the following form:
 
@@ -391,7 +392,7 @@ embedded) will determine the rule type of the resulting rule.
 
 The overall processing strategy will be explained in more detail in chapter~\ref{sec:procregime}.
 
-\subsection{Matching Part}
+\section{Matching Part}
 \label{matching_part}
 The reduced BNF for one match looks like this:
 \[
@@ -493,7 +494,7 @@ build-in functions and the plug-in interface see sections \ref{sec:build-ins}
 and \ref{sec:plugins}, respectively. For a detailed description of how the
 matching and modification of the dag works, see section \ref{sec:procregime}.
 
-\subsection{Actions}
+\section{Actions}
 
 The BNF for one action looks like this:
 \[
@@ -604,7 +605,7 @@ proposition:
 #var: -> # ^ <y> ( :#var ^ #var )
 \end{verbatim}
 
-\subsection{Some Simple Examples}
+\section{Some Simple Examples}
 
 Test for a disjunction of types, and the existence of the \cd{Shape} feature,
 add a new nominal with the feature's value as proposition and delete the
@@ -662,7 +663,7 @@ Functions can also be used on the matching side (see section
 \ref{matching_part}), as in the next example:
 
 \begin{verbatim}
-:dvp, random(one, two, three) ^ two
+:dvp ^ (random(one, two, three) ^ two)
 ->
 # = <Content> ( <Answer> positive ).
 \end{verbatim}
@@ -670,10 +671,10 @@ Functions can also be used on the matching side (see section
 Also look into the file \texttt{presentation-examples.trf}, which contains
 much more elaborate examples with explanations attached to it.
 
-\section{Build-in Functions}
+\chapter{Build-in Functions}
 \label{sec:build-ins}
 
-\subsection{Mathematical Functions}
+\section{Mathematical Functions}
 Mathematical functions expecting \texttt{double} arguments will return
 \verb\NaN\, if one of the arguments is not a valid number.
 \begin{itemize}
@@ -688,7 +689,7 @@ Mathematical functions expecting \texttt{double} arguments will return
 \item \texttt{neg} is unary minus.
 \end{itemize}
 
-\subsection{Other Functions}
+\section{Other Functions}
 \begin{itemize}
 \item \texttt{concatenate} concatenates an arbitrary number of strings and
   returns the result
@@ -703,7 +704,7 @@ Mathematical functions expecting \texttt{double} arguments will return
   \texttt{UtterancePlanner} main logger, and always returns \texttt{true}
 \end{itemize}
 
-\section{Adding New Functions}
+\chapter{Adding New Functions}
 \label{sec:plugins}
 New functions can be added using a lightweight plug-in mechanism. All functions
 must be subclasses of \texttt{Function}, if they work on the internal
@@ -748,7 +749,7 @@ constructor will then load all appropriate classes (subclasses of
 \texttt{Function}) on startup.
 
 
-\section{Processing Regime\label{sec:procregime}}
+\chapter{Processing Regime\label{sec:procregime}}
 
 Processing is divided into different stages. Every stage has its own set of
 rules, which are loaded from the rule files specified in different sections of
@@ -784,7 +785,7 @@ fixpoint loop around the stages. The stages are applied in the order in which
 they appear in the project file, independent of their names.
 
 \if0
-\section{Future Enhancements}
+\chapter{Future Enhancements}
 \begin{itemize}
 \item Macros to avoid copy and paste duplication of parts of rules
 \item GUI enhancements
@@ -800,7 +801,7 @@ they appear in the project file, independent of their names.
 
 \newpage
 \appendix
-\section{More Examples}
+\chapter{More Examples}
 
 The following examples are a \LaTeX{}ed version of the file
 \texttt{examples.trf}, which is used also for testing and can be found in the
