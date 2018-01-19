@@ -16,7 +16,8 @@ public class FunCallDagNode extends SpecialDagNode {
   private List _args;
 
   @SuppressWarnings("rawtypes")
-  public FunCallDagNode(String name, List args) throws NoSuchMethodException {
+  public FunCallDagNode(Environment env, String name, List args) throws NoSuchMethodException {
+    super(env);
     _name = name;
     _function = FunctionFactory.get(_name);
     if (_function == null) {
@@ -46,7 +47,7 @@ public class FunCallDagNode extends SpecialDagNode {
           }
         }
       }
-      FunCallDagNode result = new FunCallDagNode(_name, args);
+      FunCallDagNode result = new FunCallDagNode(_env, _name, args);
       result._typeCode = type;
       return result;
     }
@@ -110,7 +111,7 @@ public class FunCallDagNode extends SpecialDagNode {
     DagNode dag =
       ((o instanceof DagNode)
           ? ((DagNode) o)
-              : new DagNode(PROP_FEAT_ID, new DagNode(o.toString())));
+              : new DagNode(_env.PROP_FEAT_ID, new DagNode(_env, o.toString())));
     return dag;
   }
 

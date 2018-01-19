@@ -45,23 +45,25 @@ public class LFParserTest {
     "@raw:provide(answer ^ <value>foo ^ <text>bar)"
   };
 
+  Environment env;
 
   @Before public void setUp() {
     // next line is needed to initialize static fields
     UtterancePlanner up = new UtterancePlanner();
     up.initHierachy();
+    env = up.env;
   }
 
   private void testOne(String lf, int i) throws IOException {
-    LFParser lfparser = new LFParser(new Lexer(new StringReader(lf)));
+    LFParser lfparser = new LFParser(new Lexer(new StringReader(lf)), env);
     lfparser.setErrorVerbose(true);
     DagNode res = null;
     if (lfparser.parse())
       res = lfparser.getResultLF();
-    DagNode.usePrettyPrinter();
+    env.usePrettyPrinter();
     String lfString = (res == null) ? null : res.toString();
     if (PRINT) { System.out.println(lf); System.out.println(lfString); }
-    lfparser = new LFParser(new Lexer(new StringReader(lf)));
+    lfparser = new LFParser(new Lexer(new StringReader(lf)), env);
     lfparser.setErrorVerbose(true);
     DagNode resOut = null;
     if (lfparser.parse())
@@ -77,9 +79,9 @@ public class LFParserTest {
   }
 
   private void testOneRaw(String raw, String lf, int i) throws IOException {
-    LFParser lfparserRaw = new LFParser(new Lexer(new StringReader(raw)));
+    LFParser lfparserRaw = new LFParser(new Lexer(new StringReader(raw)), env);
     lfparserRaw.setErrorVerbose(true);
-    LFParser lfparser = new LFParser(new Lexer(new StringReader(lf)));
+    LFParser lfparser = new LFParser(new Lexer(new StringReader(lf)), env);
     lfparser.setErrorVerbose(true);
     DagNode res = null, rawRes = null;
     if (lfparserRaw.parse())
@@ -99,7 +101,7 @@ public class LFParserTest {
   }
 
   private void testOneExt(String lf, int i) throws IOException {
-    LFParser lfparser = new LFParser(new Lexer(new StringReader(lf)));
+    LFParser lfparser = new LFParser(new Lexer(new StringReader(lf)), env);
     lfparser.setExtMode(true);
     lfparser.setErrorVerbose(true);
     DagNode res = null;
@@ -107,7 +109,7 @@ public class LFParserTest {
       res = lfparser.getResultLFs().get(0);
     String lfString = (res == null) ? null : res.toString(true);
     if (PRINT) { System.out.println(lf); System.out.println(lfString); }
-    lfparser = new LFParser(new Lexer(new StringReader(lfString)));
+    lfparser = new LFParser(new Lexer(new StringReader(lfString)), env);
     lfparser.setExtMode(true);
     lfparser.setErrorVerbose(true);
     DagNode resOut = null;

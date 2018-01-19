@@ -22,7 +22,7 @@ public class Deletion extends Action {
   @Override
   public String toString() {
     return  _lval.toString() + " ! <"
-    + DagNode.getFeatureName(_rval.getEdgeIterator().next().getFeature()) +">";
+    + _rval._env.getFeatureName(_rval.getEdgeIterator().next().getFeature()) +">";
   }
 }
 

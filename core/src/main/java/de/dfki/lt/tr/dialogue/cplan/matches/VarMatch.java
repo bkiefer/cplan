@@ -16,6 +16,7 @@ public class VarMatch extends Match {
   private Match _match;
 
   public VarMatch(MatchLVal lval, Match match) {
+    _env = match._env;
     _lval = lval;
     _match = match;
   }
@@ -26,7 +27,7 @@ public class VarMatch extends Match {
     if (current == null && _lval instanceof GlobalVar) {
       // simulate matching against an unbound variable by matching against an
       // empty node
-      current = new DagEdge((short)-1, new DagNode());
+      current = new DagEdge((short)-1, new DagNode(_env));
     }
     return current;
   }

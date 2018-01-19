@@ -26,18 +26,18 @@ public class Addition extends Action {
     DagNode toAdd = _rval.cloneFS();
     try {
       toAdd = toAdd.expandVars(bindings);
-      if (root.getFeature() == DagNode.PROP_FEAT_ID) {
-        DagNode prop = toAdd.getValue(DagNode.PROP_FEAT_ID);
+      if (root.getFeature() == _rval._env.PROP_FEAT_ID) {
+        DagNode prop = toAdd.getValue(_rval._env.PROP_FEAT_ID);
         if (prop == null) {
           logger.warn("Trying to set proposition to non-atomic value, ignoring");
         } else {
           // TODO should rather be type unification
           root.setValue(prop);
         }
-      } else if (root.getFeature() == DagNode.TYPE_FEAT_ID) {
-        DagNode type = toAdd.getValue(DagNode.TYPE_FEAT_ID);
+      } else if (root.getFeature() == _rval._env.TYPE_FEAT_ID) {
+        DagNode type = toAdd.getValue(_rval._env.TYPE_FEAT_ID);
         if (type == null) {
-          type = toAdd.getValue(DagNode.PROP_FEAT_ID);
+          type = toAdd.getValue(_rval._env.PROP_FEAT_ID);
         }
         if (type == null) {
           logger.warn("Trying to set type to non-atomic value, ignoring");

@@ -746,6 +746,8 @@ public class UttplanParserTest {
 
   };
 
+  Environment env;
+
   @Before public void setUp() {
     //BasicConfigurator.resetConfiguration();
     //RootLogger.getRootLogger().addAppender(
@@ -753,13 +755,14 @@ public class UttplanParserTest {
     // next line is needed to initialize static fields
     @SuppressWarnings("unused")
     UtterancePlanner up = new UtterancePlanner();
-    DagNode.init(new FlatHierarchy());
-    DagNode.usePrettyPrinter();
+    env = up.env;
+    env.init(new FlatHierarchy(env));
+    env.usePrettyPrinter();
     // DagNode.registerPrinter(null); // return to default printer
   }
 
   private RuleParser getRuleParser(String input) {
-    RuleParser parser = new RuleParser(new Lexer());
+    RuleParser parser = new RuleParser(new Lexer(), env);
     parser.reset(input, new StringReader(input));
     //parser.setDebugLevel(99);
     parser.setErrorVerbose(true);
@@ -770,7 +773,7 @@ public class UttplanParserTest {
     Lexer lexer = new Lexer();
     lexer.setErrorLogger(null);
     lexer.setErrorsQuiet(true);
-    RuleParser parser = new RuleParser(lexer);
+    RuleParser parser = new RuleParser(lexer, env);
     parser.reset(input, new StringReader(input));
     //parser.setDebugLevel(99);
     parser.setErrorVerbose (false);
@@ -800,7 +803,7 @@ public class UttplanParserTest {
   }
 
   private LFParser getLFParser(String input) {
-    LFParser parser = new LFParser(new Lexer());
+    LFParser parser = new LFParser(new Lexer(), env);
     parser.reset(input, new StringReader(input));
     //parser.setDebugLevel(99);
     parser.setErrorVerbose(true);
@@ -963,9 +966,9 @@ public class UttplanParserTest {
   }
 
   private DagNode embed(DagNode toEmbed, String edgeName) {
-    DagNode result = new DagNode();
-    result.addEdge(DagNode.TYPE_FEAT_ID, new DagNode("x"));
-    result.addEdge(DagNode.getFeatureId(edgeName), toEmbed);
+    DagNode result = new DagNode(env);
+    result.addEdge(env.TYPE_FEAT_ID, new DagNode(env, "x"));
+    result.addEdge(env.getFeatureId(edgeName), toEmbed);
     result.setNominal();
     return result;
   }
@@ -973,8 +976,8 @@ public class UttplanParserTest {
   private void testApplyOne(UtterancePlanner up, String[] testPattern,
     boolean value, int i, boolean embedded) {
     for (int j = 1; j < testPattern.length; j += 2) {
-      DagNode in = DagNode.parseLfString(testPattern[j]);
-      DagNode out = DagNode.parseLfString(testPattern[j+1]);
+      DagNode in = env.parseLfString(testPattern[j]);
+      DagNode out = env.parseLfString(testPattern[j+1]);
       if (embedded) {
         in = embed(embed(in, "XXX"), "YYY");
         out = embed(embed(out, "XXX"), "YYY");
@@ -987,7 +990,7 @@ public class UttplanParserTest {
         System.out.println("<< "+in);
       }
       // remove invisible prop coreferences by printing and re-reading
-      in = DagNode.parseLfString(in.toString());
+      in = env.parseLfString(in.toString());
       if (_print) {
         System.out.println("< "+in);
         System.out.println(out);
@@ -1063,8 +1066,8 @@ public class UttplanParserTest {
     up.addProcessor(up.readRulesFromString(testPattern[0]));
     up.setTracing(rt);
     for (int j = 1; j < testPattern.length; j += 2) {
-      DagNode in = DagNode.parseLfString(testPattern[j]);
-      DagNode out = DagNode.parseLfString(testPattern[j+1]);
+      DagNode in = env.parseLfString(testPattern[j]);
+      DagNode out = env.parseLfString(testPattern[j+1]);
       in = up.process(in);
       assertEquals("Matching pattern " + 17 + "(" + j + ")", out, in);
     }
@@ -1072,8 +1075,8 @@ public class UttplanParserTest {
 
     up.setTracing(null);
     for (int j = 1; j < testPattern.length; j += 2) {
-      DagNode in = DagNode.parseLfString(testPattern[j]);
-      DagNode out = DagNode.parseLfString(testPattern[j+1]);
+      DagNode in = env.parseLfString(testPattern[j]);
+      DagNode out = env.parseLfString(testPattern[j+1]);
       in = up.process(in);
       assertEquals("Matching pattern " + 3 + "(" + j + ")", out, in);
     }
@@ -1119,14 +1122,14 @@ public class UttplanParserTest {
     String outSpec = "@a:type(prop ^ <added> true)";
     UtterancePlanner up = new UtterancePlanner();
     up.addProcessor(up.readRulesFromString(rule));
-    DagNode.usePrettyPrinter();
-    DagNode in = DagNode.parseLfString(inSpec);
-    DagNode out = DagNode.parseLfString(outSpec);
+    env.usePrettyPrinter();
+    DagNode in = env.parseLfString(inSpec);
+    DagNode out = env.parseLfString(outSpec);
     int runs = 0;
     do {
       DagNode res = up.process(in);
       // remove invisible prop coreferences by printing and re-reading
-      res = DagNode.parseLfString(res.toString());
+      res = env.parseLfString(res.toString());
       ++ runs;
       if (res.equals(out)) {
         System.out.println(runs); break;
@@ -1165,12 +1168,12 @@ public class UttplanParserTest {
     Rule r = getFirstRuleParsed(
         ":a ^ <F> (#i:#t ^ #p) ^ (eq(3,3) ~ 1) "
         + "-> ##fs = #i:#t ^ #p ^ <res> eq(3,3).");
-    DagNode.usePrettyPrinter();
+    env.usePrettyPrinter();
     String rString = r.toString();
     assertEquals("((:a ^ <F> ((#i: ^ :#t) ^ #p)) ^ (eq(3, 3) ~ 1)) " +
     		"-> ##fs = @#i:#t(#p ^ <res>eq(3, 3)) .",
         rString);
-    DagNode.useDebugPrinter();
+    env.useDebugPrinter();
     String dString = r.toString();
     assertEquals("((:a ^ <F> ((#i: ^ :#t) ^ #p)) ^ (eq([@3@], [@3@]) ~ 1)) " +
     		"-> ##fs = [ #i: :#t #p res[ eq([@3@], [@3@])]] .",
@@ -1183,7 +1186,7 @@ public class UttplanParserTest {
   public void testPrintParseOne(String pattern, int i) throws IOException {
     LFDagPrinter lfd = new LFDagPrinter();
     lfd.setRuleMode(true);
-    DagNode.registerPrinter(lfd);
+    env.registerPrinter(lfd);
     List<Rule> rules = getRulesParsed(pattern);
     //System.out.println("#   " + pattern);
     int j = 1;

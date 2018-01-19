@@ -1,7 +1,5 @@
 package de.dfki.lt.tr.dialogue.cplan;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,24 +15,7 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.lt.tr.dialogue.cplan.io.DagPrinter;
-import de.dfki.lt.tr.dialogue.cplan.io.LFDagPrinter;
-import de.dfki.lt.tr.dialogue.cplan.io.LFDebugPrinter;
-import de.dfki.lt.tr.dialogue.cplan.util.Position;
-
 public class DagNode {
-  /** The lexer to use in logical form parsing */
-  private static final Lexer _lfLexer;
-  /** The parser for logical forms. */
-  private static final LFParser _lfParser;
-
-  static {
-    /** The lexer to use in logical form parsing */
-    _lfLexer = new Lexer();
-    /** The parser for logical forms. */
-    _lfParser = new LFParser(_lfLexer);
-    _lfParser.setErrorVerbose(true);
-  }
 
   public static Logger logger = LoggerFactory.getLogger("DagNode");
 
@@ -53,71 +34,16 @@ public class DagNode {
 
   protected static short NO_FEAT = Short.MAX_VALUE;
 
-  public static final String TOP_TYPE = "top";
-  public static int TOP_ID = 0;
-  public static final int BOTTOM_ID = -1;
-
   // We decided to overwrite instead of unify, which has the nice side effect
   // that there are no failures.
   private static final boolean UNIFY_TYPES = false;
 
-  /** Special feature name for the id of a nominal */
-  public static short ID_FEAT_ID = -1;
-
-  /** Special feature name for the preposition of a nominal */
-  public static short PROP_FEAT_ID = -1;
-
-  /** Special feature name for the type of a nominal */
-  public static short TYPE_FEAT_ID = -1;
-
-  private static final String[] featureOrder =
-    { "__ID", "__TYPE", "__PROP", "Cop-Restr", "Cop-Scope" };
-
-  private static final int _useLfPrinter = 1;
-
-  public static void init(Hierarchy h) {
-    _types = h;
-    assert(TOP_ID == getTypeId(TOP_TYPE));
-    for (String feat : featureOrder) {
-      getFeatureId(feat);
-    }
-    ID_FEAT_ID = getFeatureId(featureOrder[0]);
-    TYPE_FEAT_ID = getFeatureId(featureOrder[1]);
-    PROP_FEAT_ID = getFeatureId(featureOrder[2]);
-    switch (_useLfPrinter) {
-    case 1: usePrettyPrinter(); break;
-    case 2: useDebugPrinter(); break;
-    }
-  }
-
-  public static boolean isInitialized() {
-    return _types != null;
-  }
-
-  public static Hierarchy getHierarchy() {
-    return _types;
-  }
-
-  public static void usePrettyPrinter() {
-    registerPrinter(new LFDagPrinter());
-  }
-
-  public static void useDebugPrinter() {
-    registerPrinter(new LFDebugPrinter());
-  }
+  public Environment _env;
 
   public static int totalNoNodes = 0, totalNoArcs = 0;
 
   static int copyGeneration = 1;
   static int currentGeneration = 1;
-
-  /** A printer used to change the default toString method to print the right
-   *  format
-   */
-  private static DagPrinter _DEFAULT_PRINTER = null;
-
-  /** An object that performs subsumption checks on types */
-  static Hierarchy _types = null;
 
   /* ******************** PUBLIC CONSTANTS ******************** */
 
@@ -207,7 +133,8 @@ public class DagNode {
   // Constructors
   // *************************************************************************
 
-  protected DagNode(int typeIdent) {
+  protected DagNode(Environment env, int typeIdent) {
+    _env = env;
     _typeCode = typeIdent;
     _outedges = null;
     _isNominal = false;
@@ -216,25 +143,25 @@ public class DagNode {
   }
 
   public DagNode(String string, DagNode dagNode) {
-    this(TOP_ID);
-    addEdge(new DagEdge(getFeatureId(string), dagNode));
+    this(dagNode._env);
+    addEdge(new DagEdge(_env.getFeatureId(string), dagNode));
   }
 
   public DagNode(short featureId, DagNode dagNode) {
-    this(TOP_ID);
+    this(dagNode._env);
     addEdge(new DagEdge(featureId, dagNode));
   }
 
-  public DagNode(String type) {
-    this(getTypeId(type));
+  public DagNode(Environment env, String type) {
+    this(env, env.getTypeId(type));
   }
 
-  public DagNode() {
-    this(TOP_ID);
+  public DagNode(Environment env) {
+    this(env, env.TOP_ID);
   }
 
   protected DagNode clone(int type) {
-    DagNode result = new DagNode(type);
+    DagNode result = new DagNode(this._env, type);
     result._isNominal = _isNominal;
     return result;
   }
@@ -243,74 +170,9 @@ public class DagNode {
   // Parsing Strings to Dags
   // *************************************************************************
 
-  /** Convert the given input string, which contains a (partial) logical form,
-   *  into an internal data structure for processing.
-   */
-  public static DagNode parseLfString(String input) {
-    input = input.trim();
-    if (input.isEmpty())
-      return null;
-    StringReader sr = new StringReader(input);
-    _lfParser.reset("Console", sr);
-    try {
-      if (_lfParser.parse() && _lfParser.correct()) {
-        return _lfParser.getResultLF();
-      }
-    }
-    catch (IOException ioex) {
-      // this will hardly ever been thrown
-      ioex.printStackTrace();
-    }
-    catch (ArrayIndexOutOfBoundsException ex) {
-      // may occur during parsing of LF in LFParser. Just die silently.
-    }
-    return null;
-  }
-
-  /** Get the error position of the last LF parse, or null, if there is no
-   *  such error.
-   */
-  public static Position getLastLFErrorPosition() {
-    return _lfLexer.getLastErrorPosition();
-  }
-
-  // *************************************************************************
-  // Grammar interface
-  // *************************************************************************
-
-  public static short getFeatureId(String name) {
-    return _types.getFeatureId(name);
-  }
-
-  public static String getFeatureName(short id) {
-    return _types.getFeatureName(id);
-  }
-
-  public static int getTypeId(String name) {
-    return _types.getTypeId(name);
-  }
-
-  public static String getTypeName(int id) {
-    return _types.getTypeName(id);
-  }
-
-  protected static int unifyTypes(int type1, int type2) {
-    // TODO replace by type unification proper. We currently don't need this.
-    return (type1 == type2 ? type1 : BOTTOM_ID);
-  }
-
   protected boolean keepFeature(short feat) {
     return true;
   }
-
-  /** does typeId1 subsumes (is more general than or equal to) typeId2 */
-  public static boolean subsumesType(int typeId1, int typeId2) {
-    if (typeId1 == typeId2 || typeId1 == DagNode.TOP_ID) {
-      return true;
-    }
-    return (_types != null && _types.subsumes(typeId1, typeId2));
-  }
-
 
   // *************************************************************************
   // Operations specific to tomabechi dag representation
@@ -377,15 +239,11 @@ public class DagNode {
   }
 
   public String getTypeName() {
-    return getTypeName(_typeCode);
+    return _env.getTypeName(_typeCode);
   }
 
   public static void recordFailures(boolean state) {
     recordFailures = state;
-  }
-
-  public static void registerPrinter(DagPrinter printer) {
-    _DEFAULT_PRINTER = printer;
   }
 
   private DagNode cloneFSRec() {
@@ -510,8 +368,8 @@ public class DagNode {
     int unifType;
     // NO TYPE UNIFICATION --> NO FAILURE, this is intended.
     if (UNIFY_TYPES) {
-      unifType = unifyTypes(type1, type2);
-      if (unifType == BOTTOM_ID) {
+      unifType = _env.unifyTypes(type1, type2);
+      if (unifType == _env.BOTTOM_ID) {
         if (recordFailures)
           forwardFailures.put(this, FailType.TYPE);
         return false;
@@ -557,7 +415,7 @@ public class DagNode {
           // "relation" arcs
           if (! (subThis._isNominal && subArg._isNominal)) {
             logger.warn("Status of relation/feature unclear " +
-                "during unification: {}", getFeatureName(feat1));
+                "during unification: {}", _env.getFeatureName(feat1));
           }
           arc1It.add(arc2);
         }
@@ -608,7 +466,7 @@ public class DagNode {
         DagNode sub = edge._value;
         if (sub instanceof SpecialDagNode) {
           DagNode eval = ((SpecialDagNode)sub).evaluate(here, bindings);
-          if (edge._feature == ID_FEAT_ID)  // why this??
+          if (edge._feature == _env.ID_FEAT_ID)  // why this??
               // || edge._feature == PROP_FEAT_ID)
           {
             // add the plain evaluated node to the varDags
@@ -619,7 +477,7 @@ public class DagNode {
               Iterator<DagEdge> edgeit = eval.getEdgeIterator();
               DagEdge firstEdge = edgeit.next();
               // case b) if it has only a PROP, use the value under PROP
-              if (firstEdge.getFeature() == DagNode.PROP_FEAT_ID
+              if (firstEdge.getFeature() == _env.PROP_FEAT_ID
                   && ! edgeit.hasNext()) {
                 eval = firstEdge.getValue();
               } else {
@@ -640,7 +498,7 @@ public class DagNode {
               throw new UnificationException(
                   "The following edge could not be properly expanded: " + edge);
             }
-            DagNode newSub = new DagNode();
+            DagNode newSub = new DagNode(_env);
             newSub.addEdge(new DagEdge(edge._feature, eval));
             varDags.add(newSub);
           }
@@ -948,9 +806,9 @@ public class DagNode {
       feat2 = (arc2It.hasNext() ? (arc2 = arc2It.next())._feature : NO_FEAT);
     }
     /** I can rightly assume that ID is the first feature */
-    if (feat1 == ID_FEAT_ID)
+    if (feat1 == _env.ID_FEAT_ID)
       feat1 = (arc1It.hasNext() ? (arc1 = arc1It.next())._feature : NO_FEAT);
-    if (feat2 == ID_FEAT_ID)
+    if (feat2 == _env.ID_FEAT_ID)
       feat2 = (arc2It.hasNext() ? (arc2 = arc2It.next())._feature : NO_FEAT);
 
     while (feat1 == feat2 &&  feat1 != NO_FEAT) {
@@ -1328,7 +1186,7 @@ public class DagNode {
     int type1 = this.getType();
     int type2 = in2.getType();
     if (type1 != type2) {
-      if (! subsumesType(type1, type2)) {
+      if (! _env.subsumesType(type1, type2)) {
         return false;
       }
     }
@@ -1416,8 +1274,6 @@ public class DagNode {
     sb.append(']');
   }
 
-
-
   /** print fs in jxchg format */
   @Override
   public final String toString() {
@@ -1434,10 +1290,10 @@ public class DagNode {
       ((SpecialDagNode)this).toStringSpecial(sb);
     }
     else {
-      if (_DEFAULT_PRINTER != null) {
-        synchronized (_DEFAULT_PRINTER) {
-          _DEFAULT_PRINTER.getCorefs(this);
-          _DEFAULT_PRINTER.toStringRec(this, readable, sb);
+      if (_env.DEFAULT_PRINTER != null) {
+        synchronized (_env.DEFAULT_PRINTER) {
+          _env.DEFAULT_PRINTER.getCorefs(this);
+          _env.DEFAULT_PRINTER.toStringRec(this, readable, sb);
         }
       }
       else {
@@ -1446,6 +1302,4 @@ public class DagNode {
     }
     return sb.toString();
   }
-
-
 }

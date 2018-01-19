@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.2.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Skeleton implementation for Bison LALR(1) parsers in Java
 
-   Copyright (C) 2007-2013 Free Software Foundation, Inc.
+   Copyright (C) 2007-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ import java.util.LinkedList;
 public class LFParser
 {
     /** Version number for the Bison executable that generated this parser.  */
-  public static final String bisonVersion = "3.0.2";
+  public static final String bisonVersion = "3.0.4";
 
   /** Name of the skeleton that generated this parser.  */
   public static final String bisonSkeleton = "lalr1.java";
@@ -139,6 +139,8 @@ public class LFParser
   private Lexer yylexer;
   
   
+    /* User arguments.  */
+    protected final Environment env;
 
 
 
@@ -146,11 +148,12 @@ public class LFParser
    * Instantiates the Bison-generated parser.
    * @param yylexer The scanner that will supply tokens to the parser.
    */
-  public LFParser (Lexer yylexer) 
+  public LFParser (Lexer yylexer, Environment env) 
   {
     
     this.yylexer = yylexer;
-    
+    this.env = env;
+          
   }
 
   private java.io.PrintStream yyDebugStream = System.err;
@@ -342,38 +345,38 @@ public class LFParser
       {
           case 2:
   if (yyn == 2)
-    /* "LFParser.y":108  */ /* lalr1.java:489  */
+    /* "LFParser.y":110  */ /* lalr1.java:489  */
     { yyval = null; _lf = (( DagNode )(yystack.valueAt (1-(1)))); if (extMode) return YYACCEPT; };
   break;
     
 
   case 3:
   if (yyn == 3)
-    /* "LFParser.y":109  */ /* lalr1.java:489  */
+    /* "LFParser.y":111  */ /* lalr1.java:489  */
     { yyval = null; _lf = (( DagNode )(yystack.valueAt (1-(1)))); if (extMode) return YYACCEPT; };
   break;
     
 
   case 4:
   if (yyn == 4)
-    /* "LFParser.y":110  */ /* lalr1.java:489  */
+    /* "LFParser.y":112  */ /* lalr1.java:489  */
     { yyval = null; _lf = null; _correct = false; };
   break;
     
 
   case 5:
   if (yyn == 5)
-    /* "LFParser.y":115  */ /* lalr1.java:489  */
+    /* "LFParser.y":117  */ /* lalr1.java:489  */
     {
      yyval = unify(getNewLF((( String )(yystack.valueAt (7-(2))))).setNominal(),
-                unify(newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (7-(4))))), (( DagNode )(yystack.valueAt (7-(6))))));
+                unify(newLF(env.TYPE_FEAT_ID, (( String )(yystack.valueAt (7-(4))))), (( DagNode )(yystack.valueAt (7-(6))))));
    };
   break;
     
 
   case 6:
   if (yyn == 6)
-    /* "LFParser.y":119  */ /* lalr1.java:489  */
+    /* "LFParser.y":121  */ /* lalr1.java:489  */
     {
      yyval = unify(getNewLF((( String )(yystack.valueAt (5-(2))))).setNominal(), (( DagNode )(yystack.valueAt (5-(4)))));
    };
@@ -382,36 +385,36 @@ public class LFParser
 
   case 7:
   if (yyn == 7)
-    /* "LFParser.y":122  */ /* lalr1.java:489  */
+    /* "LFParser.y":124  */ /* lalr1.java:489  */
     { yyval = (( DagNode )(yystack.valueAt (3-(2)))).setNominal(); };
   break;
     
 
   case 8:
   if (yyn == 8)
-    /* "LFParser.y":125  */ /* lalr1.java:489  */
+    /* "LFParser.y":127  */ /* lalr1.java:489  */
     { yyval = unify((( DagNode )(yystack.valueAt (3-(1)))), (( DagNode )(yystack.valueAt (3-(3))))); };
   break;
     
 
   case 9:
   if (yyn == 9)
-    /* "LFParser.y":126  */ /* lalr1.java:489  */
+    /* "LFParser.y":128  */ /* lalr1.java:489  */
     { yyval = (( DagNode )(yystack.valueAt (1-(1)))); };
   break;
     
 
   case 10:
   if (yyn == 10)
-    /* "LFParser.y":129  */ /* lalr1.java:489  */
+    /* "LFParser.y":131  */ /* lalr1.java:489  */
     { yyval = newLF((( String )(yystack.valueAt (6-(2)))), (( DagNode )(yystack.valueAt (6-(5))))).setNominal(); };
   break;
     
 
   case 11:
   if (yyn == 11)
-    /* "LFParser.y":130  */ /* lalr1.java:489  */
-    { yyval = newLF((( String )(yystack.valueAt (4-(2)))), newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (4-(4))))))
+    /* "LFParser.y":132  */ /* lalr1.java:489  */
+    { yyval = newLF((( String )(yystack.valueAt (4-(2)))), newLF(env.PROP_FEAT_ID, (( String )(yystack.valueAt (4-(4))))))
                                     .setNominal();
                         };
   break;
@@ -419,8 +422,8 @@ public class LFParser
 
   case 12:
   if (yyn == 12)
-    /* "LFParser.y":133  */ /* lalr1.java:489  */
-    { yyval = newLF((( String )(yystack.valueAt (4-(2)))), newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (4-(4))))))
+    /* "LFParser.y":135  */ /* lalr1.java:489  */
+    { yyval = newLF((( String )(yystack.valueAt (4-(2)))), newLF(env.PROP_FEAT_ID, (( String )(yystack.valueAt (4-(4))))))
                                     .setNominal();
                            };
   break;
@@ -428,10 +431,10 @@ public class LFParser
 
   case 13:
   if (yyn == 13)
-    /* "LFParser.y":137  */ /* lalr1.java:489  */
+    /* "LFParser.y":139  */ /* lalr1.java:489  */
     { yyval = newLF((( String )(yystack.valueAt (6-(2)))),
                                      unify(getNewLF((( String )(yystack.valueAt (6-(4))))).setNominal(),
-                                           newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (6-(6)))))))
+                                           newLF(env.TYPE_FEAT_ID, (( String )(yystack.valueAt (6-(6)))))))
                             .setNominal();
                         };
   break;
@@ -439,7 +442,7 @@ public class LFParser
 
   case 14:
   if (yyn == 14)
-    /* "LFParser.y":143  */ /* lalr1.java:489  */
+    /* "LFParser.y":145  */ /* lalr1.java:489  */
     { yyval = newLF((( String )(yystack.valueAt (5-(2)))), getNewLF((( String )(yystack.valueAt (5-(4))))).setNominal())
                             .setNominal();
                         };
@@ -448,53 +451,53 @@ public class LFParser
 
   case 15:
   if (yyn == 15)
-    /* "LFParser.y":146  */ /* lalr1.java:489  */
+    /* "LFParser.y":148  */ /* lalr1.java:489  */
     { yyval = unify(getNewLF((( String )(yystack.valueAt (3-(1))))).setNominal(),
-                                     newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (3-(3))))));
+                                     newLF(env.TYPE_FEAT_ID, (( String )(yystack.valueAt (3-(3))))));
                         };
   break;
     
 
   case 16:
   if (yyn == 16)
-    /* "LFParser.y":149  */ /* lalr1.java:489  */
+    /* "LFParser.y":151  */ /* lalr1.java:489  */
     { yyval = getNewLF((( String )(yystack.valueAt (2-(1))))).setNominal(); };
   break;
     
 
   case 17:
   if (yyn == 17)
-    /* "LFParser.y":150  */ /* lalr1.java:489  */
-    { yyval = newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (2-(2))))).setNominal(); };
+    /* "LFParser.y":152  */ /* lalr1.java:489  */
+    { yyval = newLF(env.TYPE_FEAT_ID, (( String )(yystack.valueAt (2-(2))))).setNominal(); };
   break;
     
 
   case 18:
   if (yyn == 18)
-    /* "LFParser.y":151  */ /* lalr1.java:489  */
-    { yyval = newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (1-(1))))); };
+    /* "LFParser.y":153  */ /* lalr1.java:489  */
+    { yyval = newLF(env.PROP_FEAT_ID, (( String )(yystack.valueAt (1-(1))))); };
   break;
     
 
   case 19:
   if (yyn == 19)
-    /* "LFParser.y":155  */ /* lalr1.java:489  */
+    /* "LFParser.y":157  */ /* lalr1.java:489  */
     {
-                          DagNode prop = newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (5-(3)))));
+                          DagNode prop = newLF(env.PROP_FEAT_ID, (( String )(yystack.valueAt (5-(3)))));
                           if ((( DagNode )(yystack.valueAt (5-(4)))) != null) {
                             prop = unify(prop, (( DagNode )(yystack.valueAt (5-(4)))));
                           }
                           yyval = unify(getNewLF("raw").setNominal(),
-                                 unify(newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (5-(1))))), prop));
+                                 unify(newLF(env.TYPE_FEAT_ID, (( String )(yystack.valueAt (5-(1))))), prop));
                         };
   break;
     
 
   case 20:
   if (yyn == 20)
-    /* "LFParser.y":164  */ /* lalr1.java:489  */
+    /* "LFParser.y":166  */ /* lalr1.java:489  */
     {
-	DagNode res = newLF((( String )(yystack.valueAt (5-(2)))), newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (5-(4)))))).setNominal();
+	DagNode res = newLF((( String )(yystack.valueAt (5-(2)))), newLF(env.PROP_FEAT_ID, (( String )(yystack.valueAt (5-(4)))))).setNominal();
 	yyval = ((( DagNode )(yystack.valueAt (5-(5)))) == null) ? res : unify(res, (( DagNode )(yystack.valueAt (5-(5)))));
 	};
   break;
@@ -502,9 +505,9 @@ public class LFParser
 
   case 21:
   if (yyn == 21)
-    /* "LFParser.y":168  */ /* lalr1.java:489  */
+    /* "LFParser.y":170  */ /* lalr1.java:489  */
     {
-	DagNode res = newLF((( String )(yystack.valueAt (5-(2)))), newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (5-(4)))))).setNominal();
+	DagNode res = newLF((( String )(yystack.valueAt (5-(2)))), newLF(env.PROP_FEAT_ID, (( String )(yystack.valueAt (5-(4)))))).setNominal();
 	yyval = ((( DagNode )(yystack.valueAt (5-(5)))) == null) ? res : unify(res, (( DagNode )(yystack.valueAt (5-(5)))));
 	};
   break;
@@ -512,13 +515,13 @@ public class LFParser
 
   case 22:
   if (yyn == 22)
-    /* "LFParser.y":172  */ /* lalr1.java:489  */
+    /* "LFParser.y":174  */ /* lalr1.java:489  */
     { yyval = null; };
   break;
     
 
 
-/* "LFParser.java":522  */ /* lalr1.java:489  */
+/* "LFParser.java":525  */ /* lalr1.java:489  */
         default: break;
       }
 
@@ -1081,9 +1084,9 @@ private static final byte yycheck_[] = yycheck_init();
   {
     return new short[]
     {
-       0,   108,   108,   109,   110,   115,   119,   122,   125,   126,
-     129,   130,   133,   136,   142,   146,   149,   150,   151,   154,
-     164,   168,   172
+       0,   110,   110,   111,   112,   117,   121,   124,   127,   128,
+     131,   132,   135,   138,   144,   148,   151,   152,   153,   156,
+     166,   170,   174
     };
   }
 
@@ -1164,10 +1167,10 @@ private static final byte yycheck_[] = yycheck_init();
 
 /* User implementation code.  */
 /* Unqualified %code blocks.  */
-/* "LFParser.y":22  */ /* lalr1.java:1066  */
+/* "LFParser.y":24  */ /* lalr1.java:1066  */
 
   private boolean extMode = false;
-  
+
   private boolean _correct = true;
 
   private DagNode _lf;
@@ -1175,7 +1178,7 @@ private static final byte yycheck_[] = yycheck_init();
   private HashMap<String, DagNode> _nodes = new HashMap<String, DagNode>();
 
   private DagNode newLF(String feature, String type) {
-    return new DagNode(feature, new DagNode(type));
+    return new DagNode(feature, new DagNode(env, type));
   }
 
   private DagNode newLF(String feature, DagNode value) {
@@ -1183,13 +1186,13 @@ private static final byte yycheck_[] = yycheck_init();
   }
 
   private DagNode newLF(short feature, String type) {
-    return new DagNode(feature, new DagNode(type));
+    return new DagNode(feature, new DagNode(env, type));
   }
 
   private DagNode getNewLF(String id) {
     DagNode lf = _nodes.get(id);
     if (lf == null) {
-      lf = newLF(DagNode.ID_FEAT_ID, id);
+      lf = newLF(env.ID_FEAT_ID, id);
       _nodes.put(id, lf);
     }
     return lf;
@@ -1235,7 +1238,7 @@ private static final byte yycheck_[] = yycheck_init();
   public boolean correct() { return _correct; }
 
 
-/* "LFParser.java":1239  */ /* lalr1.java:1066  */
+/* "LFParser.java":1242  */ /* lalr1.java:1066  */
 
 }
 

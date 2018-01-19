@@ -59,11 +59,11 @@ public class LFDagPrinter extends DagPrinter {
       while (it.hasNext()) {
         edge = it.next();
         short feature = edge.getFeature();
-        if (feature == DagNode.ID_FEAT_ID) {
+        if (feature == here._env.ID_FEAT_ID) {
           id = edge.getValue().dereference(); edge = null;
-        } else if (feature == DagNode.TYPE_FEAT_ID) {
+        } else if (feature == here._env.TYPE_FEAT_ID) {
           type = edge.getValue().dereference(); edge = null;
-        } else if (feature == DagNode.PROP_FEAT_ID) {
+        } else if (feature == here._env.PROP_FEAT_ID) {
           prop = edge.getValue().dereference(); edge = null;
         } else {
           break;
@@ -140,7 +140,7 @@ public class LFDagPrinter extends DagPrinter {
       DagNode.EdgeIterator it = here.getTransitionalEdgeIterator();
       if (it.hasNext()) {
         DagEdge edge = it.next();
-        assert(edge.getFeature() == DagNode.PROP_FEAT_ID);
+        assert(edge.getFeature() == here._env.PROP_FEAT_ID);
         assert(! it.hasNext());
         DagNode sub = edge.getValue();
         if (sub != null) {

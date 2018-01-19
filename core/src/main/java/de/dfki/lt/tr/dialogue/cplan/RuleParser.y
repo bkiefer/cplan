@@ -28,6 +28,8 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
 
 %define parse.error verbose
 
+%parse-param {Environment env}
+
 %code {
   /** A class to collect matches and actions to generate real rules when
    *  done.
@@ -161,7 +163,7 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
 
   private FunCall getNewFunCall(String name, List args, Location loc) {
     try {
-      return new FunCall(name, args);
+      return new FunCall(env, name, args);
     }
     catch (NoSuchMethodException ex) {
       yyerror(loc, "No such Function registered: " + ex.getMessage());
@@ -175,7 +177,7 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
   private FunCallDagNode getNewFunCallDagNode(String name, List args,
                                               Location loc) {
     try {
-      return new FunCallDagNode(name, args);
+      return new FunCallDagNode(env, name, args);
     }
     catch (NoSuchMethodException ex) {
       yyerror(loc, "No such Function registered: " + ex.getMessage());
@@ -288,8 +290,8 @@ eterm : eterm '^' term     { $$ = new Conjunction($1, $3); }
       | term
       ;
 
-term : '<' id_lvar '>' term     { $$ = new FeatVal($2, $4); }
-     | '<' id_lvar '>'          { $$ = new FeatVal($2, null); }
+term : '<' id_lvar '>' term     { $$ = new FeatVal(env, $2, $4); }
+     | '<' id_lvar '>'          { $$ = new FeatVal(env, $2, null); }
      | '(' GVAR '~' expr ')'    { $$ = new VarMatch(new GlobalVar($2), $4); }
      | '(' funcall '~' expr ')' { $$ = new VarMatch($2, $4); }
      | feature                  { $$ = $1; }
@@ -297,11 +299,11 @@ term : '<' id_lvar '>' term     { $$ = new FeatVal($2, $4); }
 
 feature : nominal         { $$ = $1; }
         | nominal iv_term { $$ = new Conjunction($1,
-                                   new FeatVal(DagNode.TYPE_FEAT_ID, $2)); }
-        | ':' iv_term     { $$ = new FeatVal(DagNode.TYPE_FEAT_ID, $2); }
-        | id_lvar         { $$ = new FeatVal(DagNode.PROP_FEAT_ID, $1); }
-        | STRING          { $$ = new FeatVal(DagNode.PROP_FEAT_ID,
-                                             new Atom($1)); }
+                                   new FeatVal(env, env.TYPE_FEAT_ID, $2)); }
+        | ':' iv_term     { $$ = new FeatVal(env, env.TYPE_FEAT_ID, $2); }
+        | id_lvar         { $$ = new FeatVal(env, env.PROP_FEAT_ID, $1); }
+        | STRING          { $$ = new FeatVal(env, env.PROP_FEAT_ID,
+                                             new Atom(env, $1)); }
         | '!' term        { $2.setNegated(true); $$ = $2; }
         | '(' expr ')'    { $$ = $2; }
         | '=' nominal     { $$ = new Coref($2); }
@@ -311,13 +313,13 @@ feature : nominal         { $$ = $1; }
 //      | funcall         { $$ = new UnifyMatch(null, $1),; }
         ;
 
-nominal : ID ':'     { $$ = new FeatVal(DagNode.ID_FEAT_ID, new Atom($1)); }
+nominal : ID ':'     { $$ = new FeatVal(env, env.ID_FEAT_ID, new Atom(env, $1)); }
         | VAR ':'    { $$ = new LocalVar($1);  }
         | GVAR ':'   { $$ = new GlobalVar($1); }
         ;
 
 id_lvar : VAR      { $$ = new LocalVar($1); }
-        | ID       { $$ = new Atom($1); }
+        | ID       { $$ = new Atom(env, $1); }
 
 iv_term : id_lvar           { $$ = $1; }
         | '!' iv_term       { $2.setNegated(true); $$ = $2; }
@@ -375,18 +377,18 @@ action : lval '=' rexpr
 // THAT DOES NOT SUFFICE! IT MIGHT BE NICE TO SPECIFY REXPRS TO DELETE E.G.
 // THE TYPE AND PROP AND SOME FEATURES IN ONE SWEEP, BUT KEEP THE REST
        | lval '!' '<' ID  '>'
-       { $$ = new Deletion($1, new DagNode($4, new DagNode())); }
+       { $$ = new Deletion($1, new DagNode($4, new DagNode(env))); }
        ;
 
-lval : VAR       { $$ = new VarDagNode($1, Bindings.LOCAL); }
-     | RVAR      { $$ = new VarDagNode($1, Bindings.RIGHTLOCAL); }
-     | '#'       { $$ = new VarDagNode("#", Bindings.LOCAL); }
-     | GVAR path { $$ = new VarDagNode($1, $2); }
+lval : VAR       { $$ = new VarDagNode(env, $1, Bindings.LOCAL); }
+     | RVAR      { $$ = new VarDagNode(env, $1, Bindings.RIGHTLOCAL); }
+     | '#'       { $$ = new VarDagNode(env, "#", Bindings.LOCAL); }
+     | GVAR path { $$ = new VarDagNode(env, $1, $2); }
 //   | ID ':'    { $$ = new VarDagNode($1, Bindings.ABSOLUTE); }
      ;
 
 path : '<' ID '>' path { $$ = $4.addToFront($2); }
-     |                 { $$ = new Path(); }
+     |                 { $$ = new Path(env); }
      ;
 
 rexpr  : rexpr '^' rterm  { $1.add($3); $1.setNominal(); $$ = $1; }
@@ -399,14 +401,14 @@ rterm : '<' ID '>' rterm  { $$ = new DagNode($2, $4).setNominal(); }
 
 
 rfeat : rnominal          { $$ = $1; }
-      | rnominal r_id_var { $1.add(new DagNode(DagNode.TYPE_FEAT_ID, $2));
+      | rnominal r_id_var { $1.add(new DagNode(env.TYPE_FEAT_ID, $2));
                             $$ = $1; }
-      | ':' r_id_var      { $$ = new DagNode(DagNode.TYPE_FEAT_ID, $2)
+      | ':' r_id_var      { $$ = new DagNode(env.TYPE_FEAT_ID, $2)
                                     .setNominal();
                           }
-      | r_id_var          { $$ = new DagNode(DagNode.PROP_FEAT_ID, $1); }
-      | STRING            { $$ = new DagNode(DagNode.PROP_FEAT_ID,
-                                             new DagNode($1)); }
+      | r_id_var          { $$ = new DagNode(env.PROP_FEAT_ID, $1); }
+      | STRING            { $$ = new DagNode(env.PROP_FEAT_ID,
+                                             new DagNode(env, $1)); }
       | '(' rexpr ')'     { $$ = $2.setNominal(); }
       // | ID '(' rargs ')'  { $$ = getNewFunCallDagNode($1, $3, @1);
       //                       if ($$ == null) return YYERROR ;
@@ -417,7 +419,7 @@ rfeat : rnominal          { $$ = $1; }
       ;
 
 rnominal : r_id_var ':' {
-             $$ = new DagNode(DagNode.ID_FEAT_ID, $1).setNominal();
+             $$ = new DagNode(env.ID_FEAT_ID, $1).setNominal();
          }
          ;
 
@@ -429,17 +431,17 @@ rargs : rarg ',' rargs   { $3.add(0, $1); $$ = $3; }
       ;
 
 rarg  : r_id_var  { $$ = $1; }
-      | STRING    { $$ = new DagNode($1); }
-      | '#'       { $$ = new VarDagNode("#", Bindings.LOCAL); }
+      | STRING    { $$ = new DagNode(env, $1); }
+      | '#'       { $$ = new VarDagNode(env, "#", Bindings.LOCAL); }
       ;
 //rarg  : rexpr     { $$ = $1; }
 //      | '#'       { $$ = new VarDagNode("#", Bindings.LOCAL); }
 //      ;
 
-r_id_var : ID     { $$ = new DagNode($1); }
-         | VAR    { $$ = new VarDagNode($1, Bindings.LOCAL); }
-         | GVAR path { $$ = new VarDagNode($1, $2); }
-         | RVAR   { $$ = new VarDagNode($1, Bindings.RIGHTLOCAL); }
+r_id_var : ID     { $$ = new DagNode(env, $1); }
+         | VAR    { $$ = new VarDagNode(env, $1, Bindings.LOCAL); }
+         | GVAR path { $$ = new VarDagNode(env, $1, $2); }
+         | RVAR   { $$ = new VarDagNode(env, $1, Bindings.RIGHTLOCAL); }
          | ID '(' rargs ')'  { $$ = getNewFunCallDagNode($1, $3, @1);
                                if ($$ == null) return YYERROR ;
                              }

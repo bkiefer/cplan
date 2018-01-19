@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.2.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Skeleton implementation for Bison LALR(1) parsers in Java
 
-   Copyright (C) 2007-2013 Free Software Foundation, Inc.
+   Copyright (C) 2007-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
 public class RuleParser
 {
     /** Version number for the Bison executable that generated this parser.  */
-  public static final String bisonVersion = "3.0.2";
+  public static final String bisonVersion = "3.0.4";
 
   /** Name of the skeleton that generated this parser.  */
   public static final String bisonSkeleton = "lalr1.java";
@@ -214,6 +214,8 @@ public class RuleParser
   private Lexer yylexer;
   
   
+    /* User arguments.  */
+    protected final Environment env;
 
 
 
@@ -221,11 +223,12 @@ public class RuleParser
    * Instantiates the Bison-generated parser.
    * @param yylexer The scanner that will supply tokens to the parser.
    */
-  public RuleParser (Lexer yylexer) 
+  public RuleParser (Lexer yylexer, Environment env) 
   {
     
     this.yylexer = yylexer;
-    
+    this.env = env;
+          
   }
 
   private java.io.PrintStream yyDebugStream = System.err;
@@ -443,261 +446,261 @@ public class RuleParser
       {
           case 2:
   if (yyn == 2)
-    /* "RuleParser.y":261  */ /* lalr1.java:489  */
+    /* "RuleParser.y":263  */ /* lalr1.java:489  */
     { _rules = (( LinkedList )(yystack.valueAt (1-(1)))); };
   break;
     
 
   case 3:
   if (yyn == 3)
-    /* "RuleParser.y":263  */ /* lalr1.java:489  */
+    /* "RuleParser.y":265  */ /* lalr1.java:489  */
     { _rules = (( LinkedList )(yystack.valueAt (2-(1)))); _rules.addAll((( LinkedList )(yystack.valueAt (2-(2))))); yyval = _rules; };
   break;
     
 
   case 4:
   if (yyn == 4)
-    /* "RuleParser.y":264  */ /* lalr1.java:489  */
+    /* "RuleParser.y":266  */ /* lalr1.java:489  */
     { yyval = (( LinkedList )(yystack.valueAt (1-(1)))); };
   break;
     
 
   case 5:
   if (yyn == 5)
-    /* "RuleParser.y":268  */ /* lalr1.java:489  */
+    /* "RuleParser.y":270  */ /* lalr1.java:489  */
     { yyval = newRuleList(newRule((( Match )(yystack.valueAt (4-(1)))), (( List )(yystack.valueAt (4-(3)))), yystack.locationAt (4-(2)), (( String )(yystack.valueAt (4-(2)))).equals("->"))); };
   break;
     
 
   case 6:
   if (yyn == 6)
-    /* "RuleParser.y":270  */ /* lalr1.java:489  */
+    /* "RuleParser.y":272  */ /* lalr1.java:489  */
     { yyval = newRule((( Match )(yystack.valueAt (6-(1)))), (( List )(yystack.valueAt (6-(3)))), yystack.locationAt (6-(2)), (( String )(yystack.valueAt (6-(2)))).equals("->")).applyToAll((( LinkedList )(yystack.valueAt (6-(5))))); };
   break;
     
 
   case 7:
   if (yyn == 7)
-    /* "RuleParser.y":272  */ /* lalr1.java:489  */
+    /* "RuleParser.y":274  */ /* lalr1.java:489  */
     { yyval = newRule((( Match )(yystack.valueAt (4-(1)))), new LinkedList<Action>(), yystack.locationAt (4-(2)), true).applyToAll((( LinkedList )(yystack.valueAt (4-(3))))); };
   break;
     
 
   case 8:
   if (yyn == 8)
-    /* "RuleParser.y":273  */ /* lalr1.java:489  */
+    /* "RuleParser.y":275  */ /* lalr1.java:489  */
     { yyval = new LinkedList<RuleProto>(); };
   break;
     
 
   case 9:
   if (yyn == 9)
-    /* "RuleParser.y":276  */ /* lalr1.java:489  */
+    /* "RuleParser.y":278  */ /* lalr1.java:489  */
     { (( LinkedList )(yystack.valueAt (3-(3)))).addFirst(new Op('|', (( LinkedList )(yystack.valueAt (3-(2)))))); yyval = (( LinkedList )(yystack.valueAt (3-(3)))); };
   break;
     
 
   case 10:
   if (yyn == 10)
-    /* "RuleParser.y":277  */ /* lalr1.java:489  */
+    /* "RuleParser.y":279  */ /* lalr1.java:489  */
     { (( LinkedList )(yystack.valueAt (3-(3)))).addFirst(new Op('^', (( LinkedList )(yystack.valueAt (3-(2)))))); yyval = (( LinkedList )(yystack.valueAt (3-(3)))); };
   break;
     
 
   case 11:
   if (yyn == 11)
-    /* "RuleParser.y":278  */ /* lalr1.java:489  */
+    /* "RuleParser.y":280  */ /* lalr1.java:489  */
     { yyval = newOpList('|', (( LinkedList )(yystack.valueAt (2-(2))))); };
   break;
     
 
   case 12:
   if (yyn == 12)
-    /* "RuleParser.y":279  */ /* lalr1.java:489  */
+    /* "RuleParser.y":281  */ /* lalr1.java:489  */
     { yyval = newOpList('^', (( LinkedList )(yystack.valueAt (2-(2))))); };
   break;
     
 
   case 13:
   if (yyn == 13)
-    /* "RuleParser.y":282  */ /* lalr1.java:489  */
+    /* "RuleParser.y":284  */ /* lalr1.java:489  */
     { yyval = new Disjunction((( Match )(yystack.valueAt (3-(1)))), (( Match )(yystack.valueAt (3-(3))))); };
   break;
     
 
   case 15:
   if (yyn == 15)
-    /* "RuleParser.y":286  */ /* lalr1.java:489  */
+    /* "RuleParser.y":288  */ /* lalr1.java:489  */
     { yyval = new Conjunction((( Match )(yystack.valueAt (3-(1)))), (( Match )(yystack.valueAt (3-(3))))); };
   break;
     
 
   case 17:
   if (yyn == 17)
-    /* "RuleParser.y":291  */ /* lalr1.java:489  */
-    { yyval = new FeatVal((( Match )(yystack.valueAt (4-(2)))), (( Match )(yystack.valueAt (4-(4))))); };
+    /* "RuleParser.y":293  */ /* lalr1.java:489  */
+    { yyval = new FeatVal(env, (( Match )(yystack.valueAt (4-(2)))), (( Match )(yystack.valueAt (4-(4))))); };
   break;
     
 
   case 18:
   if (yyn == 18)
-    /* "RuleParser.y":292  */ /* lalr1.java:489  */
-    { yyval = new FeatVal((( Match )(yystack.valueAt (3-(2)))), null); };
+    /* "RuleParser.y":294  */ /* lalr1.java:489  */
+    { yyval = new FeatVal(env, (( Match )(yystack.valueAt (3-(2)))), null); };
   break;
     
 
   case 19:
   if (yyn == 19)
-    /* "RuleParser.y":293  */ /* lalr1.java:489  */
+    /* "RuleParser.y":295  */ /* lalr1.java:489  */
     { yyval = new VarMatch(new GlobalVar((( String )(yystack.valueAt (5-(2))))), (( Match )(yystack.valueAt (5-(4))))); };
   break;
     
 
   case 20:
   if (yyn == 20)
-    /* "RuleParser.y":294  */ /* lalr1.java:489  */
+    /* "RuleParser.y":296  */ /* lalr1.java:489  */
     { yyval = new VarMatch((( MatchLVal )(yystack.valueAt (5-(2)))), (( Match )(yystack.valueAt (5-(4))))); };
   break;
     
 
   case 21:
   if (yyn == 21)
-    /* "RuleParser.y":295  */ /* lalr1.java:489  */
+    /* "RuleParser.y":297  */ /* lalr1.java:489  */
     { yyval = (( Match )(yystack.valueAt (1-(1)))); };
   break;
     
 
   case 22:
   if (yyn == 22)
-    /* "RuleParser.y":298  */ /* lalr1.java:489  */
+    /* "RuleParser.y":300  */ /* lalr1.java:489  */
     { yyval = (( Match )(yystack.valueAt (1-(1)))); };
   break;
     
 
   case 23:
   if (yyn == 23)
-    /* "RuleParser.y":299  */ /* lalr1.java:489  */
+    /* "RuleParser.y":301  */ /* lalr1.java:489  */
     { yyval = new Conjunction((( Match )(yystack.valueAt (2-(1)))),
-                                   new FeatVal(DagNode.TYPE_FEAT_ID, (( Match )(yystack.valueAt (2-(2)))))); };
+                                   new FeatVal(env, env.TYPE_FEAT_ID, (( Match )(yystack.valueAt (2-(2)))))); };
   break;
     
 
   case 24:
   if (yyn == 24)
-    /* "RuleParser.y":301  */ /* lalr1.java:489  */
-    { yyval = new FeatVal(DagNode.TYPE_FEAT_ID, (( Match )(yystack.valueAt (2-(2))))); };
+    /* "RuleParser.y":303  */ /* lalr1.java:489  */
+    { yyval = new FeatVal(env, env.TYPE_FEAT_ID, (( Match )(yystack.valueAt (2-(2))))); };
   break;
     
 
   case 25:
   if (yyn == 25)
-    /* "RuleParser.y":302  */ /* lalr1.java:489  */
-    { yyval = new FeatVal(DagNode.PROP_FEAT_ID, (( Match )(yystack.valueAt (1-(1))))); };
+    /* "RuleParser.y":304  */ /* lalr1.java:489  */
+    { yyval = new FeatVal(env, env.PROP_FEAT_ID, (( Match )(yystack.valueAt (1-(1))))); };
   break;
     
 
   case 26:
   if (yyn == 26)
-    /* "RuleParser.y":303  */ /* lalr1.java:489  */
-    { yyval = new FeatVal(DagNode.PROP_FEAT_ID,
-                                             new Atom((( String )(yystack.valueAt (1-(1)))))); };
+    /* "RuleParser.y":305  */ /* lalr1.java:489  */
+    { yyval = new FeatVal(env, env.PROP_FEAT_ID,
+                                             new Atom(env, (( String )(yystack.valueAt (1-(1)))))); };
   break;
     
 
   case 27:
   if (yyn == 27)
-    /* "RuleParser.y":305  */ /* lalr1.java:489  */
+    /* "RuleParser.y":307  */ /* lalr1.java:489  */
     { (( Match )(yystack.valueAt (2-(2)))).setNegated(true); yyval = (( Match )(yystack.valueAt (2-(2)))); };
   break;
     
 
   case 28:
   if (yyn == 28)
-    /* "RuleParser.y":306  */ /* lalr1.java:489  */
+    /* "RuleParser.y":308  */ /* lalr1.java:489  */
     { yyval = (( Match )(yystack.valueAt (3-(2)))); };
   break;
     
 
   case 29:
   if (yyn == 29)
-    /* "RuleParser.y":307  */ /* lalr1.java:489  */
+    /* "RuleParser.y":309  */ /* lalr1.java:489  */
     { yyval = new Coref((( Match )(yystack.valueAt (2-(2))))); };
   break;
     
 
   case 30:
   if (yyn == 30)
-    /* "RuleParser.y":314  */ /* lalr1.java:489  */
-    { yyval = new FeatVal(DagNode.ID_FEAT_ID, new Atom((( String )(yystack.valueAt (2-(1)))))); };
+    /* "RuleParser.y":316  */ /* lalr1.java:489  */
+    { yyval = new FeatVal(env, env.ID_FEAT_ID, new Atom(env, (( String )(yystack.valueAt (2-(1)))))); };
   break;
     
 
   case 31:
   if (yyn == 31)
-    /* "RuleParser.y":315  */ /* lalr1.java:489  */
+    /* "RuleParser.y":317  */ /* lalr1.java:489  */
     { yyval = new LocalVar((( String )(yystack.valueAt (2-(1)))));  };
   break;
     
 
   case 32:
   if (yyn == 32)
-    /* "RuleParser.y":316  */ /* lalr1.java:489  */
+    /* "RuleParser.y":318  */ /* lalr1.java:489  */
     { yyval = new GlobalVar((( String )(yystack.valueAt (2-(1))))); };
   break;
     
 
   case 33:
   if (yyn == 33)
-    /* "RuleParser.y":319  */ /* lalr1.java:489  */
+    /* "RuleParser.y":321  */ /* lalr1.java:489  */
     { yyval = new LocalVar((( String )(yystack.valueAt (1-(1))))); };
   break;
     
 
   case 34:
   if (yyn == 34)
-    /* "RuleParser.y":320  */ /* lalr1.java:489  */
-    { yyval = new Atom((( String )(yystack.valueAt (1-(1))))); };
+    /* "RuleParser.y":322  */ /* lalr1.java:489  */
+    { yyval = new Atom(env, (( String )(yystack.valueAt (1-(1))))); };
   break;
     
 
   case 35:
   if (yyn == 35)
-    /* "RuleParser.y":322  */ /* lalr1.java:489  */
+    /* "RuleParser.y":324  */ /* lalr1.java:489  */
     { yyval = (( Match )(yystack.valueAt (1-(1)))); };
   break;
     
 
   case 36:
   if (yyn == 36)
-    /* "RuleParser.y":323  */ /* lalr1.java:489  */
+    /* "RuleParser.y":325  */ /* lalr1.java:489  */
     { (( Match )(yystack.valueAt (2-(2)))).setNegated(true); yyval = (( Match )(yystack.valueAt (2-(2)))); };
   break;
     
 
   case 37:
   if (yyn == 37)
-    /* "RuleParser.y":324  */ /* lalr1.java:489  */
+    /* "RuleParser.y":326  */ /* lalr1.java:489  */
     { yyval = (( Match )(yystack.valueAt (3-(2)))); };
   break;
     
 
   case 38:
   if (yyn == 38)
-    /* "RuleParser.y":327  */ /* lalr1.java:489  */
+    /* "RuleParser.y":329  */ /* lalr1.java:489  */
     { yyval = (( Match )(yystack.valueAt (1-(1)))); };
   break;
     
 
   case 39:
   if (yyn == 39)
-    /* "RuleParser.y":328  */ /* lalr1.java:489  */
+    /* "RuleParser.y":330  */ /* lalr1.java:489  */
     { yyval = new Disjunction((( Match )(yystack.valueAt (3-(1)))), (( Match )(yystack.valueAt (3-(3))))); };
   break;
     
 
   case 40:
   if (yyn == 40)
-    /* "RuleParser.y":331  */ /* lalr1.java:489  */
+    /* "RuleParser.y":333  */ /* lalr1.java:489  */
     { yyval = getNewFunCall((( String )(yystack.valueAt (4-(1)))), (( List )(yystack.valueAt (4-(3)))), yystack.locationAt (4-(1)));
                              if (yyval == null) return YYERROR ;
                            };
@@ -706,7 +709,7 @@ public class RuleParser
 
   case 41:
   if (yyn == 41)
-    /* "RuleParser.y":334  */ /* lalr1.java:489  */
+    /* "RuleParser.y":336  */ /* lalr1.java:489  */
     { yyval = getNewFunCall((( String )(yystack.valueAt (3-(1)))), null, yystack.locationAt (3-(1)));
                              if (yyval == null) return YYERROR ;
                            };
@@ -715,7 +718,7 @@ public class RuleParser
 
   case 42:
   if (yyn == 42)
-    /* "RuleParser.y":357  */ /* lalr1.java:489  */
+    /* "RuleParser.y":359  */ /* lalr1.java:489  */
     {
             List<Action> result  = new LinkedList<Action>();
             result.add((( Action )(yystack.valueAt (1-(1)))));
@@ -726,14 +729,14 @@ public class RuleParser
 
   case 43:
   if (yyn == 43)
-    /* "RuleParser.y":362  */ /* lalr1.java:489  */
+    /* "RuleParser.y":364  */ /* lalr1.java:489  */
     { (( List )(yystack.valueAt (3-(3)))).add(0, (( Action )(yystack.valueAt (3-(1))))); yyval = (( List )(yystack.valueAt (3-(3)))); };
   break;
     
 
   case 44:
   if (yyn == 44)
-    /* "RuleParser.y":366  */ /* lalr1.java:489  */
+    /* "RuleParser.y":368  */ /* lalr1.java:489  */
     {
          DagNode rval = (((( DagNode )(yystack.valueAt (3-(3)))) == null) ? null : (( DagNode )(yystack.valueAt (3-(3)))).copyAndInvalidate());
          yyval = new Assignment((( VarDagNode )(yystack.valueAt (3-(1)))), rval);
@@ -743,7 +746,7 @@ public class RuleParser
 
   case 45:
   if (yyn == 45)
-    /* "RuleParser.y":371  */ /* lalr1.java:489  */
+    /* "RuleParser.y":373  */ /* lalr1.java:489  */
     {
          DagNode rval = (((( DagNode )(yystack.valueAt (3-(3)))) == null) ? null : (( DagNode )(yystack.valueAt (3-(3)))).copyAndInvalidate());
          yyval = new Addition((( VarDagNode )(yystack.valueAt (3-(1)))), rval);
@@ -753,100 +756,100 @@ public class RuleParser
 
   case 46:
   if (yyn == 46)
-    /* "RuleParser.y":378  */ /* lalr1.java:489  */
-    { yyval = new Deletion((( VarDagNode )(yystack.valueAt (5-(1)))), new DagNode((( String )(yystack.valueAt (5-(4)))), new DagNode())); };
+    /* "RuleParser.y":380  */ /* lalr1.java:489  */
+    { yyval = new Deletion((( VarDagNode )(yystack.valueAt (5-(1)))), new DagNode((( String )(yystack.valueAt (5-(4)))), new DagNode(env))); };
   break;
     
 
   case 47:
   if (yyn == 47)
-    /* "RuleParser.y":381  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode((( String )(yystack.valueAt (1-(1)))), Bindings.LOCAL); };
+    /* "RuleParser.y":383  */ /* lalr1.java:489  */
+    { yyval = new VarDagNode(env, (( String )(yystack.valueAt (1-(1)))), Bindings.LOCAL); };
   break;
     
 
   case 48:
   if (yyn == 48)
-    /* "RuleParser.y":382  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode((( String )(yystack.valueAt (1-(1)))), Bindings.RIGHTLOCAL); };
+    /* "RuleParser.y":384  */ /* lalr1.java:489  */
+    { yyval = new VarDagNode(env, (( String )(yystack.valueAt (1-(1)))), Bindings.RIGHTLOCAL); };
   break;
     
 
   case 49:
   if (yyn == 49)
-    /* "RuleParser.y":383  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode("#", Bindings.LOCAL); };
+    /* "RuleParser.y":385  */ /* lalr1.java:489  */
+    { yyval = new VarDagNode(env, "#", Bindings.LOCAL); };
   break;
     
 
   case 50:
   if (yyn == 50)
-    /* "RuleParser.y":384  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode((( String )(yystack.valueAt (2-(1)))), (( Path )(yystack.valueAt (2-(2))))); };
+    /* "RuleParser.y":386  */ /* lalr1.java:489  */
+    { yyval = new VarDagNode(env, (( String )(yystack.valueAt (2-(1)))), (( Path )(yystack.valueAt (2-(2))))); };
   break;
     
 
   case 51:
   if (yyn == 51)
-    /* "RuleParser.y":388  */ /* lalr1.java:489  */
+    /* "RuleParser.y":390  */ /* lalr1.java:489  */
     { yyval = (( Path )(yystack.valueAt (4-(4)))).addToFront((( String )(yystack.valueAt (4-(2))))); };
   break;
     
 
   case 52:
   if (yyn == 52)
-    /* "RuleParser.y":389  */ /* lalr1.java:489  */
-    { yyval = new Path(); };
+    /* "RuleParser.y":391  */ /* lalr1.java:489  */
+    { yyval = new Path(env); };
   break;
     
 
   case 53:
   if (yyn == 53)
-    /* "RuleParser.y":392  */ /* lalr1.java:489  */
+    /* "RuleParser.y":394  */ /* lalr1.java:489  */
     { (( DagNode )(yystack.valueAt (3-(1)))).add((( DagNode )(yystack.valueAt (3-(3))))); (( DagNode )(yystack.valueAt (3-(1)))).setNominal(); yyval = (( DagNode )(yystack.valueAt (3-(1)))); };
   break;
     
 
   case 54:
   if (yyn == 54)
-    /* "RuleParser.y":393  */ /* lalr1.java:489  */
+    /* "RuleParser.y":395  */ /* lalr1.java:489  */
     { yyval = (( DagNode )(yystack.valueAt (1-(1)))); };
   break;
     
 
   case 55:
   if (yyn == 55)
-    /* "RuleParser.y":396  */ /* lalr1.java:489  */
+    /* "RuleParser.y":398  */ /* lalr1.java:489  */
     { yyval = new DagNode((( String )(yystack.valueAt (4-(2)))), (( DagNode )(yystack.valueAt (4-(4))))).setNominal(); };
   break;
     
 
   case 56:
   if (yyn == 56)
-    /* "RuleParser.y":397  */ /* lalr1.java:489  */
+    /* "RuleParser.y":399  */ /* lalr1.java:489  */
     { yyval = (( DagNode )(yystack.valueAt (1-(1)))); };
   break;
     
 
   case 57:
   if (yyn == 57)
-    /* "RuleParser.y":401  */ /* lalr1.java:489  */
+    /* "RuleParser.y":403  */ /* lalr1.java:489  */
     { yyval = (( DagNode )(yystack.valueAt (1-(1)))); };
   break;
     
 
   case 58:
   if (yyn == 58)
-    /* "RuleParser.y":402  */ /* lalr1.java:489  */
-    { (( DagNode )(yystack.valueAt (2-(1)))).add(new DagNode(DagNode.TYPE_FEAT_ID, (( DagNode )(yystack.valueAt (2-(2))))));
+    /* "RuleParser.y":404  */ /* lalr1.java:489  */
+    { (( DagNode )(yystack.valueAt (2-(1)))).add(new DagNode(env.TYPE_FEAT_ID, (( DagNode )(yystack.valueAt (2-(2))))));
                             yyval = (( DagNode )(yystack.valueAt (2-(1)))); };
   break;
     
 
   case 59:
   if (yyn == 59)
-    /* "RuleParser.y":404  */ /* lalr1.java:489  */
-    { yyval = new DagNode(DagNode.TYPE_FEAT_ID, (( DagNode )(yystack.valueAt (2-(2)))))
+    /* "RuleParser.y":406  */ /* lalr1.java:489  */
+    { yyval = new DagNode(env.TYPE_FEAT_ID, (( DagNode )(yystack.valueAt (2-(2)))))
                                     .setNominal();
                           };
   break;
@@ -854,45 +857,45 @@ public class RuleParser
 
   case 60:
   if (yyn == 60)
-    /* "RuleParser.y":407  */ /* lalr1.java:489  */
-    { yyval = new DagNode(DagNode.PROP_FEAT_ID, (( DagNode )(yystack.valueAt (1-(1))))); };
+    /* "RuleParser.y":409  */ /* lalr1.java:489  */
+    { yyval = new DagNode(env.PROP_FEAT_ID, (( DagNode )(yystack.valueAt (1-(1))))); };
   break;
     
 
   case 61:
   if (yyn == 61)
-    /* "RuleParser.y":408  */ /* lalr1.java:489  */
-    { yyval = new DagNode(DagNode.PROP_FEAT_ID,
-                                             new DagNode((( String )(yystack.valueAt (1-(1)))))); };
+    /* "RuleParser.y":410  */ /* lalr1.java:489  */
+    { yyval = new DagNode(env.PROP_FEAT_ID,
+                                             new DagNode(env, (( String )(yystack.valueAt (1-(1)))))); };
   break;
     
 
   case 62:
   if (yyn == 62)
-    /* "RuleParser.y":410  */ /* lalr1.java:489  */
+    /* "RuleParser.y":412  */ /* lalr1.java:489  */
     { yyval = (( DagNode )(yystack.valueAt (3-(2)))).setNominal(); };
   break;
     
 
   case 63:
   if (yyn == 63)
-    /* "RuleParser.y":419  */ /* lalr1.java:489  */
+    /* "RuleParser.y":421  */ /* lalr1.java:489  */
     {
-             yyval = new DagNode(DagNode.ID_FEAT_ID, (( DagNode )(yystack.valueAt (2-(1))))).setNominal();
+             yyval = new DagNode(env.ID_FEAT_ID, (( DagNode )(yystack.valueAt (2-(1))))).setNominal();
          };
   break;
     
 
   case 64:
   if (yyn == 64)
-    /* "RuleParser.y":424  */ /* lalr1.java:489  */
+    /* "RuleParser.y":426  */ /* lalr1.java:489  */
     { (( List )(yystack.valueAt (3-(3)))).add(0, (( DagNode )(yystack.valueAt (3-(1))))); yyval = (( List )(yystack.valueAt (3-(3)))); };
   break;
     
 
   case 65:
   if (yyn == 65)
-    /* "RuleParser.y":425  */ /* lalr1.java:489  */
+    /* "RuleParser.y":427  */ /* lalr1.java:489  */
     { List<DagNode> result = new LinkedList<DagNode>();
                            result.add((( DagNode )(yystack.valueAt (1-(1)))));
                            yyval = result;
@@ -902,56 +905,56 @@ public class RuleParser
 
   case 66:
   if (yyn == 66)
-    /* "RuleParser.y":431  */ /* lalr1.java:489  */
+    /* "RuleParser.y":433  */ /* lalr1.java:489  */
     { yyval = (( DagNode )(yystack.valueAt (1-(1)))); };
   break;
     
 
   case 67:
   if (yyn == 67)
-    /* "RuleParser.y":432  */ /* lalr1.java:489  */
-    { yyval = new DagNode((( String )(yystack.valueAt (1-(1))))); };
+    /* "RuleParser.y":434  */ /* lalr1.java:489  */
+    { yyval = new DagNode(env, (( String )(yystack.valueAt (1-(1))))); };
   break;
     
 
   case 68:
   if (yyn == 68)
-    /* "RuleParser.y":433  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode("#", Bindings.LOCAL); };
+    /* "RuleParser.y":435  */ /* lalr1.java:489  */
+    { yyval = new VarDagNode(env, "#", Bindings.LOCAL); };
   break;
     
 
   case 69:
   if (yyn == 69)
-    /* "RuleParser.y":439  */ /* lalr1.java:489  */
-    { yyval = new DagNode((( String )(yystack.valueAt (1-(1))))); };
+    /* "RuleParser.y":441  */ /* lalr1.java:489  */
+    { yyval = new DagNode(env, (( String )(yystack.valueAt (1-(1))))); };
   break;
     
 
   case 70:
   if (yyn == 70)
-    /* "RuleParser.y":440  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode((( String )(yystack.valueAt (1-(1)))), Bindings.LOCAL); };
+    /* "RuleParser.y":442  */ /* lalr1.java:489  */
+    { yyval = new VarDagNode(env, (( String )(yystack.valueAt (1-(1)))), Bindings.LOCAL); };
   break;
     
 
   case 71:
   if (yyn == 71)
-    /* "RuleParser.y":441  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode((( String )(yystack.valueAt (2-(1)))), (( Path )(yystack.valueAt (2-(2))))); };
+    /* "RuleParser.y":443  */ /* lalr1.java:489  */
+    { yyval = new VarDagNode(env, (( String )(yystack.valueAt (2-(1)))), (( Path )(yystack.valueAt (2-(2))))); };
   break;
     
 
   case 72:
   if (yyn == 72)
-    /* "RuleParser.y":442  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode((( String )(yystack.valueAt (1-(1)))), Bindings.RIGHTLOCAL); };
+    /* "RuleParser.y":444  */ /* lalr1.java:489  */
+    { yyval = new VarDagNode(env, (( String )(yystack.valueAt (1-(1)))), Bindings.RIGHTLOCAL); };
   break;
     
 
   case 73:
   if (yyn == 73)
-    /* "RuleParser.y":443  */ /* lalr1.java:489  */
+    /* "RuleParser.y":445  */ /* lalr1.java:489  */
     { yyval = getNewFunCallDagNode((( String )(yystack.valueAt (4-(1)))), (( List )(yystack.valueAt (4-(3)))), yystack.locationAt (4-(1)));
                                if (yyval == null) return YYERROR ;
                              };
@@ -960,7 +963,7 @@ public class RuleParser
 
   case 74:
   if (yyn == 74)
-    /* "RuleParser.y":446  */ /* lalr1.java:489  */
+    /* "RuleParser.y":448  */ /* lalr1.java:489  */
     { yyval = getNewFunCallDagNode((( String )(yystack.valueAt (3-(1)))), null, yystack.locationAt (3-(1)));
                                if (yyval == null) return YYERROR ;
                              };
@@ -968,7 +971,7 @@ public class RuleParser
     
 
 
-/* "RuleParser.java":972  */ /* lalr1.java:489  */
+/* "RuleParser.java":975  */ /* lalr1.java:489  */
         default: break;
       }
 
@@ -1613,14 +1616,14 @@ private static final short yycheck_[] = yycheck_init();
   {
     return new short[]
     {
-       0,   261,   261,   263,   264,   267,   269,   271,   273,   276,
-     277,   278,   279,   282,   283,   286,   288,   291,   292,   293,
-     294,   295,   298,   299,   301,   302,   303,   305,   306,   307,
-     314,   315,   316,   319,   320,   322,   323,   324,   327,   328,
-     331,   334,   357,   362,   365,   370,   377,   381,   382,   383,
-     384,   388,   389,   392,   393,   396,   397,   401,   402,   404,
-     407,   408,   410,   419,   424,   425,   431,   432,   433,   439,
-     440,   441,   442,   443,   446
+       0,   263,   263,   265,   266,   269,   271,   273,   275,   278,
+     279,   280,   281,   284,   285,   288,   290,   293,   294,   295,
+     296,   297,   300,   301,   303,   304,   305,   307,   308,   309,
+     316,   317,   318,   321,   322,   324,   325,   326,   329,   330,
+     333,   336,   359,   364,   367,   372,   379,   383,   384,   385,
+     386,   390,   391,   394,   395,   398,   399,   403,   404,   406,
+     409,   410,   412,   421,   426,   427,   433,   434,   435,   441,
+     442,   443,   444,   445,   448
     };
   }
 
@@ -1702,7 +1705,7 @@ private static final short yycheck_[] = yycheck_init();
 
 /* User implementation code.  */
 /* Unqualified %code blocks.  */
-/* "RuleParser.y":31  */ /* lalr1.java:1066  */
+/* "RuleParser.y":33  */ /* lalr1.java:1066  */
 
   /** A class to collect matches and actions to generate real rules when
    *  done.
@@ -1836,7 +1839,7 @@ private static final short yycheck_[] = yycheck_init();
 
   private FunCall getNewFunCall(String name, List args, Location loc) {
     try {
-      return new FunCall(name, args);
+      return new FunCall(env, name, args);
     }
     catch (NoSuchMethodException ex) {
       yyerror(loc, "No such Function registered: " + ex.getMessage());
@@ -1850,7 +1853,7 @@ private static final short yycheck_[] = yycheck_init();
   private FunCallDagNode getNewFunCallDagNode(String name, List args,
                                               Location loc) {
     try {
-      return new FunCallDagNode(name, args);
+      return new FunCallDagNode(env, name, args);
     }
     catch (NoSuchMethodException ex) {
       yyerror(loc, "No such Function registered: " + ex.getMessage());
@@ -1908,7 +1911,7 @@ private static final short yycheck_[] = yycheck_init();
   }
   */
 
-/* "RuleParser.java":1912  */ /* lalr1.java:1066  */
+/* "RuleParser.java":1915  */ /* lalr1.java:1066  */
 
 }
 

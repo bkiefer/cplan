@@ -42,11 +42,11 @@ public class LFDebugPrinter extends DagPrinter {
         DagEdge edge = fvListIt.next();
         short feature = edge.getFeature();
         sb.append(' ');
-        if (feature == DagNode.ID_FEAT_ID) {
+        if (feature == here._env.ID_FEAT_ID) {
           specialEdgeString(edge, sb).append(':');
-        } else if (feature == DagNode.TYPE_FEAT_ID) {
+        } else if (feature == here._env.TYPE_FEAT_ID) {
           sb.append(':'); specialEdgeString(edge, sb);
-        } else if (feature == DagNode.PROP_FEAT_ID) {
+        } else if (feature == here._env.PROP_FEAT_ID) {
           specialEdgeString(edge, sb);
         } else {
           sb.append(readable ? edge.getName() : edge.getFeature());

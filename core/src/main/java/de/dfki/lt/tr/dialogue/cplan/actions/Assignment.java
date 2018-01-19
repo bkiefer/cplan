@@ -31,17 +31,17 @@ public class Assignment extends Action {
       logger.error("{}", uex);
       return false;
     }
-    if (root.getFeature() == DagNode.PROP_FEAT_ID) {
-      DagNode prop = toAssign.getValue(DagNode.PROP_FEAT_ID);
+    if (root.getFeature() == _rval._env.PROP_FEAT_ID) {
+      DagNode prop = toAssign.getValue(_rval._env.PROP_FEAT_ID);
       if (prop == null) {
         logger.warn("Trying to set proposition to non-atomic value, ignoring");
       } else {
         root.setValue(prop);
       }
-    } else if (root.getFeature() == DagNode.TYPE_FEAT_ID) {
-      DagNode type = toAssign.getValue(DagNode.TYPE_FEAT_ID);
+    } else if (root.getFeature() == _rval._env.TYPE_FEAT_ID) {
+      DagNode type = toAssign.getValue(_rval._env.TYPE_FEAT_ID);
       if (type == null) {
-        type = toAssign.getValue(DagNode.PROP_FEAT_ID);
+        type = toAssign.getValue(_rval._env.PROP_FEAT_ID);
       }
       if (type == null) {
         logger.warn("Trying to set type to non-atomic value, ignoring");

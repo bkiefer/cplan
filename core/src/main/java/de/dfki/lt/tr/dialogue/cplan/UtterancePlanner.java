@@ -84,10 +84,13 @@ public class UtterancePlanner {
   /** The tracer that is currently used to trace rules */
   private RuleTracer _currentTracer;
 
+  Environment env; // package visible for tests
+
   protected void init() {
     FunctionFactory.init(this);
     _errors = new ArrayList<Position>();
 
+    env = new Environment();
     _ruleLexer = new Lexer();
     _ruleLexer.setErrorLogger(logger);
   }
@@ -159,7 +162,7 @@ public class UtterancePlanner {
    */
   private List<Rule> readRules(Reader r, String inputDescription)
   throws IOException {
-    RuleParser ruleParser = new RuleParser(_ruleLexer);
+    RuleParser ruleParser = new RuleParser(_ruleLexer, env);
     ruleParser.setErrorVerbose(true);
     ruleParser.setDebugLevel(0);
     ruleParser.reset(inputDescription, r);
@@ -244,8 +247,8 @@ public class UtterancePlanner {
   }
 
   protected void initHierachy() {
-    if (! DagNode.isInitialized())
-      DagNode.init(new FlatHierarchy());
+    if (! env.isInitialized())
+      env.init(new FlatHierarchy(env));
   }
 
   protected void loadPlugins() {

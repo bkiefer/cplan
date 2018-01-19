@@ -3,12 +3,12 @@ package de.dfki.lt.tr.dialogue.cplan;
 
 public abstract class SpecialDagNode extends DagNode {
 
-  protected SpecialDagNode(int status) {
-    super(status);
+  protected SpecialDagNode(Environment env, int status) {
+    super(env, status);
   }
 
-  protected SpecialDagNode() {
-    super();
+  protected SpecialDagNode(Environment env) {
+    super(env);
   }
 
   /** All subtypes of DagNode have to override this method to get the cloning

@@ -3,10 +3,7 @@ package de.dfki.lt.tr.dialogue.cplan.matches;
 import java.util.Iterator;
 import java.util.List;
 
-import de.dfki.lt.tr.dialogue.cplan.Bindings;
-import de.dfki.lt.tr.dialogue.cplan.DagEdge;
-import de.dfki.lt.tr.dialogue.cplan.DagNode;
-import de.dfki.lt.tr.dialogue.cplan.FunCallDagNode;
+import de.dfki.lt.tr.dialogue.cplan.*;
 import de.dfki.lt.tr.dialogue.cplan.functions.Function;
 import de.dfki.lt.tr.dialogue.cplan.functions.FunctionFactory;
 
@@ -26,7 +23,8 @@ public class FunCall extends Match implements MatchLVal {
 
   /** Create the function call object, giving its name and arguments */
   @SuppressWarnings("rawtypes")
-  public FunCall(String name, List args) throws NoSuchMethodException {
+  public FunCall(Environment env, String name, List args) throws NoSuchMethodException {
+    _env = env;
     _name = name;
     _fn = FunctionFactory.get(_name);
     if (_fn == null) {
@@ -111,10 +109,10 @@ public class FunCall extends Match implements MatchLVal {
       _fn.apply(FunCallDagNode.getActualParameters(_args, null, bindings));
     DagNode subRes = (result instanceof DagNode)
                      ? (DagNode) result
-                     : new DagNode(result.toString());
+                     : new DagNode(_env, result.toString());
     return new DagEdge((short)-1,
         (subRes.edgesAreEmpty()
-         ? new DagNode(DagNode.PROP_FEAT_ID, subRes)
+         ? new DagNode(_env.PROP_FEAT_ID, subRes)
          : subRes));
 
   }
@@ -122,7 +120,7 @@ public class FunCall extends Match implements MatchLVal {
   @Override
   public Match deepCopy() {
     try {
-      return this.copy(new FunCall(_name, _args));
+      return this.copy(new FunCall(_env, _name, _args));
     }
     catch (NoSuchMethodException ex) {
       assert(false);  // will not happen, has been checked before.

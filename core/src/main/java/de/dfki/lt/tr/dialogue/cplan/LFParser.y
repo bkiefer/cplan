@@ -19,9 +19,11 @@ import java.util.LinkedList;
 
 %define parse.error verbose
 
+%parse-param {Environment env}
+
 %code {
   private boolean extMode = false;
-  
+
   private boolean _correct = true;
 
   private DagNode _lf;
@@ -29,7 +31,7 @@ import java.util.LinkedList;
   private HashMap<String, DagNode> _nodes = new HashMap<String, DagNode>();
 
   private DagNode newLF(String feature, String type) {
-    return new DagNode(feature, new DagNode(type));
+    return new DagNode(feature, new DagNode(env, type));
   }
 
   private DagNode newLF(String feature, DagNode value) {
@@ -37,13 +39,13 @@ import java.util.LinkedList;
   }
 
   private DagNode newLF(short feature, String type) {
-    return new DagNode(feature, new DagNode(type));
+    return new DagNode(feature, new DagNode(env, type));
   }
 
   private DagNode getNewLF(String id) {
     DagNode lf = _nodes.get(id);
     if (lf == null) {
-      lf = newLF(DagNode.ID_FEAT_ID, id);
+      lf = newLF(env.ID_FEAT_ID, id);
       _nodes.put(id, lf);
     }
     return lf;
@@ -114,7 +116,7 @@ start : lf               { $$ = null; _lf = $1; if (extMode) return YYACCEPT; }
 
 lf : '@' ID ':' ID '(' lfconj ')' {
      $$ = unify(getNewLF($2).setNominal(),
-                unify(newLF(DagNode.TYPE_FEAT_ID, $4), $6));
+                unify(newLF(env.TYPE_FEAT_ID, $4), $6));
    }
    | '@' ID  '(' lfconj ')' {
      $$ = unify(getNewLF($2).setNominal(), $4);
@@ -127,16 +129,16 @@ lfconj : lfterm '^' lfconj { $$ = unify($1, $3); }
        ;
 
 lfterm : '<' ID '>' '(' lfconj ')' { $$ = newLF($2, $5).setNominal(); }
-       | '<' ID '>' ID  { $$ = newLF($2, newLF(DagNode.PROP_FEAT_ID, $4))
+       | '<' ID '>' ID  { $$ = newLF($2, newLF(env.PROP_FEAT_ID, $4))
                                     .setNominal();
                         }
-       | '<' ID '>' STRING { $$ = newLF($2, newLF(DagNode.PROP_FEAT_ID, $4))
+       | '<' ID '>' STRING { $$ = newLF($2, newLF(env.PROP_FEAT_ID, $4))
                                     .setNominal();
                            }
        | '<' ID '>' ID ':' ID
                         { $$ = newLF($2,
                                      unify(getNewLF($4).setNominal(),
-                                           newLF(DagNode.TYPE_FEAT_ID, $6)))
+                                           newLF(env.TYPE_FEAT_ID, $6)))
                             .setNominal();
                         }
        | '<' ID '>' ID ':'
@@ -144,29 +146,29 @@ lfterm : '<' ID '>' '(' lfconj ')' { $$ = newLF($2, $5).setNominal(); }
                             .setNominal();
                         }
        | ID ':' ID      { $$ = unify(getNewLF($1).setNominal(),
-                                     newLF(DagNode.TYPE_FEAT_ID, $3));
+                                     newLF(env.TYPE_FEAT_ID, $3));
                         }
        | ID ':'         { $$ = getNewLF($1).setNominal(); }
-       | ':' ID         { $$ = newLF(DagNode.TYPE_FEAT_ID, $2).setNominal(); }
-       | ID             { $$ = newLF(DagNode.PROP_FEAT_ID, $1); }
+       | ':' ID         { $$ = newLF(env.TYPE_FEAT_ID, $2).setNominal(); }
+       | ID             { $$ = newLF(env.PROP_FEAT_ID, $1); }
        ;
 
 rawlf : ID '(' ID keyval ')'
                         {
-                          DagNode prop = newLF(DagNode.PROP_FEAT_ID, $3);
+                          DagNode prop = newLF(env.PROP_FEAT_ID, $3);
                           if ($4 != null) {
                             prop = unify(prop, $4);
                           }
                           $$ = unify(getNewLF("raw").setNominal(),
-                                 unify(newLF(DagNode.TYPE_FEAT_ID, $1), prop));
+                                 unify(newLF(env.TYPE_FEAT_ID, $1), prop));
                         };
 
 keyval : ',' ID '=' STRING keyval {
-	DagNode res = newLF($2, newLF(DagNode.PROP_FEAT_ID, $4)).setNominal();
+	DagNode res = newLF($2, newLF(env.PROP_FEAT_ID, $4)).setNominal();
 	$$ = ($5 == null) ? res : unify(res, $5);
 	}
        | ',' ID '=' ID keyval {
-	DagNode res = newLF($2, newLF(DagNode.PROP_FEAT_ID, $4)).setNominal();
+	DagNode res = newLF($2, newLF(env.PROP_FEAT_ID, $4)).setNominal();
 	$$ = ($5 == null) ? res : unify(res, $5);
 	}
        | { $$ = null; };

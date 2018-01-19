@@ -22,12 +22,12 @@ public class DagEdge {
   }
 
   public String getName() {
-    return DagNode.getFeatureName(_feature);
+    return _value._env.getFeatureName(_feature);
   }
 
   @Override
   public String toString() {
-    return '<' + DagNode.getFeatureName(_feature) + '>' + _value;
+    return '<' + _value._env.getFeatureName(_feature) + '>' + _value;
   }
 
   /** Get the last edge of the given path.
@@ -40,7 +40,7 @@ public class DagEdge {
       if (next == null) {
         DagNode value = current.getValue();
         value.setNominal();
-        next = current.getValue().addEdge(feature, new DagNode());
+        next = current.getValue().addEdge(feature, new DagNode(value._env));
       }
       current = next;
     }

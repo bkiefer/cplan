@@ -5,23 +5,23 @@ public class VarDagNode extends SpecialDagNode {
   private String _varName;
   private Path _path;
 
-  public VarDagNode(String string, int status) {
-    this(string, status, null);
+  public VarDagNode(Environment env, String string, int status) {
+    this(env, string, status, null);
   }
 
-  public VarDagNode(String string, Path path) {
-    this(string, Bindings.GLOBAL, path);
+  public VarDagNode(Environment env, String string, Path path) {
+    this(env, string, Bindings.GLOBAL, path);
   }
 
-  private VarDagNode(String string, int status, Path path) {
-    super(status);
+  private VarDagNode(Environment env, String string, int status, Path path) {
+    super(env, status);
     _varName = string;
     _path = path;
   }
 
   @Override
   public DagNode clone(int type) {
-    return new VarDagNode(_varName, type, _path);
+    return new VarDagNode(_env, _varName, type, _path);
   }
 
   /** Return the binding associated with this variable, if there is any. This
@@ -33,7 +33,7 @@ public class VarDagNode extends SpecialDagNode {
     if (current == null &&
         (getType() == Bindings.GLOBAL || getType() == Bindings.RIGHTLOCAL)) {
       // create a new global or right local variable
-      current = new DagEdge((short)-1, new DagNode());
+      current = new DagEdge((short)-1, new DagNode(_env));
       bindings.bind(_varName, current, getType());
     }
     if (getType() == Bindings.GLOBAL) {
@@ -76,7 +76,7 @@ public class VarDagNode extends SpecialDagNode {
     }
     // Avoid unwanted coreferences for atomic nodes
     if (bound.getValue().edgesAreEmpty()
-        && bound.getValue().getType() != DagNode.TOP_ID) {
+        && bound.getValue().getType() != _env.TOP_ID) {
       return bound.getValue().cloneFS();
     }
     return bound.getValue();
@@ -104,7 +104,7 @@ public class VarDagNode extends SpecialDagNode {
       sb.append("##").append(_varName);
       if (_path != null) {
         for(short feat : _path) {
-          sb.append("<").append(DagNode.getFeatureName(feat)).append(">");
+          sb.append("<").append(_env.getFeatureName(feat)).append(">");
         }
       }
       break;

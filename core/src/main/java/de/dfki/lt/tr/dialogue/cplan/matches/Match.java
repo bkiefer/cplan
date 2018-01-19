@@ -3,12 +3,15 @@ package de.dfki.lt.tr.dialogue.cplan.matches;
 
 import de.dfki.lt.tr.dialogue.cplan.Bindings;
 import de.dfki.lt.tr.dialogue.cplan.DagEdge;
+import de.dfki.lt.tr.dialogue.cplan.Environment;
 
 /** Abstract superclass of all syntax tree nodes for the parsing of graph
  *  transformation matching rules.
  */
 public abstract class Match {
   protected boolean _negated = false;
+
+  Environment _env;
 
   /** See if, given the variable bindings, all conditions specified in this
    *  subtree can be fulfilled on the given input node
