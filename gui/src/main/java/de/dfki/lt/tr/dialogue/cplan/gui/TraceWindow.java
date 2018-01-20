@@ -222,6 +222,7 @@ implements UPMainFrame.RunStateListener {
     int arrangement) {
     super("Trace Window");
     parent = myParent;
+
     //super(parent, "Trace Window", false);
     if (arrangement < TABBED_VERTICAL || arrangement > FOUR_QUADRANTS) {
       throw new IllegalArgumentException("Unknown arrangement: " + arrangement);

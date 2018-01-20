@@ -50,6 +50,8 @@ public class Environment {
 
   public void init(Hierarchy h) {
     _types = h;
+    // reserve the mapping to zero for the "top" type
+    _types.getTypeId(TOP_TYPE);
     assert(TOP_ID == getTypeId(TOP_TYPE));
     for (String feat : featureOrder) {
       getFeatureId(feat);

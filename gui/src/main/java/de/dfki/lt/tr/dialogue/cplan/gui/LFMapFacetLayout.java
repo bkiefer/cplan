@@ -24,12 +24,10 @@ public class LFMapFacetLayout extends FacetLayoutBase {
 
   public static short[] _excludedFeatures = null;
 
-  public static void init() {
+  /** Pass the feature IDs of ID, TYPE, and PROP in an array */
+  public static void init(short[] excluded) {
     // ModelAdapterFactory.register(DagNode.class, LFModelAdapter.class);
-    _excludedFeatures = new short[3];
-    _excludedFeatures[0] = DagNode.ID_FEAT_ID;
-    _excludedFeatures[1] = DagNode.TYPE_FEAT_ID;
-    _excludedFeatures[2] = DagNode.PROP_FEAT_ID;
+    _excludedFeatures = excluded;
   }
 
   public int facet() {

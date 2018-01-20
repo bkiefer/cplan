@@ -14,12 +14,9 @@ public class LFModelAdapter extends ModelAdapter {
 
   public static short[] _excludedFeatures;
 
-  public static void init() {
+  public static void init(short[] excluded) {
     ModelAdapterFactory.registerAdapter(DagNode.class, LFModelAdapter.class);
-    _excludedFeatures = new short[3];
-    _excludedFeatures[0] = DagNode.ID_FEAT_ID;
-    _excludedFeatures[1] = DagNode.TYPE_FEAT_ID;
-    _excludedFeatures[2] = DagNode.PROP_FEAT_ID;
+    _excludedFeatures = excluded;
   }
 
   private class EdgeAdapterIterator implements MapAdapterIterator {

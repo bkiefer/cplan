@@ -30,7 +30,8 @@ public class DagToLF {
    * @param el the XML element to add the new diamond-element to (parent)
    * Element to which will be appended
    */
-  private static Element editFeatures(Element el, DagNode sub, String feature){
+  private static Element editFeatures(Environment env, Element el, DagNode sub,
+      String feature){
 
     // create root diamond node
     Element diamond = new Element("diamond");
@@ -39,7 +40,7 @@ public class DagToLF {
     // create its proposition node
     Element prop = new Element("prop");
     prop = prop.setAttribute("name",
-        sub.getEdge(DagNode.PROP_FEAT_ID).getValue().getTypeName());
+        sub.getEdge(env.PROP_FEAT_ID).getValue().getTypeName());
 
     // add all in a tree-like manner
     diamond = diamond.addContent(prop);
@@ -57,7 +58,7 @@ public class DagToLF {
    *        have been converted already. If sub represents such a nominal, only
    *        the name will be added, not the sub-features or -relations
    */
-  private static Element handleContent(Element diamond, DagNode sub,
+  private static Element handleContent(Environment env, Element diamond, DagNode sub,
       String relMode, IdentityHashMap<DagNode, String> coreferences) {
 
     if (coreferences.containsKey(sub)) {
@@ -78,11 +79,11 @@ public class DagToLF {
       while (it.hasNext()) {
         edge = it.next();
         short feature = edge.getFeature();
-        if (feature == DagNode.ID_FEAT_ID) {
+        if (feature == env.ID_FEAT_ID) {
           id = edge.getValue().dereference(); edge = null;
-        } else if (feature == DagNode.TYPE_FEAT_ID) {
+        } else if (feature == env.TYPE_FEAT_ID) {
           type = edge.getValue().dereference(); edge = null;
-        } else if (feature == DagNode.PROP_FEAT_ID) {
+        } else if (feature == env.PROP_FEAT_ID) {
           propDag = edge.getValue().dereference(); edge = null;
         } else {
           break;
@@ -143,10 +144,10 @@ public class DagToLF {
           if (featId != -1) {
             DagNode val = edge.getValue();
             if (val.isNominal()) {
-              diamond = editRelations(diamond, val, edge.getName(), coreferences);
+              diamond = editRelations(env, diamond, val, edge.getName(), coreferences);
             }
             else {
-              diamond = editFeatures(diamond, val, edge.getName());
+              diamond = editFeatures(env, diamond, val, edge.getName());
             }
           }
           edge = it.hasNext() ? it.next() : null;
@@ -155,10 +156,10 @@ public class DagToLF {
         for (DagEdge ppedge : postponed) {
           DagNode val = ppedge.getValue();
           if (val.isNominal()) {
-            diamond = editRelations(diamond, val, ppedge.getName(), coreferences);
+            diamond = editRelations(env, diamond, val, ppedge.getName(), coreferences);
           }
           else {
-            diamond = editFeatures(diamond, val, ppedge.getName());
+            diamond = editFeatures(env, diamond, val, ppedge.getName());
           }
         }
       }
@@ -181,13 +182,13 @@ public class DagToLF {
    *        have been converted already. If sub represents such a nominal, only
    *        the name will be added, not the sub-features or -relations
    */
-  private static Element editRelations(Element el, DagNode sub, String relMode,
-      IdentityHashMap<DagNode, String> coreferences) {
+  private static Element editRelations(Environment env, Element el, DagNode sub,
+      String relMode, IdentityHashMap<DagNode, String> coreferences) {
 
     // create root diamond node
     Element diamond = new Element("diamond");
     diamond = diamond.setAttribute("mode", relMode);
-    diamond = handleContent(diamond, sub, relMode, coreferences);
+    diamond = handleContent(env, diamond, sub, relMode, coreferences);
 
     el = el.addContent(diamond);
     return el;
@@ -198,13 +199,13 @@ public class DagToLF {
   /**
 	 * Returns an OpenCCG LF object, constructed from a dag.
 	 */
-	public static LF convertToLF(DagNode root) {
+	public static LF convertToLF(Environment env, DagNode root) {
 	  if (postponedFeatures == null) {
 	    short[] pp = {
-	        DagNode.getFeatureId("Subject"),
-	        DagNode.getFeatureId("Scope"),
-	        DagNode.getFeatureId("Object"),
-	        DagNode.getFeatureId("Loc")
+	        env.getFeatureId("Subject"),
+	        env.getFeatureId("Scope"),
+	        env.getFeatureId("Object"),
+	        env.getFeatureId("Loc")
 	    };
 	    postponedFeatures = pp;
 	  }
@@ -224,7 +225,7 @@ public class DagToLF {
 			Element lf1 = new Element("lf");
 			Element sat = new Element("satop");
 			// null as relMode indicates that sat is the root
-			sat = handleContent(sat, root, null, coreferences);
+			sat = handleContent(env, sat, root, null, coreferences);
 
 			// now we supposedly have a complete structure
 			lf1 = lf1.addContent(sat);
@@ -242,9 +243,9 @@ public class DagToLF {
 		return lf;
 	}
 
-	public static DagNode convertToDag(LF lf) {
+	public static DagNode convertToDag(Environment env, LF lf) {
 	  Lexer lex = new Lexer();
-	  LFParser lfp = new LFParser(lex);
+	  LFParser lfp = new LFParser(lex, env);
 	  lfp.reset("String", new StringReader(lf.toString()));
     DagNode result = null;
     try {
@@ -260,14 +261,14 @@ public class DagToLF {
 	  return result;
   }
 
-	public static String test(String input) {
+	public static String test(Environment env, String input) {
 	  Lexer lex = new Lexer();
-	  LFParser lfp = new LFParser(lex);
+	  LFParser lfp = new LFParser(lex, env);
 	  lfp.reset("String", new StringReader(input));
 	  try {
       if (lfp.parse()) {
         DagNode result = lfp.getResultLF();
-        LF lf = DagToLF.convertToLF(result);
+        LF lf = DagToLF.convertToLF(env, result);
         return lf.toString();
       }
     } catch (IOException e) { // will never happen

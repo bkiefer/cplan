@@ -748,16 +748,21 @@ public class UttplanParserTest {
 
   Environment env;
 
+  private UtterancePlanner getPlanner() {
+    UtterancePlanner up = new UtterancePlanner();
+    env = up.env;
+    env.init(new FlatHierarchy());
+    env.usePrettyPrinter();
+    return up;
+  }
+
   @Before public void setUp() {
     //BasicConfigurator.resetConfiguration();
     //RootLogger.getRootLogger().addAppender(
     //    new ConsoleAppender(new PatternLayout("%m%n")));
     // next line is needed to initialize static fields
     @SuppressWarnings("unused")
-    UtterancePlanner up = new UtterancePlanner();
-    env = up.env;
-    env.init(new FlatHierarchy(env));
-    env.usePrettyPrinter();
+    UtterancePlanner up = getPlanner();
     // DagNode.registerPrinter(null); // return to default printer
   }
 
@@ -1005,7 +1010,7 @@ public class UttplanParserTest {
 
   private void testRecursiveApplicationOne(String[] testPattern,
       boolean value, int i, RuleTracer rt, boolean embed) {
-    UtterancePlanner up = new UtterancePlanner();
+    UtterancePlanner up = getPlanner();
     up.MAX_ITERATIONS = 10; // if there's an infinite loop, get it fast
     up.addProcessor(up.readRulesFromString(testPattern[0]));
     if (rt != null) {
@@ -1061,7 +1066,7 @@ public class UttplanParserTest {
 
   @Test public void testUntracing() throws IOException {
     CollectEventsTracer rt = new CollectEventsTracer();
-    UtterancePlanner up = new UtterancePlanner();
+    UtterancePlanner up = getPlanner();
     String[] testPattern = otherPatterns[17];
     up.addProcessor(up.readRulesFromString(testPattern[0]));
     up.setTracing(rt);
@@ -1120,7 +1125,7 @@ public class UttplanParserTest {
       ":type ^ prop ^ ! <added> ^ (random(1,2,3) ~ 2) -> # ^ <added> true.";
     String inSpec = "@a:type(prop)";
     String outSpec = "@a:type(prop ^ <added> true)";
-    UtterancePlanner up = new UtterancePlanner();
+    UtterancePlanner up = getPlanner();
     up.addProcessor(up.readRulesFromString(rule));
     env.usePrettyPrinter();
     DagNode in = env.parseLfString(inSpec);
@@ -1360,7 +1365,7 @@ public class UttplanParserTest {
     int which = -1;
     if (which > 0) {
       _print = true;
-      UtterancePlanner up = new UtterancePlanner();
+      UtterancePlanner up = getPlanner();
       up.readProjectFile(getExampleGrammarFile());
       testApplyOne(up, goodPatterns[which], true, which, false);
       _print = false;
@@ -1370,7 +1375,7 @@ public class UttplanParserTest {
   /* Test loading a grammar/project from a test fixture directory */
   @Test
   public void testGrammarApply() throws FileNotFoundException, IOException {
-    UtterancePlanner up = new UtterancePlanner();
+    UtterancePlanner up = getPlanner();
     up.readProjectFile(getExampleGrammarFile());
     int i = 1;
     for (String [] pattern : goodPatterns) {

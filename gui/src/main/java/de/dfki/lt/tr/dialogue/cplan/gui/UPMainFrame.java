@@ -229,7 +229,6 @@ public class UPMainFrame extends MainFrame {
   private static final int RUNNING = 1;
   private static final int SUSPENDED = 2;
 
-
   /* **********************************************************************
    * Constructors
    * ********************************************************************** */
@@ -241,6 +240,7 @@ public class UPMainFrame extends MainFrame {
   public UPMainFrame(String title, InteractivePlanner ip, String ruleFile) {
     _fileProcessor = new ProjectFileProcessor();
     _planner = ip;
+
 
     int historySize = 0;
     try {
@@ -359,7 +359,7 @@ public class UPMainFrame extends MainFrame {
                                   errs, (errs == 1 ? "" : "s")),
                     Color.RED);
     }
-    LFMapFacetLayout.init();
+    LFMapFacetLayout.init(_planner.excludedFeatures);
     this.setTitle(_projectFile.getPath());
   }
 
@@ -546,7 +546,7 @@ public class UPMainFrame extends MainFrame {
       return false;
     }
 
-    _input = DagNode.parseLfString(currentText);
+    _input = _planner.parseLfString(currentText);
     setOutputDisplay(null);
     if (_input != null) {
       setInputDisplay(_input);
@@ -558,7 +558,7 @@ public class UPMainFrame extends MainFrame {
       return true;
     }
     else {
-      Position errPos = DagNode.getLastLFErrorPosition();
+      Position errPos = _planner.getLastLFErrorPosition();
       _inputArea.setBackground(ERROR_COLOR);
       if (errPos.line >= 0) {
         setStatusLine(errPos.msg);

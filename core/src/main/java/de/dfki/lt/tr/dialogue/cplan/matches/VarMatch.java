@@ -3,6 +3,7 @@ package de.dfki.lt.tr.dialogue.cplan.matches;
 import de.dfki.lt.tr.dialogue.cplan.Bindings;
 import de.dfki.lt.tr.dialogue.cplan.DagEdge;
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
+import de.dfki.lt.tr.dialogue.cplan.Environment;
 
 /** This class represents matches on the right hand side that do apply to
  *  the current node, or to some global variable or function call.
@@ -15,8 +16,8 @@ public class VarMatch extends Match {
   private MatchLVal _lval;
   private Match _match;
 
-  public VarMatch(MatchLVal lval, Match match) {
-    _env = match._env;
+  public VarMatch(Environment env, MatchLVal lval, Match match) {
+    _env = env;
     _lval = lval;
     _match = match;
   }
@@ -56,7 +57,7 @@ public class VarMatch extends Match {
   @Override
   public Match deepCopy() {
     VarMatch newMatch =
-      new VarMatch((MatchLVal) ((Match)_lval).deepCopy(), _match.deepCopy());
+      new VarMatch(_env, (MatchLVal) ((Match)_lval).deepCopy(), _match.deepCopy());
     return copy(newMatch);
   }
 }

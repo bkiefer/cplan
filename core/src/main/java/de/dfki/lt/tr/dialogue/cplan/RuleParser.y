@@ -72,7 +72,7 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
     }
 
     public Rule toRule() {
-      return new BasicRule(new VarMatch(null, _match), _replace, _position,
+      return new BasicRule(new VarMatch(env, null, _match), _replace, _position,
                            _oneShot);
     }
 
@@ -150,7 +150,7 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
 
   private LinkedList<RuleProto> addTopVarMatches(LinkedList<RuleProto> rules) {
     for (RuleProto rule : rules) {
-      rule.setMatch(new VarMatch(null, rule.getMatch()));
+      rule.setMatch(new VarMatch(env, null, rule.getMatch()));
     }
     return rules;
   }
@@ -292,8 +292,8 @@ eterm : eterm '^' term     { $$ = new Conjunction($1, $3); }
 
 term : '<' id_lvar '>' term     { $$ = new FeatVal(env, $2, $4); }
      | '<' id_lvar '>'          { $$ = new FeatVal(env, $2, null); }
-     | '(' GVAR '~' expr ')'    { $$ = new VarMatch(new GlobalVar($2), $4); }
-     | '(' funcall '~' expr ')' { $$ = new VarMatch($2, $4); }
+     | '(' GVAR '~' expr ')'    { $$ = new VarMatch(env, new GlobalVar($2), $4); }
+     | '(' funcall '~' expr ')' { $$ = new VarMatch(env, $2, $4); }
      | feature                  { $$ = $1; }
      ;
 

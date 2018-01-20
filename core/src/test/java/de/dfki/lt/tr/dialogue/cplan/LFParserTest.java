@@ -45,16 +45,8 @@ public class LFParserTest {
     "@raw:provide(answer ^ <value>foo ^ <text>bar)"
   };
 
-  Environment env;
 
-  @Before public void setUp() {
-    // next line is needed to initialize static fields
-    UtterancePlanner up = new UtterancePlanner();
-    up.initHierachy();
-    env = up.env;
-  }
-
-  private void testOne(String lf, int i) throws IOException {
+  private void testOne(Environment env, String lf, int i) throws IOException {
     LFParser lfparser = new LFParser(new Lexer(new StringReader(lf)), env);
     lfparser.setErrorVerbose(true);
     DagNode res = null;
@@ -72,13 +64,15 @@ public class LFParserTest {
   }
 
   @Test public void testLFs() throws IOException {
+    Environment env = new Environment();
+    env.init(new FlatHierarchy());
     int i = 0;
     for (String lf : testLFs) {
-      testOne(lf, ++i);
+      testOne(env, lf, ++i);
     }
   }
 
-  private void testOneRaw(String raw, String lf, int i) throws IOException {
+  private void testOneRaw(Environment env, String raw, String lf, int i) throws IOException {
     LFParser lfparserRaw = new LFParser(new Lexer(new StringReader(raw)), env);
     lfparserRaw.setErrorVerbose(true);
     LFParser lfparser = new LFParser(new Lexer(new StringReader(lf)), env);
@@ -95,12 +89,14 @@ public class LFParserTest {
   }
 
   @Test public void testRawLFs() throws IOException {
+    Environment env = new Environment();
+    env.init(new FlatHierarchy());
     for(int i = 0; i < rawLFs.length; i += 2) {
-      testOneRaw(rawLFs[i], rawLFs[i+1], i>>1 + 1);
+      testOneRaw(env, rawLFs[i], rawLFs[i+1], i>>1 + 1);
     }
   }
 
-  private void testOneExt(String lf, int i) throws IOException {
+  private void testOneExt(Environment env, String lf, int i) throws IOException {
     LFParser lfparser = new LFParser(new Lexer(new StringReader(lf)), env);
     lfparser.setExtMode(true);
     lfparser.setErrorVerbose(true);
@@ -119,9 +115,12 @@ public class LFParserTest {
   }
 
   @Test public void testExtLFs() throws IOException {
+    Environment env = new Environment();
+    env.init(new FlatHierarchy());
+    env.usePrettyPrinter();
     int i = 0;
     for (String lf : testLFs) {
-      testOneExt(lf, ++i);
+      testOneExt(env, lf, ++i);
     }
   }
 

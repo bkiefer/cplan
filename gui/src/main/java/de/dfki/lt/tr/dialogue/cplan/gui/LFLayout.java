@@ -7,7 +7,6 @@ import de.dfki.lt.loot.gui.layouts.SimpleTreeLayout;
 
 public class LFLayout extends AbstractLayout {
   public LFLayout() {
-    LFMapFacetLayout.init();
     addLayout(new LFMapFacetLayout());
     addLayout(new CompactConsLayout());
     addLayout(new SimpleTreeLayout());

@@ -248,7 +248,7 @@ public class UtterancePlanner {
 
   protected void initHierachy() {
     if (! env.isInitialized())
-      env.init(new FlatHierarchy(env));
+      env.init(new FlatHierarchy());
   }
 
   protected void loadPlugins() {

@@ -552,14 +552,14 @@ public class RuleParser
   case 19:
   if (yyn == 19)
     /* "RuleParser.y":295  */ /* lalr1.java:489  */
-    { yyval = new VarMatch(new GlobalVar((( String )(yystack.valueAt (5-(2))))), (( Match )(yystack.valueAt (5-(4))))); };
+    { yyval = new VarMatch(env, new GlobalVar((( String )(yystack.valueAt (5-(2))))), (( Match )(yystack.valueAt (5-(4))))); };
   break;
     
 
   case 20:
   if (yyn == 20)
     /* "RuleParser.y":296  */ /* lalr1.java:489  */
-    { yyval = new VarMatch((( MatchLVal )(yystack.valueAt (5-(2)))), (( Match )(yystack.valueAt (5-(4))))); };
+    { yyval = new VarMatch(env, (( MatchLVal )(yystack.valueAt (5-(2)))), (( Match )(yystack.valueAt (5-(4))))); };
   break;
     
 
@@ -1748,7 +1748,7 @@ private static final short yycheck_[] = yycheck_init();
     }
 
     public Rule toRule() {
-      return new BasicRule(new VarMatch(null, _match), _replace, _position,
+      return new BasicRule(new VarMatch(env, null, _match), _replace, _position,
                            _oneShot);
     }
 
@@ -1826,7 +1826,7 @@ private static final short yycheck_[] = yycheck_init();
 
   private LinkedList<RuleProto> addTopVarMatches(LinkedList<RuleProto> rules) {
     for (RuleProto rule : rules) {
-      rule.setMatch(new VarMatch(null, rule.getMatch()));
+      rule.setMatch(new VarMatch(env, null, rule.getMatch()));
     }
     return rules;
   }

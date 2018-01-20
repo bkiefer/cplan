@@ -10,6 +10,7 @@ import de.dfki.lt.j2emacs.J2Emacs;
 import de.dfki.lt.loot.gui.Style;
 import de.dfki.lt.tr.dialogue.cplan.BatchTest.BatchType;
 import de.dfki.lt.tr.dialogue.cplan.functions.FunctionFactory;
+import de.dfki.lt.tr.dialogue.cplan.gui.LFMapFacetLayout;
 import de.dfki.lt.tr.dialogue.cplan.gui.LFModelAdapter;
 import de.dfki.lt.tr.dialogue.cplan.gui.UPMainFrame;
 import de.dfki.lt.tr.dialogue.cplan.util.Position;
@@ -35,8 +36,15 @@ implements UPMainFrame.CloseAllListener {
   /** An Emacs connector */
   private J2Emacs _j2e = null;
 
+  public short[] excludedFeatures;
+
   public InteractivePlanner() {
-    LFModelAdapter.init();
+    excludedFeatures = new short[3];
+    excludedFeatures[0] = env.ID_FEAT_ID;
+    excludedFeatures[1] = env.TYPE_FEAT_ID;
+    excludedFeatures[2] = env.PROP_FEAT_ID;
+    LFModelAdapter.init(excludedFeatures);
+    LFMapFacetLayout.init(excludedFeatures);
   }
 
   public File getResourcesDir() {
@@ -118,7 +126,7 @@ implements UPMainFrame.CloseAllListener {
     }
     String input = getInputFromTerminal();
     while(! input.isEmpty()) {
-      DagNode lf = DagNode.parseLfString(input);
+      DagNode lf = env.parseLfString(input);
       if (lf != null) {
         System.out.println(lf);
         DagNode result = process(lf);
@@ -188,6 +196,14 @@ implements UPMainFrame.CloseAllListener {
     catch (IOException ioex) {
       Logger.getRootLogger().warn(ioex);
     }
+  }
+
+  public DagNode parseLfString(String currentText) {
+    return env.parseLfString(currentText);
+  }
+
+  public Position getLastLFErrorPosition() {
+    return env.getLastLFErrorPosition();
   }
 
   /*
@@ -388,9 +404,9 @@ implements UPMainFrame.CloseAllListener {
     }
 
     if (options.has("d")) {
-      DagNode.useDebugPrinter();
+      ip.env.useDebugPrinter();
     } else {
-      DagNode.usePrettyPrinter();
+      ip.env.usePrettyPrinter();
     }
 
     String project = nonOptionArgs.size() > 0 ? nonOptionArgs.get(0) : null;
