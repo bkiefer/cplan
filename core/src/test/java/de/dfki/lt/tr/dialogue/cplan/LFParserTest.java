@@ -103,6 +103,7 @@ public class LFParserTest {
     DagNode res = null;
     if (lfparser.parse())
       res = lfparser.getResultLFs().get(0);
+    DagNode.usePrettyPrinter();
     String lfString = (res == null) ? null : res.toString(true);
     if (PRINT) { System.out.println(lf); System.out.println(lfString); }
     lfparser = new LFParser(new Lexer(new StringReader(lfString)), env);

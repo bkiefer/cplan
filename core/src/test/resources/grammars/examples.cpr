@@ -1,6 +1,7 @@
 [Settings]
 history_file=history.txt
 encoding=ISO-8859-15
+language=nl_NL
 
 [Rules]
 examples.trf

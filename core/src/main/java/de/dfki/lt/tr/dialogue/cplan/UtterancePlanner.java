@@ -75,6 +75,9 @@ public class UtterancePlanner {
   /** The current project configuration */
   ProjectConfiguration _configuration;
 
+  /** A language code for, e.g., number formatting */
+  private String _languageCode = "en_US";
+
   /** A flag that indicates that processing should be stopped immediately.
    *
    *  Useful in the GUI to stop infinite loops, or if processing times out.
@@ -151,6 +154,16 @@ public class UtterancePlanner {
     return null;
   }
 
+  /** Return the language for this planner, defaults to en_US. */
+  public String getLanguage() {
+    return _languageCode;
+  }
+
+  /** Set the language for this planner. */
+  public void setLanguage(String langCode) {
+    _languageCode = langCode;
+  }
+
   /** read all rules from reader \c r and add them to the \c rules list.
    *
    *  If errors occur, they are collected in the _errors field of this
@@ -213,6 +226,10 @@ public class UtterancePlanner {
       String history = localSettings.find(KEY_HISTORY_FILE);
       if (history != null) {
         _configuration.settings.put(KEY_HISTORY_FILE, history);
+      }
+      String lang = localSettings.find(KEY_LANGUAGE);
+      if (lang != null) {
+        _languageCode = lang;
       }
     }
     return encoding;
