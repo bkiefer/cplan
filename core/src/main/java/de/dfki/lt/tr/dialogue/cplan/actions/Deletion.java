@@ -1,14 +1,11 @@
 package de.dfki.lt.tr.dialogue.cplan.actions;
 
-import de.dfki.lt.tr.dialogue.cplan.Bindings;
-import de.dfki.lt.tr.dialogue.cplan.DagEdge;
-import de.dfki.lt.tr.dialogue.cplan.DagNode;
-import de.dfki.lt.tr.dialogue.cplan.VarDagNode;
+import de.dfki.lt.tr.dialogue.cplan.*;
 
 public class Deletion extends Action {
 
-  public Deletion(VarDagNode lval, DagNode rval) {
-    super(lval, rval);
+  public Deletion(Environment env, VarDagNode lval, DagNode rval) {
+    super(env, lval, rval);
   }
 
   @Override
@@ -19,10 +16,9 @@ public class Deletion extends Action {
     return true;
   }
 
-  @Override
   public String toString() {
-    return  _lval.toString() + " ! <"
-    + _rval._env.getFeatureName(_rval.getEdgeIterator().next().getFeature()) +">";
+    return  _env.toString(_lval) + " ! <"
+        + _env.getFeatureName(_rval.getEdgeIterator().next().getFeature()) +">";
   }
 }
 

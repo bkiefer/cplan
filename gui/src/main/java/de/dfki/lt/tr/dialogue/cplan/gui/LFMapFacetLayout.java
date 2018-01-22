@@ -13,6 +13,7 @@ import de.dfki.lt.loot.gui.nodes.TextNode;
 import de.dfki.lt.loot.gui.nodes.BracketNode.Orientation;
 import de.dfki.lt.tr.dialogue.cplan.DagEdge;
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
+import de.dfki.lt.tr.dialogue.cplan.Environment;
 
 /** A Layout specifically to render OpenCCG logical forms (HLDS)
  *  This is a FacetLayout to be used with AbstractLayout just to get the
@@ -23,6 +24,8 @@ import de.dfki.lt.tr.dialogue.cplan.DagNode;
 public class LFMapFacetLayout extends FacetLayoutBase {
 
   public static short[] _excludedFeatures = null;
+
+  public static Environment env;
 
   /** Pass the feature IDs of ID, TYPE, and PROP in an array */
   public static void init(short[] excluded) {
@@ -36,13 +39,14 @@ public class LFMapFacetLayout extends FacetLayoutBase {
 
   public GraphicalNode transform(Object model, ViewContext context,
       int facetMask) {
+    //Environment env = ((IPViewContext)context).getEnvironment();
     if (model == null) return null;
     DagNode dag = (DagNode) model;
     dag = dag.dereference();
 
     if (! dag.isNominal()) {
       DagNode prop = dag.getEdge(_excludedFeatures[2]).getValue().dereference();
-      return new TextNode(prop.getTypeName(), Style.get("type"));
+      return new TextNode(env.getTypeName(prop), Style.get("type"));
     }
 
     DagNode.EdgeIterator it = dag.getTransitionalEdgeIterator();
@@ -96,11 +100,11 @@ public class LFMapFacetLayout extends FacetLayoutBase {
 
     AligningNode tb = new AligningNode('w');
     StringBuilder sb = new StringBuilder();
-    if (id != null) sb.append(id.getTypeName());
+    if (id != null) sb.append(env.getTypeName(id));
     sb.append(":");
-    if (type != null) sb.append(type.getTypeName());
+    if (type != null) sb.append(env.getTypeName(type));
     if (prop != null) {
-      sb.append(" ^ ").append(prop.getTypeName());
+      sb.append(" ^ ").append(env.getTypeName(prop));
     }
     tb.addNode(new TextNode(sb.toString(), Style.get("type")));
 
@@ -110,7 +114,7 @@ public class LFMapFacetLayout extends FacetLayoutBase {
       short feature = edge.getFeature();
       if (Arrays.binarySearch(_excludedFeatures, feature) < 0) {
         AligningNode fvpNode = new AligningNode('n');
-        fvpNode.addNode(new TextNode(edge.getName() + " ",
+        fvpNode.addNode(new TextNode(env.getName(edge) + " ",
             Style.get("feature")));
         fvpNode.addNode(_meta.transform(edge.getValue(), context, facetMask));
         tb.addNode(fvpNode);

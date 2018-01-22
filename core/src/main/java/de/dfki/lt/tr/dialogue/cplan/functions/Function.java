@@ -23,7 +23,10 @@ public interface Function {
    * is possible.
    */
   public abstract int arity();
-  
+
   /** Connect this function to the Planner where it was registered */
   public abstract void register(UtterancePlanner planner);
+
+  /** Evaluate this function with the given arguments */
+  public abstract DagNode evaluate(List<DagNode> args);
 }

@@ -38,7 +38,18 @@ public class DagNode {
   // that there are no failures.
   private static final boolean UNIFY_TYPES = false;
 
-  public Environment _env;
+  /** Special feature id for the id of a nominal */
+  public static final short ID_FEAT_ID = 0;
+
+  /** Special feature id for the preposition of a nominal */
+  public static final short PROP_FEAT_ID = 1;
+
+  /** Special feature id for the type of a nominal */
+  public static final short TYPE_FEAT_ID = 2;
+
+  /** The top type must have id zero, and the bottom type -1 */
+  public static final int TOP_ID = 0;
+  public static final int BOTTOM_ID = -1;
 
   public static int totalNoNodes = 0, totalNoArcs = 0;
 
@@ -46,9 +57,6 @@ public class DagNode {
   static int currentGeneration = 1;
 
   /* ******************** PUBLIC CONSTANTS ******************** */
-
-  /** Use internal codes or external names for printing */
-  public static boolean PRINT_READABLE = true;
 
   /** Which type of failure occured?
    *  unification failures: Type clash, cycle, wellformedness unification
@@ -133,8 +141,7 @@ public class DagNode {
   // Constructors
   // *************************************************************************
 
-  protected DagNode(Environment env, int typeIdent) {
-    _env = env;
+  protected DagNode(int typeIdent) {
     _typeCode = typeIdent;
     _outedges = null;
     _isNominal = false;
@@ -142,26 +149,15 @@ public class DagNode {
     _copyGeneration = 0;
   }
 
-  public DagNode(String string, DagNode dagNode) {
-    this(dagNode._env);
-    addEdge(new DagEdge(_env.getFeatureId(string), dagNode));
-  }
-
   public DagNode(short featureId, DagNode dagNode) {
-    this(dagNode._env);
+    this();
     addEdge(new DagEdge(featureId, dagNode));
   }
 
-  public DagNode(Environment env, String type) {
-    this(env, env.getTypeId(type));
-  }
-
-  public DagNode(Environment env) {
-    this(env, env.TOP_ID);
-  }
+  public DagNode() { this(TOP_ID); }
 
   protected DagNode clone(int type) {
-    DagNode result = new DagNode(this._env, type);
+    DagNode result = new DagNode(type);
     result._isNominal = _isNominal;
     return result;
   }
@@ -238,9 +234,6 @@ public class DagNode {
     this._typeCode = typeIdent;
   }
 
-  public String getTypeName() {
-    return _env.getTypeName(_typeCode);
-  }
 
   public static void recordFailures(boolean state) {
     recordFailures = state;
@@ -355,7 +348,7 @@ public class DagNode {
   /** Will always return true. Otherwise, the whole system breaks, because
    *  already applied changes could not be rolled back.
    */
-  public boolean add(DagNode arg) {
+  public boolean add(Environment _env, DagNode arg) {
     DagNode in1 = this.dereference();
     DagNode in2 = arg.dereference();
     if (in1 == in2) return true;
@@ -369,7 +362,7 @@ public class DagNode {
     // NO TYPE UNIFICATION --> NO FAILURE, this is intended.
     if (UNIFY_TYPES) {
       unifType = _env.unifyTypes(type1, type2);
-      if (unifType == _env.BOTTOM_ID) {
+      if (unifType == BOTTOM_ID) {
         if (recordFailures)
           forwardFailures.put(this, FailType.TYPE);
         return false;
@@ -423,7 +416,7 @@ public class DagNode {
           // "Unify" only if both sub-nodes are proper and not special dag nodes
           if (subThis.getClass() == DagNode.class
               && subArg.getClass() == DagNode.class) {
-            if (! subThis.add(subArg))
+            if (! subThis.add(_env, subArg))
               return false;;
           } else {
             // special dag nodes ALWAYS must be added. Their content is not
@@ -453,12 +446,12 @@ public class DagNode {
    *         like for example a variable under a TYPE feature is bound to
    *         a complex node without TYPE, so the value can not be obtained.
    */
-  public final DagNode expandVars(Bindings bindings)
+  public final DagNode expandVars(Environment env, Bindings bindings)
   throws UnificationException {
     DagNode here = dereference();
     if (here._outedges != null) {
       List<DagNode> varDags = new LinkedList<DagNode>();
-      Iterator<DagEdge> it = _outedges.iterator();
+      Iterator<DagEdge> it = here._outedges.iterator();
       // collect all ID edges with special nodes and evaluate their content.
       // the original edges are deleted
       while (it.hasNext()) {
@@ -466,7 +459,7 @@ public class DagNode {
         DagNode sub = edge._value;
         if (sub instanceof SpecialDagNode) {
           DagNode eval = ((SpecialDagNode)sub).evaluate(here, bindings);
-          if (edge._feature == _env.ID_FEAT_ID)  // why this??
+          if (edge._feature == ID_FEAT_ID)  // why this??
               // || edge._feature == PROP_FEAT_ID)
           {
             // add the plain evaluated node to the varDags
@@ -477,7 +470,7 @@ public class DagNode {
               Iterator<DagEdge> edgeit = eval.getEdgeIterator();
               DagEdge firstEdge = edgeit.next();
               // case b) if it has only a PROP, use the value under PROP
-              if (firstEdge.getFeature() == _env.PROP_FEAT_ID
+              if (firstEdge.getFeature() == PROP_FEAT_ID
                   && ! edgeit.hasNext()) {
                 eval = firstEdge.getValue();
               } else {
@@ -498,7 +491,7 @@ public class DagNode {
               throw new UnificationException(
                   "The following edge could not be properly expanded: " + edge);
             }
-            DagNode newSub = new DagNode(_env);
+            DagNode newSub = new DagNode();
             newSub.addEdge(new DagEdge(edge._feature, eval));
             varDags.add(newSub);
           }
@@ -506,12 +499,12 @@ public class DagNode {
         }
         else {
           // either other feature or relation. call recursively
-          edge._value = sub.expandVars(bindings);
+          edge._value = sub.expandVars(env, bindings);
         }
       }
       for(DagNode varDag : varDags) {
         // unify the contents of the var into this node
-        here.add(varDag);
+        here.add(env, varDag);
       }
     } else {
       // __TYPE or __PROP
@@ -806,9 +799,9 @@ public class DagNode {
       feat2 = (arc2It.hasNext() ? (arc2 = arc2It.next())._feature : NO_FEAT);
     }
     /** I can rightly assume that ID is the first feature */
-    if (feat1 == _env.ID_FEAT_ID)
+    if (feat1 == ID_FEAT_ID)
       feat1 = (arc1It.hasNext() ? (arc1 = arc1It.next())._feature : NO_FEAT);
-    if (feat2 == _env.ID_FEAT_ID)
+    if (feat2 == ID_FEAT_ID)
       feat2 = (arc2It.hasNext() ? (arc2 = arc2It.next())._feature : NO_FEAT);
 
     while (feat1 == feat2 &&  feat1 != NO_FEAT) {
@@ -901,7 +894,7 @@ public class DagNode {
   /** We assume the feature list is either equal to null or not empty. Other
    *  code can rely on that
    */
-  private void addEdge(DagEdge undumpArc) {
+  void addEdge(DagEdge undumpArc) {
     if (null == _outedges) _outedges = new ArrayList<DagEdge>(3);
     _outedges.add(undumpArc);
   }
@@ -1174,7 +1167,7 @@ public class DagNode {
 
   /** TODO: This will work only for the simple cases !!! */
   @SuppressWarnings("null")
-  private boolean subsumesRec(DagNode in2) {
+  private boolean subsumesRec(Environment _env, DagNode in2) {
     { DagNode fs1 = this.getForward();
       if (fs1 == null) {
         this.setForward(in2);
@@ -1215,7 +1208,7 @@ public class DagNode {
         }
       }
       if (feat1 == feat2 && feat1 != NO_FEAT) {
-        if (! arc1.getValue().subsumesRec(arc2.getValue())) return false;
+        if (! arc1.getValue().subsumesRec(_env, arc2.getValue())) return false;
         feat1 = (arc1It.hasNext() ? (arc1 = arc1It.next()).getFeature() : NO_FEAT);
         feat2 = (arc2It.hasNext() ? (arc2 = arc2It.next()).getFeature() : NO_FEAT);
       }
@@ -1224,16 +1217,16 @@ public class DagNode {
   }
 
   /** Return true if `this' is more general than fs */
-  public boolean subsumes(DagNode fs) {
-    boolean result = subsumesRec(fs);
+  public boolean subsumes(Environment env, DagNode fs) {
+    boolean result = subsumesRec(env, fs);
     invalidate();
     return result;
   }
 
 
   /** return true if fs is more general than `this' */
-  public boolean isSubsumedBy(DagNode fs) {
-    boolean result = (fs).subsumesRec(this);
+  public boolean isSubsumedBy(Environment env, DagNode fs) {
+    boolean result = (fs).subsumesRec(env, this);
     invalidate();
     return result;
   }
@@ -1243,8 +1236,8 @@ public class DagNode {
   // Begin construct jxchg string representation from (permanent) dag
   // *************************************************************************
 
-  private void toStringRec(boolean readable, StringBuilder sb,
-                           IdentityHashMap<DagNode, Integer> corefs) {
+  void toStringRec(boolean readable, StringBuilder sb,
+      IdentityHashMap<DagNode, Integer> corefs, Environment env) {
     DagNode here = this.dereference();
     int corefNo = corefs.get(here);
     if (corefNo < 0) { // already printed, only coref
@@ -1258,48 +1251,26 @@ public class DagNode {
     }
 
     sb.append('[');
-    sb.append(readable ? here.getTypeName() : here.getType());
+    sb.append(readable ? env.getTypeName(here) : here.getType());
     EdgeIterator fvListIt = here.getNewEdgeIterator();
     if (fvListIt != null && fvListIt.hasNext()) {
       while(fvListIt.hasNext()) {
         DagEdge edge = fvListIt.next();
         sb.append(' ');
-        sb.append(readable ? edge.getName() : edge.getFeature());
-        edge.getValue().toStringRec(readable, sb, corefs);
+        sb.append(readable ? env.getName(edge) : edge.getFeature());
+        edge.getValue().toStringRec(readable, sb, corefs, env);
       }
     }
     else {
-      sb.append('@').append(here.getTypeName()).append('@');
+      sb.append('@').append(env.getTypeName(here)).append('@');
     }
     sb.append(']');
   }
 
-  /** print fs in jxchg format */
+  // For debugging only: dangerous!
   @Override
-  public final String toString() {
-    return toString(PRINT_READABLE);
+  public String toString() {
+    return Environment.lastEnvironment.toString(this);
   }
 
-  public final String toString(boolean readable) {
-    IdentityHashMap<DagNode, Integer> corefMap =
-      new IdentityHashMap<DagNode, Integer>();
-    int corefs = 0;
-    corefs = countCorefsLocal(corefMap, corefs);
-    StringBuilder sb = new StringBuilder();
-    if (this instanceof SpecialDagNode) {
-      ((SpecialDagNode)this).toStringSpecial(sb);
-    }
-    else {
-      if (_env.DEFAULT_PRINTER != null) {
-        synchronized (_env.DEFAULT_PRINTER) {
-          _env.DEFAULT_PRINTER.getCorefs(this);
-          _env.DEFAULT_PRINTER.toStringRec(this, readable, sb);
-        }
-      }
-      else {
-        toStringRec(readable, sb, corefMap);
-      }
-    }
-    return sb.toString();
-  }
 }

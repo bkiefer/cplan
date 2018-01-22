@@ -37,17 +37,23 @@ public class FunCall extends Match implements MatchLVal {
     _args = args;
   }
 
+  private String toString(Object o) {
+    return (o instanceof DagNode)
+        ? _env.toString((DagNode)o)
+            : o.toString();
+  }
+
   @SuppressWarnings("rawtypes")
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append(_name).append("(");
     if (_args != null && ! _args.isEmpty()) {
-      sb.append(_args.get(0));
+      sb.append(toString(_args.get(0)));
       Iterator it = _args.iterator();
       it.next();
       while (it.hasNext()) {
-        sb.append(", ").append(it.next());
+        sb.append(", ").append(toString(it.next()));
       }
     }
     sb.append(")");
@@ -109,7 +115,7 @@ public class FunCall extends Match implements MatchLVal {
       _fn.apply(FunCallDagNode.getActualParameters(_args, null, bindings));
     DagNode subRes = (result instanceof DagNode)
                      ? (DagNode) result
-                     : new DagNode(_env, result.toString());
+                     : _env.getDagNode(result.toString());
     return new DagEdge((short)-1,
         (subRes.edgesAreEmpty()
          ? new DagNode(_env.PROP_FEAT_ID, subRes)

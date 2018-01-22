@@ -3,14 +3,13 @@ package de.dfki.lt.tr.dialogue.cplan.functions.string;
 import java.util.List;
 
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
-import de.dfki.lt.tr.dialogue.cplan.UtterancePlanner;
-import de.dfki.lt.tr.dialogue.cplan.functions.Function;
+import de.dfki.lt.tr.dialogue.cplan.functions.AbstractFunction;
 
-public class Endswith implements Function {
+public class Endswith extends AbstractFunction {
 
   public Object apply(List<DagNode> args) {
-    String str = args.get(0).toString(false);
-    String end = args.get(1).toString(false);
+    String str = toString(args.get(0));
+    String end = toString(args.get(1));
 //    System.out.println(str + "          " + end + "    " + str.endsWith(end));
     return str.endsWith(end) ? 1 : 0;
   }
@@ -22,8 +21,5 @@ public class Endswith implements Function {
 
   public int arity() {
     return 2;
-  }
-
-  public void register(UtterancePlanner planner) {
   }
 }

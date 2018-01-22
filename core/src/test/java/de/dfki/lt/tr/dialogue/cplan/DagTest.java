@@ -53,7 +53,7 @@ public class DagTest {
     // next line is needed to initialize static fields
     UtterancePlanner up = new UtterancePlanner();
     up.initHierachy();
-    env = up.env;
+    env = up.getEnvironment();
     // env.registerPrinter(null); // return to default printer
     String[] features = { "Aspect", "Mood", "Tense", "Delimitation", "Num", "Quantification", "List" };
     String[] relations = { "Actor", "Event", "Patient", "Subject", "First", "Next" };
@@ -79,116 +79,116 @@ public class DagTest {
   }
 
   @Test public void addEdgeTest() {
-    DagNode e1 = new DagNode(env);
-    e1.addEdge((short)3, new DagNode(env, "A"));
-    e1.addEdge((short)1, new DagNode(env, "A"));
+    DagNode e1 = new DagNode();
+    e1.addEdge((short)3, env.getDagNode("A"));
+    e1.addEdge((short)1, env.getDagNode("A"));
     assertTrue(checkSorted(e1));
-    e1.addEdge((short)4, new DagNode(env, "A"));
+    e1.addEdge((short)4, env.getDagNode("A"));
     assertTrue(checkSorted(e1));
 
-    e1 = new DagNode(env);
-    e1.addEdge((short)3, new DagNode(env, "A"));
-    e1.addEdge((short)5, new DagNode(env, "A"));
+    e1 = new DagNode();
+    e1.addEdge((short)3, env.getDagNode("A"));
+    e1.addEdge((short)5, env.getDagNode("A"));
     assertTrue(checkSorted(e1));
-    e1.addEdge((short)1, new DagNode(env, "A"));
+    e1.addEdge((short)1, env.getDagNode("A"));
     assertTrue(checkSorted(e1));
-    e1.addEdge((short)2, new DagNode(env, "A"));
+    e1.addEdge((short)2, env.getDagNode("A"));
     assertTrue(checkSorted(e1));
-    e1.addEdge((short)4, new DagNode(env, "A"));
+    e1.addEdge((short)4, env.getDagNode("A"));
     assertTrue(checkSorted(e1));
-    e1.addEdge((short)6, new DagNode(env, "A"));
+    e1.addEdge((short)6, env.getDagNode("A"));
     assertTrue(checkSorted(e1));
-    e1.addEdge((short)0, new DagNode(env, "A"));
+    e1.addEdge((short)0, env.getDagNode("A"));
     assertTrue(checkSorted(e1));
 
   }
 
   @Test
   public void addTest1() {
-    DagNode d1 = new DagNode(env);
-    DagNode d2 = new DagNode(env);
-    d1.addEdge((short)1, new DagNode(env, "A"));
-    d2.addEdge((short)2, new DagNode(env, "B"));
+    DagNode d1 = new DagNode();
+    DagNode d2 = new DagNode();
+    d1.addEdge((short)1, env.getDagNode("A"));
+    d2.addEdge((short)2, env.getDagNode("B"));
 
-    d1.add(d2);
+    d1.add(env, d2);
     DagNode d4 = d1.copyAndInvalidate();
 
-    DagNode d3 = new DagNode(env);
-    d3.addEdge((short)1, new DagNode(env, "A"));
-    d3.addEdge((short)2, new DagNode(env, "B"));
+    DagNode d3 = new DagNode();
+    d3.addEdge((short)1, env.getDagNode("A"));
+    d3.addEdge((short)2, env.getDagNode("B"));
 
     assertEquals(d4, d3);
   }
 
   @Test
   public void addTest2() {
-    DagNode d1 = new DagNode(env);
-    DagNode d2 = new DagNode(env);
-    d1.addEdge((short)2, new DagNode(env, "B"));
-    d2.addEdge((short)1, new DagNode(env, "A"));
-    d2.addEdge((short)3, new DagNode(env, "C"));
+    DagNode d1 = new DagNode();
+    DagNode d2 = new DagNode();
+    d1.addEdge((short)2, env.getDagNode("B"));
+    d2.addEdge((short)1, env.getDagNode("A"));
+    d2.addEdge((short)3, env.getDagNode("C"));
 
-    d1.add(d2);
+    d1.add(env, d2);
     DagNode d4 = d1.copyAndInvalidate();
 
-    DagNode d3 = new DagNode(env);
-    d3.addEdge((short)1, new DagNode(env, "A"));
-    d3.addEdge((short)2, new DagNode(env, "B"));
-    d3.addEdge((short)3, new DagNode(env, "C"));
+    DagNode d3 = new DagNode();
+    d3.addEdge((short)1, env.getDagNode("A"));
+    d3.addEdge((short)2, env.getDagNode("B"));
+    d3.addEdge((short)3, env.getDagNode("C"));
     assertEquals(d4, d3);
   }
 
   @Test
   public void addTest3() {
-    DagNode d1 = new DagNode(env);
-    DagNode d2 = new DagNode(env);
-    d1.addEdge((short)2, new DagNode(env, "B"));
-    d1.addEdge((short)4, new DagNode(env, "D"));
-    d2.addEdge((short)3, new DagNode(env, "C"));
+    DagNode d1 = new DagNode();
+    DagNode d2 = new DagNode();
+    d1.addEdge((short)2, env.getDagNode("B"));
+    d1.addEdge((short)4, env.getDagNode("D"));
+    d2.addEdge((short)3, env.getDagNode("C"));
 
-    d1.add(d2);
+    d1.add(env, d2);
     DagNode d4 = d1.copyAndInvalidate();
 
-    DagNode d3 = new DagNode(env);
-    d3.addEdge((short)2, new DagNode(env, "B"));
-    d3.addEdge((short)3, new DagNode(env, "C"));
-    d3.addEdge((short)4, new DagNode(env, "D"));
+    DagNode d3 = new DagNode();
+    d3.addEdge((short)2, env.getDagNode("B"));
+    d3.addEdge((short)3, env.getDagNode("C"));
+    d3.addEdge((short)4, env.getDagNode("D"));
     assertEquals(d4, d3);
   }
 
   @Test
   public void addTest4() {
-    DagNode d1 = new DagNode(env);
-    DagNode d2 = new DagNode(env);
-    d1.addEdge((short)2, new DagNode(env, "B"));
-    d1.addEdge((short)4, new DagNode(env, "D"));
-    d2.addEdge((short)5, new DagNode(env, "E"));
+    DagNode d1 = new DagNode();
+    DagNode d2 = new DagNode();
+    d1.addEdge((short)2, env.getDagNode("B"));
+    d1.addEdge((short)4, env.getDagNode("D"));
+    d2.addEdge((short)5, env.getDagNode("E"));
 
-    d1.add(d2);
+    d1.add(env, d2);
     DagNode d4 = d1.copyAndInvalidate();
 
-    DagNode d3 = new DagNode(env);
-    d3.addEdge((short)2, new DagNode(env, "B"));
-    d3.addEdge((short)4, new DagNode(env, "D"));
-    d3.addEdge((short)5, new DagNode(env, "E"));
+    DagNode d3 = new DagNode();
+    d3.addEdge((short)2, env.getDagNode("B"));
+    d3.addEdge((short)4, env.getDagNode("D"));
+    d3.addEdge((short)5, env.getDagNode("E"));
     assertEquals(d4, d3);
   }
 
   @Test
   public void addTest5() {
-    DagNode d1 = new DagNode(env);
-    DagNode d2 = new DagNode(env);
-    d1.addEdge((short)2, new DagNode(env, "B"));
-    d1.addEdge((short)4, new DagNode(env, "D"));
-    d2.addEdge((short)1, new DagNode(env, "A"));
+    DagNode d1 = new DagNode();
+    DagNode d2 = new DagNode();
+    d1.addEdge((short)2, env.getDagNode("B"));
+    d1.addEdge((short)4, env.getDagNode("D"));
+    d2.addEdge((short)1, env.getDagNode("A"));
 
-    d1.add(d2);
+    d1.add(env, d2);
     DagNode d4 = d1.copyAndInvalidate();
 
-    DagNode d3 = new DagNode(env);
-    d3.addEdge((short)1, new DagNode(env, "A"));
-    d3.addEdge((short)2, new DagNode(env, "B"));
-    d3.addEdge((short)4, new DagNode(env, "D"));
+    DagNode d3 = new DagNode();
+    d3.addEdge((short)1, env.getDagNode("A"));
+    d3.addEdge((short)2, env.getDagNode("B"));
+    d3.addEdge((short)4, env.getDagNode("D"));
     assertEquals(d4, d3);
   }
 

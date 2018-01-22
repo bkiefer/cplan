@@ -2,6 +2,7 @@ package de.dfki.lt.tr.dialogue.cplan;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.IdentityHashMap;
 
 import de.dfki.lt.tr.dialogue.cplan.io.DagPrinter;
 import de.dfki.lt.tr.dialogue.cplan.io.LFDagPrinter;
@@ -9,6 +10,8 @@ import de.dfki.lt.tr.dialogue.cplan.io.LFDebugPrinter;
 import de.dfki.lt.tr.dialogue.cplan.util.Position;
 
 public class Environment {
+
+  public static Environment lastEnvironment;
 
   /** The lexer to use in logical form parsing */
   private final Lexer _lfLexer;
@@ -37,6 +40,9 @@ public class Environment {
    */
   public DagPrinter DEFAULT_PRINTER = null;
 
+  /** Use internal codes or external names for printing */
+  public static boolean PRINT_READABLE = true;
+
   /** An object that performs subsumption checks on types */
   Hierarchy _types = null;
 
@@ -46,6 +52,7 @@ public class Environment {
     /** The parser for logical forms. */
     _lfParser = new LFParser(_lfLexer, this);
     _lfParser.setErrorVerbose(true);
+    lastEnvironment = this;
   }
 
   public void init(Hierarchy h) {
@@ -57,8 +64,11 @@ public class Environment {
       getFeatureId(feat);
     }
     ID_FEAT_ID = getFeatureId(featureOrder[0]);
+    assert(ID_FEAT_ID == 0);
     TYPE_FEAT_ID = getFeatureId(featureOrder[1]);
+    assert(TYPE_FEAT_ID == 1);
     PROP_FEAT_ID = getFeatureId(featureOrder[2]);
+    assert(PROP_FEAT_ID == 2);
     /*
     switch (_useLfPrinter) {
     case 1: usePrettyPrinter(); break;
@@ -132,6 +142,28 @@ public class Environment {
     return null;
   }
 
+  public final String toString(DagNode node, boolean readable) {
+    IdentityHashMap<DagNode, Integer> corefMap =
+      new IdentityHashMap<DagNode, Integer>();
+    int corefs = 0;
+    corefs = node.countCorefsLocal(corefMap, corefs);
+    StringBuilder sb = new StringBuilder();
+    if (node instanceof SpecialDagNode) {
+      ((SpecialDagNode)node).toStringSpecial(this, sb);
+    }
+    else {
+      if (DEFAULT_PRINTER != null) {
+        synchronized (DEFAULT_PRINTER) {
+          DEFAULT_PRINTER.getCorefs(node);
+          DEFAULT_PRINTER.toStringRec(this, node, readable, sb);
+        }
+      }
+      else {
+        node.toStringRec(readable, sb, corefMap, this);
+      }
+    }
+    return sb.toString();
+  }
   /** Get the error position of the last LF parse, or null, if there is no
    *  such error.
    */
@@ -151,4 +183,30 @@ public class Environment {
     DEFAULT_PRINTER = printer;
   }
 
+  /** print fs in jxchg format */
+  public final String toString(DagNode node) {
+    return toString(node, PRINT_READABLE);
+  }
+
+  public DagNode getDagNode(String string, DagNode dagNode) {
+    DagNode result = new DagNode();
+    result.addEdge(new DagEdge(getFeatureId(string), dagNode));
+    return result;
+  }
+
+  public DagNode getDagNode(String type) {
+    return new DagNode(getTypeId(type));
+  }
+
+  public String getTypeName(DagNode dag) {
+    return getTypeName(dag.getType());
+  }
+
+  public String getName(DagEdge edge) {
+    return getFeatureName(edge.getFeature());
+  }
+
+  public String toString(DagEdge edge) {
+    return '<' + getName(edge) + '>' + toString(edge.getValue());
+  }
 }

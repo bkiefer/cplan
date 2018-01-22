@@ -4,9 +4,8 @@ import java.util.List;
 import java.util.Random;
 
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
-import de.dfki.lt.tr.dialogue.cplan.UtterancePlanner;
 
-public class DiscreteRandomFunction implements Function {
+public class DiscreteRandomFunction extends AbstractFunction {
 
   private Random rand;
 
@@ -26,7 +25,4 @@ public class DiscreteRandomFunction implements Function {
   public String name() {
     return "random";
   }
-
-  public void register(UtterancePlanner planner) { }
-
 }

@@ -21,15 +21,6 @@ public class DagEdge {
     return _value;
   }
 
-  public String getName() {
-    return _value._env.getFeatureName(_feature);
-  }
-
-  @Override
-  public String toString() {
-    return '<' + _value._env.getFeatureName(_feature) + '>' + _value;
-  }
-
   /** Get the last edge of the given path.
    *  Works correctly only on non-temporary dags.
    */
@@ -40,7 +31,7 @@ public class DagEdge {
       if (next == null) {
         DagNode value = current.getValue();
         value.setNominal();
-        next = current.getValue().addEdge(feature, new DagNode(value._env));
+        next = current.getValue().addEdge(feature, new DagNode());
       }
       current = next;
     }
@@ -84,4 +75,9 @@ public class DagEdge {
     return edgeCopy;
   }
 
+  // For debugging only: dangerous!
+  @Override
+  public String toString() {
+    return Environment.lastEnvironment.toString(this);
+  }
 }

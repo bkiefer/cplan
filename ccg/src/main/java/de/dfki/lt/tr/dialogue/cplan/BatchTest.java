@@ -222,7 +222,7 @@ public class BatchTest {
 
   public BatchTest(CcgUtterancePlanner planner, BatchType realizationTest) {
     _planner = planner;
-    ASTERISK = new DagNode(_planner.env, "*");
+    ASTERISK = _planner.getEnvironment().getDagNode("*");
     _realizationTest = realizationTest;
   }
 
@@ -384,7 +384,7 @@ public class BatchTest {
     _items.clear();
     Reader in = new FileReader(_batchFile);
     Lexer l = new Lexer(_batchFile.getCanonicalPath(), in);
-    LFParser parser = new LFParser(l, _planner.env);
+    LFParser parser = new LFParser(l, _planner.getEnvironment());
     parser.setExtMode(true);
     do {
       switch (_realizationTest) {
@@ -474,9 +474,9 @@ public class BatchTest {
     if (result == null) {
       resultStatus = Status.BAD;
     } else {
-      DagEdge prop = result.getEdge(_planner.env.PROP_FEAT_ID);
+      DagEdge prop = result.getEdge(_planner.getEnvironment().PROP_FEAT_ID);
       if (prop != null
-          && prop.getValue().getTypeName().equals("No parse for sentence")) {
+          && _planner.getEnvironment().getTypeName(prop.getValue()).equals("No parse for sentence")) {
         resultStatus = Status.BAD;
       }
     }

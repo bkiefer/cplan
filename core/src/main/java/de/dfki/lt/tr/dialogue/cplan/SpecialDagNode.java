@@ -3,12 +3,12 @@ package de.dfki.lt.tr.dialogue.cplan;
 
 public abstract class SpecialDagNode extends DagNode {
 
-  protected SpecialDagNode(Environment env, int status) {
-    super(env, status);
+  protected SpecialDagNode(int status) {
+    super(status);
   }
 
-  protected SpecialDagNode(Environment env) {
-    super(env);
+  protected SpecialDagNode() {
+    super();
   }
 
   /** All subtypes of DagNode have to override this method to get the cloning
@@ -21,7 +21,7 @@ public abstract class SpecialDagNode extends DagNode {
   protected abstract DagNode evaluate(DagNode input, Bindings bindings);
 
   /** This is called in DagNode's toStringRec function */
-  public abstract void toStringSpecial(StringBuilder sb);
+  public abstract void toStringSpecial(Environment env, StringBuilder sb);
 
 }
 

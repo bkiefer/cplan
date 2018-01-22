@@ -87,13 +87,13 @@ public class UtterancePlanner {
   /** The tracer that is currently used to trace rules */
   private RuleTracer _currentTracer;
 
-  Environment env; // package visible for tests
+  protected Environment _env; // package visible for tests
 
   protected void init() {
     FunctionFactory.init(this);
     _errors = new ArrayList<Position>();
 
-    env = new Environment();
+    _env = new Environment();
     _ruleLexer = new Lexer();
     _ruleLexer.setErrorLogger(logger);
   }
@@ -102,12 +102,14 @@ public class UtterancePlanner {
     init();
   }
 
+  public Environment getEnvironment() { return _env; }
+
   /** package visibility to allow unit tests to access this */
   void addProcessor(List<Rule> basicRules) {
     if (_processors == null) {
       _processors = new ArrayList<Processor>();
     }
-    _processors.add(new ParallelProcessor(basicRules));
+    _processors.add(new ParallelProcessor(_env, basicRules));
   }
 
   public void setTracing(RuleTracer rt) {
@@ -175,7 +177,7 @@ public class UtterancePlanner {
    */
   private List<Rule> readRules(Reader r, String inputDescription)
   throws IOException {
-    RuleParser ruleParser = new RuleParser(_ruleLexer, env);
+    RuleParser ruleParser = new RuleParser(_ruleLexer, _env);
     ruleParser.setErrorVerbose(true);
     ruleParser.setDebugLevel(0);
     ruleParser.reset(inputDescription, r);
@@ -264,8 +266,8 @@ public class UtterancePlanner {
   }
 
   protected void initHierachy() {
-    if (! env.isInitialized())
-      env.init(new FlatHierarchy());
+    if (! _env.isInitialized())
+      _env.init(new FlatHierarchy());
   }
 
   protected void loadPlugins() {

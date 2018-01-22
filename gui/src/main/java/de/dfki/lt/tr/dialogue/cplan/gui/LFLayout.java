@@ -4,6 +4,7 @@ import de.dfki.lt.loot.gui.layouts.AbstractLayout;
 import de.dfki.lt.loot.gui.layouts.BasicAtomLayout;
 import de.dfki.lt.loot.gui.layouts.CompactConsLayout;
 import de.dfki.lt.loot.gui.layouts.SimpleTreeLayout;
+import de.dfki.lt.tr.dialogue.cplan.Environment;
 
 public class LFLayout extends AbstractLayout {
   public LFLayout() {

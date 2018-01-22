@@ -53,7 +53,7 @@ public class LFParserTest {
     if (lfparser.parse())
       res = lfparser.getResultLF();
     env.usePrettyPrinter();
-    String lfString = (res == null) ? null : res.toString();
+    String lfString = (res == null) ? null : env.toString(res);
     if (PRINT) { System.out.println(lf); System.out.println(lfString); }
     lfparser = new LFParser(new Lexer(new StringReader(lf)), env);
     lfparser.setErrorVerbose(true);
@@ -83,7 +83,7 @@ public class LFParserTest {
     if (lfparser.parse())
       res = lfparser.getResultLF();
 
-    String lfString = (res == null) ? null : res.toString();
+    String lfString = (res == null) ? null : env.toString(res);
     if (PRINT) { System.out.println(lf); System.out.println(lfString); }
     assertEquals("Run "+ i + " " + lf, res, rawRes);
   }
@@ -103,8 +103,8 @@ public class LFParserTest {
     DagNode res = null;
     if (lfparser.parse())
       res = lfparser.getResultLFs().get(0);
-    DagNode.usePrettyPrinter();
-    String lfString = (res == null) ? null : res.toString(true);
+    env.usePrettyPrinter();
+    String lfString = (res == null) ? null : env.toString(res, true);
     if (PRINT) { System.out.println(lf); System.out.println(lfString); }
     lfparser = new LFParser(new Lexer(new StringReader(lfString)), env);
     lfparser.setExtMode(true);

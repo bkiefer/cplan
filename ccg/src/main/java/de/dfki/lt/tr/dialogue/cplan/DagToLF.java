@@ -40,7 +40,7 @@ public class DagToLF {
     // create its proposition node
     Element prop = new Element("prop");
     prop = prop.setAttribute("name",
-        sub.getEdge(env.PROP_FEAT_ID).getValue().getTypeName());
+        env.getTypeName(sub.getEdge(env.PROP_FEAT_ID).getValue()));
 
     // add all in a tree-like manner
     diamond = diamond.addContent(prop);
@@ -91,10 +91,10 @@ public class DagToLF {
       }
 
       String nomVar =
-        ((id == null) ? "nom" + coreferences.size() : id.getTypeName());
+        ((id == null) ? "nom" + coreferences.size() : env.getTypeName(id));
       // type == null should not happen
-      String sort = (type == null ? "top" : type.getTypeName());
-      String propName = (propDag == null ? "" : propDag.getTypeName());
+      String sort = (type == null ? "top" : env.getTypeName(type));
+      String propName = (propDag == null ? "" : env.getTypeName(propDag));
 
       // name of nom = "id:type"
       String s = nomVar + ":" + sort;
@@ -144,10 +144,10 @@ public class DagToLF {
           if (featId != -1) {
             DagNode val = edge.getValue();
             if (val.isNominal()) {
-              diamond = editRelations(env, diamond, val, edge.getName(), coreferences);
+              diamond = editRelations(env, diamond, val, env.getName(edge), coreferences);
             }
             else {
-              diamond = editFeatures(env, diamond, val, edge.getName());
+              diamond = editFeatures(env, diamond, val, env.getName(edge));
             }
           }
           edge = it.hasNext() ? it.next() : null;
@@ -156,10 +156,10 @@ public class DagToLF {
         for (DagEdge ppedge : postponed) {
           DagNode val = ppedge.getValue();
           if (val.isNominal()) {
-            diamond = editRelations(env, diamond, val, ppedge.getName(), coreferences);
+            diamond = editRelations(env, diamond, val, env.getName(ppedge), coreferences);
           }
           else {
-            diamond = editFeatures(env, diamond, val, ppedge.getName());
+            diamond = editFeatures(env, diamond, val, env.getName(ppedge));
           }
         }
       }

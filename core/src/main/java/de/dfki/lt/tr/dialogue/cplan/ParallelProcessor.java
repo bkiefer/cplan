@@ -14,14 +14,17 @@ public class ParallelProcessor implements Processor {
 
   private List<Rule> _rules;
 
+  private Environment _env;
+
   private AppliedMap _applied;
 
   /** An object to trace matching / application of rules */
   private RuleTracer _tracer;
 
   /** Constructor: initialize the processor with a list of rules */
-  public ParallelProcessor(List<Rule> basicRules) {
+  public ParallelProcessor(Environment env, List<Rule> basicRules) {
     _rules = basicRules;
+    _env = env;
     int i = 0;
     for (Rule r : _rules) { ((BasicRule)r).setId(i++); }
     _applied = new AppliedMap();

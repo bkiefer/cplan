@@ -3,9 +3,8 @@ package de.dfki.lt.tr.dialogue.cplan.functions;
 import java.util.List;
 
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
-import de.dfki.lt.tr.dialogue.cplan.UtterancePlanner;
 
-public class ConstantFunction implements Function {
+public class ConstantFunction extends AbstractFunction {
 
   private String _constant;
 
@@ -24,7 +23,4 @@ public class ConstantFunction implements Function {
   public int arity() {
     return 0;
   }
-  
-  public void register(UtterancePlanner planner) { }
-
 }

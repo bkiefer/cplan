@@ -3,15 +3,14 @@ package de.dfki.lt.tr.dialogue.cplan.functions.string;
 import java.util.List;
 
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
-import de.dfki.lt.tr.dialogue.cplan.UtterancePlanner;
-import de.dfki.lt.tr.dialogue.cplan.functions.Function;
+import de.dfki.lt.tr.dialogue.cplan.functions.AbstractFunction;
 
-public class Substring implements Function {
+public class Substring extends AbstractFunction {
 
   public Object apply(List<DagNode> args) {
-    String str = args.get(0).toString(false);
-    String from = args.get(1).toString(false);
-    String to = args.get(2).toString(false);
+    String str = toString(args.get(0));
+    String from = toString(args.get(1));
+    String to = toString(args.get(2));
     int toIndex = Integer.parseInt(to);
     if (toIndex < 0) toIndex = str.length() - toIndex;
     return str.substring(Integer.parseInt(from), toIndex);
@@ -24,8 +23,5 @@ public class Substring implements Function {
 
   public int arity() {
     return 3;
-  }
-
-  public void register(UtterancePlanner planner) {
   }
 }

@@ -177,7 +177,7 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
   private FunCallDagNode getNewFunCallDagNode(String name, List args,
                                               Location loc) {
     try {
-      return new FunCallDagNode(env, name, args);
+      return new FunCallDagNode(name, args);
     }
     catch (NoSuchMethodException ex) {
       yyerror(loc, "No such Function registered: " + ex.getMessage());
@@ -367,23 +367,23 @@ actions : action {
 action : lval '=' rexpr
        {
          DagNode rval = (($3 == null) ? null : $3.copyAndInvalidate());
-         $$ = new Assignment($1, rval);
+         $$ = new Assignment(env, $1, rval);
        }
        | lval '^' rexpr
        {
          DagNode rval = (($3 == null) ? null : $3.copyAndInvalidate());
-         $$ = new Addition($1, rval);
+         $$ = new Addition(env, $1, rval);
        }
 // THAT DOES NOT SUFFICE! IT MIGHT BE NICE TO SPECIFY REXPRS TO DELETE E.G.
 // THE TYPE AND PROP AND SOME FEATURES IN ONE SWEEP, BUT KEEP THE REST
        | lval '!' '<' ID  '>'
-       { $$ = new Deletion($1, new DagNode($4, new DagNode(env))); }
+       { $$ = new Deletion(env, $1, env.getDagNode($4, new DagNode())); }
        ;
 
-lval : VAR       { $$ = new VarDagNode(env, $1, Bindings.LOCAL); }
-     | RVAR      { $$ = new VarDagNode(env, $1, Bindings.RIGHTLOCAL); }
-     | '#'       { $$ = new VarDagNode(env, "#", Bindings.LOCAL); }
-     | GVAR path { $$ = new VarDagNode(env, $1, $2); }
+lval : VAR       { $$ = VarDagNode.getVarDagNode($1, Bindings.LOCAL); }
+     | RVAR      { $$ = VarDagNode.getVarDagNode($1, Bindings.RIGHTLOCAL); }
+     | '#'       { $$ = VarDagNode.getVarDagNode("#", Bindings.LOCAL); }
+     | GVAR path { $$ = VarDagNode.getVarDagNode($1, $2); }
 //   | ID ':'    { $$ = new VarDagNode($1, Bindings.ABSOLUTE); }
      ;
 
@@ -391,24 +391,24 @@ path : '<' ID '>' path { $$ = $4.addToFront($2); }
      |                 { $$ = new Path(env); }
      ;
 
-rexpr  : rexpr '^' rterm  { $1.add($3); $1.setNominal(); $$ = $1; }
+rexpr  : rexpr '^' rterm  { $1.add(env, $3); $1.setNominal(); $$ = $1; }
        | rterm            { $$ = $1; }
        ;
 
-rterm : '<' ID '>' rterm  { $$ = new DagNode($2, $4).setNominal(); }
+rterm : '<' ID '>' rterm  { $$ = env.getDagNode($2, $4).setNominal(); }
       | rfeat             { $$ = $1; }
       ;
 
 
 rfeat : rnominal          { $$ = $1; }
-      | rnominal r_id_var { $1.add(new DagNode(env.TYPE_FEAT_ID, $2));
+      | rnominal r_id_var { $1.add(env, new DagNode(env.TYPE_FEAT_ID, $2));
                             $$ = $1; }
       | ':' r_id_var      { $$ = new DagNode(env.TYPE_FEAT_ID, $2)
                                     .setNominal();
                           }
       | r_id_var          { $$ = new DagNode(env.PROP_FEAT_ID, $1); }
       | STRING            { $$ = new DagNode(env.PROP_FEAT_ID,
-                                             new DagNode(env, $1)); }
+                                             env.getDagNode($1)); }
       | '(' rexpr ')'     { $$ = $2.setNominal(); }
       // | ID '(' rargs ')'  { $$ = getNewFunCallDagNode($1, $3, @1);
       //                       if ($$ == null) return YYERROR ;
@@ -431,17 +431,17 @@ rargs : rarg ',' rargs   { $3.add(0, $1); $$ = $3; }
       ;
 
 rarg  : r_id_var  { $$ = $1; }
-      | STRING    { $$ = new DagNode(env, $1); }
-      | '#'       { $$ = new VarDagNode(env, "#", Bindings.LOCAL); }
+      | STRING    { $$ = env.getDagNode($1); }
+      | '#'       { $$ = VarDagNode.getVarDagNode("#", Bindings.LOCAL); }
       ;
 //rarg  : rexpr     { $$ = $1; }
 //      | '#'       { $$ = new VarDagNode("#", Bindings.LOCAL); }
 //      ;
 
-r_id_var : ID     { $$ = new DagNode(env, $1); }
-         | VAR    { $$ = new VarDagNode(env, $1, Bindings.LOCAL); }
-         | GVAR path { $$ = new VarDagNode(env, $1, $2); }
-         | RVAR   { $$ = new VarDagNode(env, $1, Bindings.RIGHTLOCAL); }
+r_id_var : ID     { $$ = env.getDagNode($1); }
+         | VAR    { $$ = VarDagNode.getVarDagNode($1, Bindings.LOCAL); }
+         | GVAR path { $$ = VarDagNode.getVarDagNode($1, $2); }
+         | RVAR   { $$ = VarDagNode.getVarDagNode($1, Bindings.RIGHTLOCAL); }
          | ID '(' rargs ')'  { $$ = getNewFunCallDagNode($1, $3, @1);
                                if ($$ == null) return YYERROR ;
                              }

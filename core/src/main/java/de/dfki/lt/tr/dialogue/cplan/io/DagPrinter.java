@@ -3,12 +3,13 @@ package de.dfki.lt.tr.dialogue.cplan.io;
 import java.util.IdentityHashMap;
 
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
+import de.dfki.lt.tr.dialogue.cplan.Environment;
 
 public abstract class DagPrinter {
   private IdentityHashMap<DagNode, Integer> corefs;
   protected int _maxCoref;
 
-  public abstract void toStringRec(DagNode dag, boolean readable,
+  public abstract void toStringRec(Environment env, DagNode dag, boolean readable,
       StringBuilder sb) ;
 
   public void getCorefs(DagNode root) {

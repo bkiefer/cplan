@@ -750,7 +750,7 @@ public class UttplanParserTest {
 
   private UtterancePlanner getPlanner() {
     UtterancePlanner up = new UtterancePlanner();
-    env = up.env;
+    env = up.getEnvironment();
     env.init(new FlatHierarchy());
     env.usePrettyPrinter();
     return up;
@@ -928,12 +928,12 @@ public class UttplanParserTest {
       DagNode out = value ? getLF(testPattern[j+1]) : in.cloneFS();
       //DagNode.registerPrinter(null);
       if (_print) {
-        System.out.println(out);
+        System.out.println(env.toString(out));
       }
       in = ((BasicRule)r).applyLocallyAndCopy(in);
 
       if (_print) {
-        System.out.println(in);
+        System.out.println(env.toString(in));
       }
       if (value) {
         assertEquals("Matching pattern " + i + "(" + j + ")", out, in);
@@ -945,7 +945,7 @@ public class UttplanParserTest {
   }
 
   @Test public void testRuleApplicationSpecial() throws IOException {
-    int i = -1;
+    int i = 26;
     _print = true;
     if (i >= 0)
         testApplyOneSet(matchTestPatternsPositive[i], true, i);
@@ -971,8 +971,8 @@ public class UttplanParserTest {
   }
 
   private DagNode embed(DagNode toEmbed, String edgeName) {
-    DagNode result = new DagNode(env);
-    result.addEdge(env.TYPE_FEAT_ID, new DagNode(env, "x"));
+    DagNode result = new DagNode();
+    result.addEdge(env.TYPE_FEAT_ID, env.getDagNode("x"));
     result.addEdge(env.getFeatureId(edgeName), toEmbed);
     result.setNominal();
     return result;
@@ -988,17 +988,17 @@ public class UttplanParserTest {
         out = embed(embed(out, "XXX"), "YYY");
       }
       if (_print) {
-        System.out.println("> "+in);
+        System.out.println("> "+env.toString(in));
       }
       in = up.process(in);
       if (_print) {
-        System.out.println("<< "+in);
+        System.out.println("<< "+env.toString(in));
       }
       // remove invisible prop coreferences by printing and re-reading
-      in = env.parseLfString(in.toString());
+      in = env.parseLfString(env.toString(in));
       if (_print) {
-        System.out.println("< "+in);
-        System.out.println(out);
+        System.out.println("< "+env.toString(in));
+        System.out.println(env.toString(out));
       }
       if (value) {
         assertEquals("Matching pattern " + i + "(" + j + ")", out, in);
@@ -1134,7 +1134,7 @@ public class UttplanParserTest {
     do {
       DagNode res = up.process(in);
       // remove invisible prop coreferences by printing and re-reading
-      res = env.parseLfString(res.toString());
+      res = env.parseLfString(env.toString(res));
       ++ runs;
       if (res.equals(out)) {
         System.out.println(runs); break;

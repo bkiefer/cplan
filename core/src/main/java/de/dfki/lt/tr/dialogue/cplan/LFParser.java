@@ -1178,15 +1178,15 @@ private static final byte yycheck_[] = yycheck_init();
   private HashMap<String, DagNode> _nodes = new HashMap<String, DagNode>();
 
   private DagNode newLF(String feature, String type) {
-    return new DagNode(feature, new DagNode(env, type));
+    return env.getDagNode(feature, env.getDagNode(type));
   }
 
   private DagNode newLF(String feature, DagNode value) {
-    return new DagNode(feature, value);
+    return env.getDagNode(feature, value);
   }
 
   private DagNode newLF(short feature, String type) {
-    return new DagNode(feature, new DagNode(env, type));
+    return new DagNode(feature, env.getDagNode(type));
   }
 
   private DagNode getNewLF(String id) {
@@ -1200,7 +1200,7 @@ private static final byte yycheck_[] = yycheck_init();
 
   /** unify two conjunctions */
   private DagNode unify(DagNode left, DagNode right) {
-    left.add(right);
+    left.add(env, right);
     return left;
   }
 

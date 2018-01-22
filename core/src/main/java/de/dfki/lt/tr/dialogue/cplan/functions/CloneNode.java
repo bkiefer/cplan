@@ -3,9 +3,8 @@ package de.dfki.lt.tr.dialogue.cplan.functions;
 import java.util.List;
 
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
-import de.dfki.lt.tr.dialogue.cplan.UtterancePlanner;
 
-public class CloneNode implements Function {
+public class CloneNode extends AbstractFunction {
 
   public Object apply(List<DagNode> args) {
     return args.get(0).copySafely();
@@ -18,7 +17,4 @@ public class CloneNode implements Function {
   public String name() {
     return "clone";
   }
-
-  public void register(UtterancePlanner planner) { }
-
 }

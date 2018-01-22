@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
-import de.dfki.lt.tr.dialogue.cplan.UtterancePlanner;
 
 /** This class is a replacement for DiscreteRandomFunction to systematically
  *  generate all call sequences of the random function that can occur during
  *  a batch generation of some test item.
  * @author kiefer
  */
-public class DeterministicRandomFunction implements Function {
+public class DeterministicRandomFunction extends AbstractFunction {
 
   /** The number of the calls in this round (from start up to the fix point) */
   private int _callNo;
@@ -93,7 +92,4 @@ public class DeterministicRandomFunction implements Function {
   public String name() {
     return "random";
   }
-
-  public void register(UtterancePlanner planner) { }
-
 }

@@ -10,13 +10,15 @@ import de.dfki.lt.tr.dialogue.cplan.UtterancePlanner;
 
 /** This will throw a java exception, taking the exception message as argument
  */
-public class WarningFunction implements Function {
+public class WarningFunction extends AbstractFunction {
 
   protected Logger logger = LoggerFactory.getLogger("UtterancePlanner");
 
+  private UtterancePlanner _planner;
+
   public Object apply(List<DagNode> args) {
     if (args != null && args.size() >= 1) {
-      logger.warn("{}", args.get(0).getTypeName());
+      logger.warn("{}", _planner.getEnvironment().getTypeName(args.get(0)));
     }
     return "true";
   }
@@ -28,7 +30,4 @@ public class WarningFunction implements Function {
   public String name() {
     return "warning";
   }
-
-  public void register(UtterancePlanner planner) {  }
-
 }

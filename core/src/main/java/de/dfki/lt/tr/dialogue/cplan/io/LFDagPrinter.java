@@ -4,6 +4,7 @@ import java.util.regex.Pattern;
 
 import de.dfki.lt.tr.dialogue.cplan.DagEdge;
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
+import de.dfki.lt.tr.dialogue.cplan.Environment;
 import de.dfki.lt.tr.dialogue.cplan.SpecialDagNode;
 
 public class LFDagPrinter extends DagPrinter {
@@ -33,7 +34,7 @@ public class LFDagPrinter extends DagPrinter {
   }
 
   @Override
-  public void toStringRec(DagNode here, boolean readable, StringBuilder sb) {
+  public void toStringRec(Environment env, DagNode here, boolean readable, StringBuilder sb) {
     if (here == null) return;
 
     here = here.dereference();
@@ -42,7 +43,7 @@ public class LFDagPrinter extends DagPrinter {
 
     // subclasses will print themselves
     if (here instanceof SpecialDagNode) {
-      ((SpecialDagNode)here).toStringSpecial(sb);
+      ((SpecialDagNode)here).toStringSpecial(env, sb);
       return;
     }
 
@@ -59,11 +60,11 @@ public class LFDagPrinter extends DagPrinter {
       while (it.hasNext()) {
         edge = it.next();
         short feature = edge.getFeature();
-        if (feature == here._env.ID_FEAT_ID) {
+        if (feature == env.ID_FEAT_ID) {
           id = edge.getValue().dereference(); edge = null;
-        } else if (feature == here._env.TYPE_FEAT_ID) {
+        } else if (feature == env.TYPE_FEAT_ID) {
           type = edge.getValue().dereference(); edge = null;
-        } else if (feature == here._env.PROP_FEAT_ID) {
+        } else if (feature == env.PROP_FEAT_ID) {
           prop = edge.getValue().dereference(); edge = null;
         } else {
           break;
@@ -79,11 +80,11 @@ public class LFDagPrinter extends DagPrinter {
         if (id == null) {
           sb.append(newNominalName(-corefNo));
         } else {
-          toStringRec(id, readable, sb);
+          toStringRec(env, id, readable, sb);
         }
         sb.append(':');
         if (type != null) {
-          toStringRec(type, readable, sb);
+          toStringRec(env, type, readable, sb);
         }
         // sb.append(')'); // see above
         return;
@@ -98,11 +99,11 @@ public class LFDagPrinter extends DagPrinter {
       if (id == null) {
         sb.append(newNominalName(corefNo));
       } else {
-        toStringRec(id, readable, sb);
+        toStringRec(env, id, readable, sb);
       }
       sb.append(':');
       if (type != null) {
-        toStringRec(type, readable, sb);
+        toStringRec(env, type, readable, sb);
       }
       if (root && ! _ruleMode) {
         sb.append('(');
@@ -115,7 +116,7 @@ public class LFDagPrinter extends DagPrinter {
           sb.append(" ^ ");
         else
           printCaret = true;
-        toStringRec(prop, readable, sb);
+        toStringRec(env, prop, readable, sb);
       }
 
       //sb.append(readable ? here.getTypeName() : here.getType());
@@ -125,9 +126,9 @@ public class LFDagPrinter extends DagPrinter {
         else
           printCaret = true;
         sb.append("<")
-        .append(readable ? edge.getName() : edge.getFeature())
+        .append(readable ? env.getName(edge) : edge.getFeature())
         .append(">");
-        toStringRec(edge.getValue(), readable, sb);
+        toStringRec(env, edge.getValue(), readable, sb);
         if (it.hasNext()) {
           edge = it.next();
         } else {
@@ -140,15 +141,15 @@ public class LFDagPrinter extends DagPrinter {
       DagNode.EdgeIterator it = here.getTransitionalEdgeIterator();
       if (it.hasNext()) {
         DagEdge edge = it.next();
-        assert(edge.getFeature() == here._env.PROP_FEAT_ID);
+        assert(edge.getFeature() == env.PROP_FEAT_ID);
         assert(! it.hasNext());
         DagNode sub = edge.getValue();
         if (sub != null) {
-          toStringRec(sub, readable, sb);
+          toStringRec(env, sub, readable, sb);
         }
       }
       else {
-        String name = here.getTypeName();
+        String name = env.getTypeName(here);
         sb.append(readable ? getTypeString(name) : name);
       }
     }

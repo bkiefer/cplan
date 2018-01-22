@@ -739,7 +739,7 @@ public class RuleParser
     /* "RuleParser.y":368  */ /* lalr1.java:489  */
     {
          DagNode rval = (((( DagNode )(yystack.valueAt (3-(3)))) == null) ? null : (( DagNode )(yystack.valueAt (3-(3)))).copyAndInvalidate());
-         yyval = new Assignment((( VarDagNode )(yystack.valueAt (3-(1)))), rval);
+         yyval = new Assignment(env, (( VarDagNode )(yystack.valueAt (3-(1)))), rval);
        };
   break;
     
@@ -749,7 +749,7 @@ public class RuleParser
     /* "RuleParser.y":373  */ /* lalr1.java:489  */
     {
          DagNode rval = (((( DagNode )(yystack.valueAt (3-(3)))) == null) ? null : (( DagNode )(yystack.valueAt (3-(3)))).copyAndInvalidate());
-         yyval = new Addition((( VarDagNode )(yystack.valueAt (3-(1)))), rval);
+         yyval = new Addition(env, (( VarDagNode )(yystack.valueAt (3-(1)))), rval);
        };
   break;
     
@@ -757,35 +757,35 @@ public class RuleParser
   case 46:
   if (yyn == 46)
     /* "RuleParser.y":380  */ /* lalr1.java:489  */
-    { yyval = new Deletion((( VarDagNode )(yystack.valueAt (5-(1)))), new DagNode((( String )(yystack.valueAt (5-(4)))), new DagNode(env))); };
+    { yyval = new Deletion(env, (( VarDagNode )(yystack.valueAt (5-(1)))), env.getDagNode((( String )(yystack.valueAt (5-(4)))), new DagNode())); };
   break;
     
 
   case 47:
   if (yyn == 47)
     /* "RuleParser.y":383  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode(env, (( String )(yystack.valueAt (1-(1)))), Bindings.LOCAL); };
+    { yyval = VarDagNode.getVarDagNode((( String )(yystack.valueAt (1-(1)))), Bindings.LOCAL); };
   break;
     
 
   case 48:
   if (yyn == 48)
     /* "RuleParser.y":384  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode(env, (( String )(yystack.valueAt (1-(1)))), Bindings.RIGHTLOCAL); };
+    { yyval = VarDagNode.getVarDagNode((( String )(yystack.valueAt (1-(1)))), Bindings.RIGHTLOCAL); };
   break;
     
 
   case 49:
   if (yyn == 49)
     /* "RuleParser.y":385  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode(env, "#", Bindings.LOCAL); };
+    { yyval = VarDagNode.getVarDagNode("#", Bindings.LOCAL); };
   break;
     
 
   case 50:
   if (yyn == 50)
     /* "RuleParser.y":386  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode(env, (( String )(yystack.valueAt (2-(1)))), (( Path )(yystack.valueAt (2-(2))))); };
+    { yyval = VarDagNode.getVarDagNode((( String )(yystack.valueAt (2-(1)))), (( Path )(yystack.valueAt (2-(2))))); };
   break;
     
 
@@ -806,7 +806,7 @@ public class RuleParser
   case 53:
   if (yyn == 53)
     /* "RuleParser.y":394  */ /* lalr1.java:489  */
-    { (( DagNode )(yystack.valueAt (3-(1)))).add((( DagNode )(yystack.valueAt (3-(3))))); (( DagNode )(yystack.valueAt (3-(1)))).setNominal(); yyval = (( DagNode )(yystack.valueAt (3-(1)))); };
+    { (( DagNode )(yystack.valueAt (3-(1)))).add(env, (( DagNode )(yystack.valueAt (3-(3))))); (( DagNode )(yystack.valueAt (3-(1)))).setNominal(); yyval = (( DagNode )(yystack.valueAt (3-(1)))); };
   break;
     
 
@@ -820,7 +820,7 @@ public class RuleParser
   case 55:
   if (yyn == 55)
     /* "RuleParser.y":398  */ /* lalr1.java:489  */
-    { yyval = new DagNode((( String )(yystack.valueAt (4-(2)))), (( DagNode )(yystack.valueAt (4-(4))))).setNominal(); };
+    { yyval = env.getDagNode((( String )(yystack.valueAt (4-(2)))), (( DagNode )(yystack.valueAt (4-(4))))).setNominal(); };
   break;
     
 
@@ -841,7 +841,7 @@ public class RuleParser
   case 58:
   if (yyn == 58)
     /* "RuleParser.y":404  */ /* lalr1.java:489  */
-    { (( DagNode )(yystack.valueAt (2-(1)))).add(new DagNode(env.TYPE_FEAT_ID, (( DagNode )(yystack.valueAt (2-(2))))));
+    { (( DagNode )(yystack.valueAt (2-(1)))).add(env, new DagNode(env.TYPE_FEAT_ID, (( DagNode )(yystack.valueAt (2-(2))))));
                             yyval = (( DagNode )(yystack.valueAt (2-(1)))); };
   break;
     
@@ -866,7 +866,7 @@ public class RuleParser
   if (yyn == 61)
     /* "RuleParser.y":410  */ /* lalr1.java:489  */
     { yyval = new DagNode(env.PROP_FEAT_ID,
-                                             new DagNode(env, (( String )(yystack.valueAt (1-(1)))))); };
+                                             env.getDagNode((( String )(yystack.valueAt (1-(1)))))); };
   break;
     
 
@@ -913,42 +913,42 @@ public class RuleParser
   case 67:
   if (yyn == 67)
     /* "RuleParser.y":434  */ /* lalr1.java:489  */
-    { yyval = new DagNode(env, (( String )(yystack.valueAt (1-(1))))); };
+    { yyval = env.getDagNode((( String )(yystack.valueAt (1-(1))))); };
   break;
     
 
   case 68:
   if (yyn == 68)
     /* "RuleParser.y":435  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode(env, "#", Bindings.LOCAL); };
+    { yyval = VarDagNode.getVarDagNode("#", Bindings.LOCAL); };
   break;
     
 
   case 69:
   if (yyn == 69)
     /* "RuleParser.y":441  */ /* lalr1.java:489  */
-    { yyval = new DagNode(env, (( String )(yystack.valueAt (1-(1))))); };
+    { yyval = env.getDagNode((( String )(yystack.valueAt (1-(1))))); };
   break;
     
 
   case 70:
   if (yyn == 70)
     /* "RuleParser.y":442  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode(env, (( String )(yystack.valueAt (1-(1)))), Bindings.LOCAL); };
+    { yyval = VarDagNode.getVarDagNode((( String )(yystack.valueAt (1-(1)))), Bindings.LOCAL); };
   break;
     
 
   case 71:
   if (yyn == 71)
     /* "RuleParser.y":443  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode(env, (( String )(yystack.valueAt (2-(1)))), (( Path )(yystack.valueAt (2-(2))))); };
+    { yyval = VarDagNode.getVarDagNode((( String )(yystack.valueAt (2-(1)))), (( Path )(yystack.valueAt (2-(2))))); };
   break;
     
 
   case 72:
   if (yyn == 72)
     /* "RuleParser.y":444  */ /* lalr1.java:489  */
-    { yyval = new VarDagNode(env, (( String )(yystack.valueAt (1-(1)))), Bindings.RIGHTLOCAL); };
+    { yyval = VarDagNode.getVarDagNode((( String )(yystack.valueAt (1-(1)))), Bindings.RIGHTLOCAL); };
   break;
     
 
@@ -1853,7 +1853,7 @@ private static final short yycheck_[] = yycheck_init();
   private FunCallDagNode getNewFunCallDagNode(String name, List args,
                                               Location loc) {
     try {
-      return new FunCallDagNode(env, name, args);
+      return new FunCallDagNode(name, args);
     }
     catch (NoSuchMethodException ex) {
       yyerror(loc, "No such Function registered: " + ex.getMessage());

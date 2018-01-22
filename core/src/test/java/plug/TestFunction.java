@@ -3,8 +3,9 @@ package plug;
 import java.util.List;
 
 import de.dfki.lt.tr.dialogue.cplan.UtterancePlanner;
+import de.dfki.lt.tr.dialogue.cplan.functions.AbstractFunction;
 
-public class TestFunction implements de.dfki.lt.tr.dialogue.cplan.functions.Function {
+public class TestFunction extends AbstractFunction {
 
   public Object apply(@SuppressWarnings("rawtypes") List args) {
     return (args.size() >= 2 ? args.get(1) : null);
@@ -17,6 +18,4 @@ public class TestFunction implements de.dfki.lt.tr.dialogue.cplan.functions.Func
   public int arity() {
     return -1;
   }
-
-  public void register(UtterancePlanner planner) { }
 }

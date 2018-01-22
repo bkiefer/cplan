@@ -3,18 +3,14 @@ package de.dfki.lt.tr.dialogue.cplan.actions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.dfki.lt.tr.dialogue.cplan.Bindings;
-import de.dfki.lt.tr.dialogue.cplan.DagEdge;
-import de.dfki.lt.tr.dialogue.cplan.DagNode;
-import de.dfki.lt.tr.dialogue.cplan.UnificationException;
-import de.dfki.lt.tr.dialogue.cplan.VarDagNode;
+import de.dfki.lt.tr.dialogue.cplan.*;
 
 public class Assignment extends Action {
 
   private static final Logger logger = LoggerFactory.getLogger("UtterancePlanner");
 
-  public Assignment(VarDagNode lval, DagNode dagNode) {
-    super(lval, dagNode);
+  public Assignment(Environment env, VarDagNode lval, DagNode dagNode) {
+    super(env, lval, dagNode);
   }
 
   @Override
@@ -25,23 +21,23 @@ public class Assignment extends Action {
     // have to be deleted destructively
     DagNode toAssign = _rval.cloneFS();
     try {
-      toAssign = toAssign.expandVars(bindings);
+      toAssign = toAssign.expandVars(_env, bindings);
     }
     catch (UnificationException uex) {
       logger.error("{}", uex);
       return false;
     }
-    if (root.getFeature() == _rval._env.PROP_FEAT_ID) {
-      DagNode prop = toAssign.getValue(_rval._env.PROP_FEAT_ID);
+    if (root.getFeature() == DagNode.PROP_FEAT_ID) {
+      DagNode prop = toAssign.getValue(DagNode.PROP_FEAT_ID);
       if (prop == null) {
         logger.warn("Trying to set proposition to non-atomic value, ignoring");
       } else {
         root.setValue(prop);
       }
-    } else if (root.getFeature() == _rval._env.TYPE_FEAT_ID) {
-      DagNode type = toAssign.getValue(_rval._env.TYPE_FEAT_ID);
+    } else if (root.getFeature() == DagNode.TYPE_FEAT_ID) {
+      DagNode type = toAssign.getValue(DagNode.TYPE_FEAT_ID);
       if (type == null) {
-        type = toAssign.getValue(_rval._env.PROP_FEAT_ID);
+        type = toAssign.getValue(DagNode.PROP_FEAT_ID);
       }
       if (type == null) {
         logger.warn("Trying to set type to non-atomic value, ignoring");

@@ -6,12 +6,9 @@ import com.ibm.icu.text.RuleBasedNumberFormat;
 import com.ibm.icu.util.ULocale;
 
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
-import de.dfki.lt.tr.dialogue.cplan.UtterancePlanner;
-import de.dfki.lt.tr.dialogue.cplan.functions.Function;
+import de.dfki.lt.tr.dialogue.cplan.functions.AbstractFunction;
 
-public class NumberToString implements Function {
-
-  UtterancePlanner _planner;
+public class NumberToString extends AbstractFunction {
 
   private RuleBasedNumberFormat _numberFormatter;
 
@@ -20,7 +17,7 @@ public class NumberToString implements Function {
       _numberFormatter = new RuleBasedNumberFormat(
           new ULocale(_planner.getLanguage()), RuleBasedNumberFormat.SPELLOUT);
     }
-    String str = args.get(0).toString(false);
+    String str = toString(args.get(0));
     try {
       int i = Integer.parseInt(str);
       String s = _numberFormatter.format(i);
@@ -39,9 +36,5 @@ public class NumberToString implements Function {
 
   public int arity() {
     return 1;
-  }
-
-  public void register(UtterancePlanner planner) {
-    _planner = planner;
   }
 }

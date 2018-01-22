@@ -5,23 +5,23 @@ public class VarDagNode extends SpecialDagNode {
   private String _varName;
   private Path _path;
 
-  public VarDagNode(Environment env, String string, int status) {
-    this(env, string, status, null);
+  public static VarDagNode getVarDagNode(String string, int status) {
+    return new VarDagNode(string, status, null);
   }
 
-  public VarDagNode(Environment env, String string, Path path) {
-    this(env, string, Bindings.GLOBAL, path);
+  public static VarDagNode getVarDagNode(String string, Path path) {
+    return new VarDagNode (string, Bindings.GLOBAL, path);
   }
 
-  private VarDagNode(Environment env, String string, int status, Path path) {
-    super(env, status);
+  private VarDagNode(String string, int status, Path path) {
+    super(status);
     _varName = string;
     _path = path;
   }
 
   @Override
   public DagNode clone(int type) {
-    return new VarDagNode(_env, _varName, type, _path);
+    return new VarDagNode(_varName, type, _path);
   }
 
   /** Return the binding associated with this variable, if there is any. This
@@ -33,7 +33,7 @@ public class VarDagNode extends SpecialDagNode {
     if (current == null &&
         (getType() == Bindings.GLOBAL || getType() == Bindings.RIGHTLOCAL)) {
       // create a new global or right local variable
-      current = new DagEdge((short)-1, new DagNode(_env));
+      current = new DagEdge((short)-1, new DagNode());
       bindings.bind(_varName, current, getType());
     }
     if (getType() == Bindings.GLOBAL) {
@@ -76,7 +76,7 @@ public class VarDagNode extends SpecialDagNode {
     }
     // Avoid unwanted coreferences for atomic nodes
     if (bound.getValue().edgesAreEmpty()
-        && bound.getValue().getType() != _env.TOP_ID) {
+        && bound.getValue().getType() != DagNode.TOP_ID) {
       return bound.getValue().cloneFS();
     }
     return bound.getValue();
@@ -91,7 +91,7 @@ public class VarDagNode extends SpecialDagNode {
   */
 
   @Override
-  public void toStringSpecial(StringBuilder sb) {
+  public void toStringSpecial(Environment env, StringBuilder sb) {
     switch (getType()) {
     case Bindings.ABSOLUTE:
       sb.append(_varName).append(':');
@@ -104,7 +104,7 @@ public class VarDagNode extends SpecialDagNode {
       sb.append("##").append(_varName);
       if (_path != null) {
         for(short feat : _path) {
-          sb.append("<").append(_env.getFeatureName(feat)).append(">");
+          sb.append("<").append(env.getFeatureName(feat)).append(">");
         }
       }
       break;

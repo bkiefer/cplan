@@ -2,22 +2,24 @@ package de.dfki.lt.tr.dialogue.cplan.io;
 
 import de.dfki.lt.tr.dialogue.cplan.DagEdge;
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
+import de.dfki.lt.tr.dialogue.cplan.Environment;
 import de.dfki.lt.tr.dialogue.cplan.SpecialDagNode;
 
 public class LFDebugPrinter extends DagPrinter {
 
-  private StringBuilder specialEdgeString(DagEdge edge, StringBuilder sb) {
+  private StringBuilder specialEdgeString(Environment env, DagEdge edge,
+      StringBuilder sb) {
     DagNode val = edge.getValue().dereference();
     if (val instanceof SpecialDagNode) {
-      ((SpecialDagNode)val).toStringSpecial(sb);
+      ((SpecialDagNode)val).toStringSpecial(env, sb);
     } else {
-      sb.append(val.getTypeName());
+      sb.append(env.getTypeName(val));
     }
     return sb;
   }
 
   @Override
-  public void toStringRec(DagNode hereNode, boolean readable,
+  public void toStringRec(Environment env, DagNode hereNode, boolean readable,
       StringBuilder sb) {
     if (hereNode == null) {
       sb.append("(null)");
@@ -42,20 +44,20 @@ public class LFDebugPrinter extends DagPrinter {
         DagEdge edge = fvListIt.next();
         short feature = edge.getFeature();
         sb.append(' ');
-        if (feature == here._env.ID_FEAT_ID) {
-          specialEdgeString(edge, sb).append(':');
-        } else if (feature == here._env.TYPE_FEAT_ID) {
-          sb.append(':'); specialEdgeString(edge, sb);
-        } else if (feature == here._env.PROP_FEAT_ID) {
-          specialEdgeString(edge, sb);
+        if (feature == env.ID_FEAT_ID) {
+          specialEdgeString(env, edge, sb).append(':');
+        } else if (feature == env.TYPE_FEAT_ID) {
+          sb.append(':'); specialEdgeString(env, edge, sb);
+        } else if (feature == env.PROP_FEAT_ID) {
+          specialEdgeString(env, edge, sb);
         } else {
-          sb.append(readable ? edge.getName() : edge.getFeature());
-          toStringRec(edge.getValue(), readable, sb);
+          sb.append(readable ? env.getName(edge) : edge.getFeature());
+          toStringRec(env, edge.getValue(), readable, sb);
         }
       }
     }
     else {
-      sb.append('@').append(here.getTypeName()).append('@');
+      sb.append('@').append(env.getTypeName(here)).append('@');
     }
     sb.append(']');
   }

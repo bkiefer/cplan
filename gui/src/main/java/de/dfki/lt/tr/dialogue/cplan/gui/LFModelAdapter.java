@@ -6,17 +6,22 @@ import java.util.Iterator;
 import de.dfki.lt.loot.Pair;
 import de.dfki.lt.loot.gui.adapters.MapAdapterIterator;
 import de.dfki.lt.loot.gui.adapters.ModelAdapter;
-import de.dfki.lt.loot.gui.adapters.ModelAdapterFactory;
 import de.dfki.lt.tr.dialogue.cplan.DagEdge;
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
+import de.dfki.lt.tr.dialogue.cplan.Environment;
 
 public class LFModelAdapter extends ModelAdapter {
 
   public static short[] _excludedFeatures;
 
-  public static void init(short[] excluded) {
-    ModelAdapterFactory.registerAdapter(DagNode.class, LFModelAdapter.class);
-    _excludedFeatures = excluded;
+  private Environment _env;
+
+  public static init(short[] excludedFeatures) {
+    _env = env;
+    _excludedFeatures = new short[3];
+    _excludedFeatures[0] = _env.ID_FEAT_ID;
+    _excludedFeatures[1] = _env.TYPE_FEAT_ID;
+    _excludedFeatures[2] = _env.PROP_FEAT_ID;
   }
 
   private class EdgeAdapterIterator implements MapAdapterIterator {
@@ -30,7 +35,7 @@ public class LFModelAdapter extends ModelAdapter {
         DagEdge edge = _iterator.next();
         if (_excludedFeatures == null ||
             Arrays.binarySearch(_excludedFeatures, edge.getFeature()) < 0)
-          _current = new Pair<Object, Object>(edge.getName(), edge.getValue());
+          _current = new Pair<Object, Object>(_env.getName(edge), edge.getValue());
       }
     }
 
@@ -113,15 +118,15 @@ public class LFModelAdapter extends ModelAdapter {
         if (id == null && type == null && prop == null) return null;
 
         StringBuilder sb = new StringBuilder();
-        if (id != null) sb.append(id.getTypeName());
+        if (id != null) sb.append(_env.getTypeName(id));
         sb.append(":");
-        if (type != null) sb.append(type.getTypeName());
-        if (prop != null) sb.append(" ^ ").append(prop.getTypeName());
+        if (type != null) sb.append(_env.getTypeName(type));
+        if (prop != null) sb.append(" ^ ").append(_env.getTypeName(prop));
         return sb.toString();
       }
       else {
         return
-        node.getEdge(_excludedFeatures[2]).getValue().dereference().getTypeName();
+        _env.getTypeName(node.getEdge(_excludedFeatures[2]).getValue().dereference());
         //return node.getTypeName();
       }
     }

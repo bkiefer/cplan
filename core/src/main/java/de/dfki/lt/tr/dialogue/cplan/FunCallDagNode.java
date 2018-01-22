@@ -16,8 +16,8 @@ public class FunCallDagNode extends SpecialDagNode {
   private List _args;
 
   @SuppressWarnings("rawtypes")
-  public FunCallDagNode(Environment env, String name, List args) throws NoSuchMethodException {
-    super(env);
+  public FunCallDagNode(String name, List args) throws NoSuchMethodException {
+    super();
     _name = name;
     _function = FunctionFactory.get(_name);
     if (_function == null) {
@@ -47,7 +47,7 @@ public class FunCallDagNode extends SpecialDagNode {
           }
         }
       }
-      FunCallDagNode result = new FunCallDagNode(_env, _name, args);
+      FunCallDagNode result = new FunCallDagNode(_name, args);
       result._typeCode = type;
       return result;
     }
@@ -57,17 +57,23 @@ public class FunCallDagNode extends SpecialDagNode {
     return null;
   }
 
+  private String toString(Environment env, Object o) {
+    return (o instanceof DagNode)
+        ? env.toString((DagNode)o)
+            : o.toString();
+  }
+
   @Override
   @SuppressWarnings("rawtypes")
-  public void toStringSpecial(StringBuilder sb) {
+  public void toStringSpecial(Environment env, StringBuilder sb) {
     sb.append(_name).append('(');
     if (_args != null) {
       Iterator it = _args.iterator();
       if (it.hasNext()) {
-        sb.append((it.next()).toString());
+        sb.append(toString(env, (it.next())));
       }
       while (it.hasNext()) {
-        sb.append(", ").append((it.next()).toString());
+        sb.append(", ").append(toString(env, (it.next())));
       }
     }
     sb.append(')');
@@ -107,12 +113,7 @@ public class FunCallDagNode extends SpecialDagNode {
 
   @Override
   public DagNode evaluate(DagNode input, Bindings bindings) {
-    Object o = _function.apply(getActualParameters(_args, input, bindings));
-    DagNode dag =
-      ((o instanceof DagNode)
-          ? ((DagNode) o)
-              : new DagNode(_env.PROP_FEAT_ID, new DagNode(_env, o.toString())));
-    return dag;
+    return _function.evaluate(getActualParameters(_args, input, bindings));
   }
 
 }
