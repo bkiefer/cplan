@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.jar.JarFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.dfki.lt.tr.dialogue.cplan.functions.AbstractFunction;
 import de.dfki.lt.tr.dialogue.cplan.functions.Function;
 
 public class PluginLoader{
@@ -41,10 +43,12 @@ public class PluginLoader{
     Class<?> aClass;
     try {
       aClass = classloader.loadClass(name);
-      for (Class<?> i : aClass.getInterfaces()) {
-        if (i.equals(Function.class)) {
+      Class<?> i = aClass;
+      while (i != Object.class) {
+        if (Arrays.asList(i.getInterfaces()).contains(Function.class)) {
           return (Function) aClass.newInstance();
         }
+        i = i.getSuperclass();
       }
     } catch (ClassNotFoundException e) {
       logger.warn("{}", e);

@@ -14,8 +14,6 @@ public class WarningFunction extends AbstractFunction {
 
   protected Logger logger = LoggerFactory.getLogger("UtterancePlanner");
 
-  private UtterancePlanner _planner;
-
   public Object apply(List<DagNode> args) {
     if (args != null && args.size() >= 1) {
       logger.warn("{}", _planner.getEnvironment().getTypeName(args.get(0)));

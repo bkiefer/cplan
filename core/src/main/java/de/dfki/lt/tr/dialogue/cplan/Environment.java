@@ -26,11 +26,12 @@ public class Environment {
   /** Special feature name for the id of a nominal */
   public short ID_FEAT_ID = -1;
 
+  /** Special feature name for the type of a nominal */
+  public short TYPE_FEAT_ID = -1;
+
   /** Special feature name for the preposition of a nominal */
   public short PROP_FEAT_ID = -1;
 
-  /** Special feature name for the type of a nominal */
-  public short TYPE_FEAT_ID = -1;
 
   private static final String[] featureOrder =
     { "__ID", "__TYPE", "__PROP", "Cop-Restr", "Cop-Scope" };

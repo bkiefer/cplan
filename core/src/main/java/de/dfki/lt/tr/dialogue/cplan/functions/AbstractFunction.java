@@ -2,7 +2,6 @@ package de.dfki.lt.tr.dialogue.cplan.functions;
 
 import java.util.List;
 
-import de.dfki.lt.tr.dialogue.cplan.Bindings;
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
 import de.dfki.lt.tr.dialogue.cplan.Environment;
 import de.dfki.lt.tr.dialogue.cplan.UtterancePlanner;

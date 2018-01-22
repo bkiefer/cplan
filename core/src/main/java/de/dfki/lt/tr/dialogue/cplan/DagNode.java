@@ -41,11 +41,12 @@ public class DagNode {
   /** Special feature id for the id of a nominal */
   public static final short ID_FEAT_ID = 0;
 
-  /** Special feature id for the preposition of a nominal */
-  public static final short PROP_FEAT_ID = 1;
-
   /** Special feature id for the type of a nominal */
-  public static final short TYPE_FEAT_ID = 2;
+  public static final short TYPE_FEAT_ID = 1;
+
+  /** Special feature id for the preposition of a nominal */
+  public static final short PROP_FEAT_ID = 2;
+
 
   /** The top type must have id zero, and the bottom type -1 */
   public static final int TOP_ID = 0;

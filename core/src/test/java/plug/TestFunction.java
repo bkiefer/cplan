@@ -2,7 +2,6 @@ package plug;
 
 import java.util.List;
 
-import de.dfki.lt.tr.dialogue.cplan.UtterancePlanner;
 import de.dfki.lt.tr.dialogue.cplan.functions.AbstractFunction;
 
 public class TestFunction extends AbstractFunction {
