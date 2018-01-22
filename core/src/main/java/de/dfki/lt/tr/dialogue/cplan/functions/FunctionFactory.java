@@ -5,23 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import de.dfki.lt.tr.dialogue.cplan.UtterancePlanner;
-import de.dfki.lt.tr.dialogue.cplan.functions.math.Add;
-import de.dfki.lt.tr.dialogue.cplan.functions.math.Div;
-import de.dfki.lt.tr.dialogue.cplan.functions.math.Eq;
-import de.dfki.lt.tr.dialogue.cplan.functions.math.Gt;
-import de.dfki.lt.tr.dialogue.cplan.functions.math.GtEq;
-import de.dfki.lt.tr.dialogue.cplan.functions.math.Lt;
-import de.dfki.lt.tr.dialogue.cplan.functions.math.LtEq;
-import de.dfki.lt.tr.dialogue.cplan.functions.math.Mult;
-import de.dfki.lt.tr.dialogue.cplan.functions.math.Neg;
-import de.dfki.lt.tr.dialogue.cplan.functions.math.Not;
-import de.dfki.lt.tr.dialogue.cplan.functions.math.Sub;
-import de.dfki.lt.tr.dialogue.cplan.functions.string.Concatenate;
-import de.dfki.lt.tr.dialogue.cplan.functions.string.Contains;
-import de.dfki.lt.tr.dialogue.cplan.functions.string.Endswith;
-import de.dfki.lt.tr.dialogue.cplan.functions.string.Length;
-import de.dfki.lt.tr.dialogue.cplan.functions.string.Substring;
-import de.dfki.lt.tr.dialogue.cplan.functions.string.WordCount;
+import de.dfki.lt.tr.dialogue.cplan.functions.math.*;
+import de.dfki.lt.tr.dialogue.cplan.functions.string.*;
 import de.dfki.lt.tr.dialogue.cplan.util.PluginLoader;
 
 
@@ -69,6 +54,8 @@ public class FunctionFactory {
     register(new Contains(), planner);
     register(new Endswith(), planner);
     register(new Substring(), planner);
+    register(new NumberToString(), planner);
+    register(new OrdinalToString(), planner);
   }
 
   public static void registerPlugins(File pluginDirectory,

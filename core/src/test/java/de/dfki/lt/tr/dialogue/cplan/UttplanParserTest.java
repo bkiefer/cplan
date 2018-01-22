@@ -1349,6 +1349,18 @@ public class UttplanParserTest {
       "@e:enc(<enc> iso-8859-15 ^ <val> \"äÖìâé\" ^ <val2> \"\")",
       "@e:enc(<enc> iso-8859-15 ^ <val> \"äÖìâé\" ^ <val2> \"\" ^ <right> true)"
     },
+
+    // Example 19
+    { "", // no rule, to test grammars in file
+      "@s:string(<number>333)",
+      "@s:string(<number>333 ^ <numberAsString>\"driehonderddrieëndertig\")",
+    },
+
+    // Example 20
+    { "", // no rule, to test grammars in file
+      "@s:string(<ordinal>\"333\")",
+      "@s:string(<ordinal>\"333\" ^ <numberAsString>\"333e\")",
+    },
   };
 
   /* Test loading a grammar/project from a test fixture directory */
@@ -1374,4 +1386,6 @@ public class UttplanParserTest {
       testApplyOne(up, pattern, true, i++, false);
     }
   }
+
+
 }
