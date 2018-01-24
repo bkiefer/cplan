@@ -115,12 +115,14 @@ public class CcgUtterancePlanner extends UtterancePlanner {
           CcgHierarchy h;
           if (DagNode.isInitialized()) {
             Hierarchy e = DagNode.getHierarchy();
+            /*
             if (e instanceof FlatHierarchy) {
               h = new CcgHierarchy(_grammar, (FlatHierarchy)e);
             } else {
               logger.error("Only a Flat hierarchy can be integrated");
               h = new CcgHierarchy(_grammar);
-            }
+            }*/
+            h = new CcgHierarchy(_grammar, e);
           } else {
             h = new CcgHierarchy(_grammar);
           }
