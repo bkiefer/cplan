@@ -401,7 +401,6 @@ public class BatchTest {
   }
 
   public ResultItem realizeOneItem(RealizationTestItem item, int i) {
-    DagNode result = _planner.process(item.lf);
     String generated = "";
     StringWriter sw = new StringWriter();
     //Appender sentinel = new WriterAppender(new SimpleLayout(), sw);
@@ -409,7 +408,9 @@ public class BatchTest {
     //plannerLogger.addAppender(sentinel);
     Status resultStatus = Status.GOOD;
     boolean warnings = false;
+    DagNode result = null;
     try {
+      result = _planner.process(item.lf);
       generated = _planner.doRealization(result);
     }
     catch (NullPointerException ex) {

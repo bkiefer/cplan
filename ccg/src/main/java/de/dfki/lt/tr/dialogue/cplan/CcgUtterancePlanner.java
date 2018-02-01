@@ -349,17 +349,21 @@ public class CcgUtterancePlanner extends UtterancePlanner {
       out.flush();
       int equalTurns = 0;
       while (drf.newRound() && ++equalTurns < MAX_EQUAL_TURNS) {
-        ResultItem res = bt.realizeOneItem(item, i);
+        ResultItem res = null;
+        res = bt.realizeOneItem(item, i);
+        String result = null;
         if (res.itemStatus == BatchTest.Status.GOOD) {
-          String result = punctRegex.matcher(res.realized).replaceAll("$1");
+          result = punctRegex.matcher(res.realized).replaceAll("$1");
           result = spaceRegex.matcher(result).replaceAll(" ");
-          if (result.isEmpty()) break;
-          if (! sents.contains(result)) {
-            equalTurns = 0;
-            sents.add(result);
-            out.append(result).append(nl);
-            out.flush();
-          }
+        } else if (! useCcgRealizer) {
+          result = res.outputLf.toString(true);
+        }
+        if (result.isEmpty()) break;
+        if (! sents.contains(result)) {
+          equalTurns = 0;
+          sents.add(result);
+          out.append(result).append(nl);
+          out.flush();
         }
       }
       System.err.println(sents.size()
