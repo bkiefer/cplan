@@ -358,7 +358,7 @@ public class CcgUtterancePlanner extends UtterancePlanner {
         } else if (! useCcgRealizer) {
           result = res.outputLf.toString(true);
         }
-        if (result.isEmpty()) break;
+        if (result == null || result.isEmpty()) break;
         if (! sents.contains(result)) {
           equalTurns = 0;
           sents.add(result);
