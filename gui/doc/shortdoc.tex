@@ -689,10 +689,31 @@ Mathematical functions expecting \texttt{double} arguments will return
 \item \texttt{neg} is unary minus.
 \end{itemize}
 
+\section{String Functions}
+\begin{itemize}
+\item \texttt{cat} concatenates an arbitrary number of strings and
+  returns the result
+\item \texttt{concatenate} same as \texttt{cat}, deprecated, use \texttt{cat} instead
+\item \texttt{contains} returns 1 if first string contains the second, 0
+  otherwise
+\item \texttt{endswith} returns 1 if first string ends with the second, 0
+  otherwise
+\item \texttt{length} returns the length of the string argument
+\item \texttt{substring} needs three arguments, a string \texttt{s} and two integers
+  \texttt{from} and \texttt{to}, and returns the substring of \texttt{s} from
+  \texttt{from} inclusively to \texttt{to} exclusively. If \texttt{from} or
+  \texttt{to} are negative, the position is taken from the end of the string,
+  plus one.
+\item \texttt{wc} returns the number of words (token separated by whitespace)
+  in the string
+\item \texttt{spell\_number} returns the string representation (cardinal) of
+  the argument in the current language, which must be a number
+\item \texttt{spell\_ordinal} returns the string representation (ordinal) of
+  the argument in the current language, which must be a number
+\end{itemize}
+
 \section{Other Functions}
 \begin{itemize}
-\item \texttt{concatenate} concatenates an arbitrary number of strings and
-  returns the result
 \item \texttt{clone} clones the argument node, to get independent copies of
   parts of the current structure
 \item \texttt{random} takes an arbitrary number of arguments and randomly
@@ -702,6 +723,8 @@ Mathematical functions expecting \texttt{double} arguments will return
   processing of the current input.
 \item \texttt{warning} logs a warning message on to the
   \texttt{UtterancePlanner} main logger, and always returns \texttt{true}
+\item \texttt{bound} return 1 (true) if the value of some variable is non-null,
+  i.e., the variable is bound, 0 (false) otherwise
 \end{itemize}
 
 \chapter{Adding New Functions}
