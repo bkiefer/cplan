@@ -400,7 +400,8 @@ public class BatchTest {
     return ! (red.isEmpty() || "and".equals(red));
   }
 
-  public ResultItem realizeOneItem(RealizationTestItem item, int i) {
+  public ResultItem realizeOneItem(CcgUtterancePlanner planner,
+      RealizationTestItem item, int i) {
     String generated = "";
     StringWriter sw = new StringWriter();
     //Appender sentinel = new WriterAppender(new SimpleLayout(), sw);
@@ -410,8 +411,8 @@ public class BatchTest {
     boolean warnings = false;
     DagNode result = null;
     try {
-      result = _planner.process(item.lf);
-      generated = _planner.doRealization(result);
+      result = planner.process(item.lf);
+      generated = planner.doRealization(result);
     }
     catch (NullPointerException ex) {
       generated = "**** FAILURE ****";
@@ -443,7 +444,8 @@ public class BatchTest {
         _realizationTest);
   }
 
-  public ResultItem parseOneItem(ParsingTestItem item, int i) {
+  public ResultItem parseOneItem(CcgUtterancePlanner planner,
+      ParsingTestItem item, int i) {
     StringWriter sw = new StringWriter();
     String generated = "";
     //Appender sentinel = new WriterAppender(new SimpleLayout(), sw);
@@ -453,7 +455,7 @@ public class BatchTest {
     boolean warnings = false;
     DagNode result = null;
     try {
-      result = _planner.analyze(item.input);
+      result = planner.analyze(item.input);
     }
     catch (NullPointerException ex) {
       generated = "**** FAILURE ****";
@@ -493,7 +495,8 @@ public class BatchTest {
         _realizationTest);
   }
 
-  public ResultItem planOneItem(PlanningTestItem item, int i) {
+  public ResultItem planOneItem(CcgUtterancePlanner planner,
+      PlanningTestItem item, int i) {
     String generated = "";
     StringWriter sw = new StringWriter();
     //Appender sentinel = new WriterAppender(new SimpleLayout(), sw);
@@ -503,7 +506,7 @@ public class BatchTest {
     boolean warnings = false;
     DagNode result = null;
     try {
-      result = _planner.process(item.lf);
+      result = planner.process(item.lf);
     }
     catch (NullPointerException ex) {
       generated = "**** FAILURE ****";
@@ -538,12 +541,20 @@ public class BatchTest {
     _bad.clear();
     _good.clear();
     int i = 0;
+    CcgUtterancePlanner planner;
+    try {
+      planner = new CcgUtterancePlanner(_planner);
+    } catch (IOException ioex) {
+      logger.error("Can not initialize new processor for batch processing");
+      return;
+    }
+
     for (TestItem item : _items) {
       ResultItem res = null;
       switch(_realizationTest) {
-      case GENERATION: res = realizeOneItem((RealizationTestItem)item, i); break;
-      case PARSING: res = parseOneItem((ParsingTestItem)item, i); break;
-      case PLANNING: res = planOneItem((PlanningTestItem)item, i); break;
+      case GENERATION: res = realizeOneItem(planner, (RealizationTestItem)item, i); break;
+      case PARSING: res = parseOneItem(planner, (ParsingTestItem)item, i); break;
+      case PLANNING: res = planOneItem(planner, (PlanningTestItem)item, i); break;
       }
       ++i;
       if (res.itemStatus == Status.BAD) {

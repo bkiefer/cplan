@@ -90,6 +90,13 @@ public class DagNode {
     }
   }
 
+  public static void reset() {
+    _types = null;
+    ID_FEAT_ID = -1;
+    TYPE_FEAT_ID = -1;
+    PROP_FEAT_ID = -1;
+  }
+
   public static boolean isInitialized() {
     return _types != null;
   }

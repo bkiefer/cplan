@@ -612,8 +612,8 @@ public class UPMainFrame extends MainFrame {
     private CcgUtterancePlanner _batchPlanner;
 
     public BatchProcessor(CcgUtterancePlanner planner, BatchType realize) {
-      realizationTest = realize;
       _batchPlanner = planner;
+      realizationTest = realize;
     }
 
     public boolean processFile(File toProcess, MainFrame mf) {
@@ -637,17 +637,9 @@ public class UPMainFrame extends MainFrame {
       setStatusLine("Batch already running", Color.RED);
       return;
     }
-    CcgUtterancePlanner batchPlanner;
-    try {
-      batchPlanner = new CcgUtterancePlanner(_planner);
-    } catch (IOException ioex) {
-      Logger.getLogger("UtterancePlanner")
-      .error("Can not initialize new processor for batch processing");
-      return;
-    }
 
     // select and process batch file
-    final BatchProcessor bp = new BatchProcessor(batchPlanner, realize);
+    final BatchProcessor bp = new BatchProcessor(_planner, realize);
     openFileDialog(bp);
     if (bp.bt == null)
       return;

@@ -157,8 +157,12 @@ public class CcgUtterancePlanner extends UtterancePlanner {
     // handle "canned text" output.
     DagEdge edge = dag.getEdge(DagNode.TYPE_FEAT_ID);
     if (edge != null && edge.getValue().getTypeName().equals("canned")){
-      edge = dag.getEdge(DagNode.getFeatureId("string"))
-      .getValue().getEdge(DagNode.PROP_FEAT_ID);
+      edge = dag.getEdge(DagNode.getFeatureId("string"));
+      if (edge == null) {
+        logger.error("No <string> attribute for canned result");
+        return "***FAILURE***";
+      }
+      edge = edge.getValue().getEdge(DagNode.PROP_FEAT_ID);
       result = edge.getValue().getTypeName();
     } else {
       result = realize(dag);
@@ -350,7 +354,7 @@ public class CcgUtterancePlanner extends UtterancePlanner {
       int equalTurns = 0;
       while (drf.newRound() && ++equalTurns < MAX_EQUAL_TURNS) {
         ResultItem res = null;
-        res = bt.realizeOneItem(item, i);
+        res = bt.realizeOneItem(this, item, i);
         String result = null;
         if (res.itemStatus == BatchTest.Status.GOOD) {
           result = punctRegex.matcher(res.realized).replaceAll("$1");

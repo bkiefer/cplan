@@ -8,6 +8,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -44,6 +49,19 @@ public class ItemsTableWindow extends JFrame {
   private ItemsTableModel _model;
 
   private boolean _showGood, _showBad;
+
+  private boolean[] _showColumn = { true, true, false, true, false };
+
+  private static BiFunction<ResultItem, BatchTest, String>[] _showFunction = new BiFunction[5];
+  static {
+    _showFunction[0] = (ResultItem item, BatchTest bt) -> item.itemStatus.name().substring(0, 1);
+    _showFunction[1] = (ResultItem item, BatchTest bt) -> bt.getItem(item.testItemIndex).input().toString();
+    _showFunction[2] = (ResultItem item, BatchTest bt) -> item.outputLf.toString(true);
+    _showFunction[3] = (ResultItem item, BatchTest bt) -> item.realized;
+    _showFunction[4] = (ResultItem item, BatchTest bt) -> BatchTest.showSet(bt.getItem(item.testItemIndex).output());
+  };
+
+  private Map<Integer, Integer> _mapCols = new HashMap<>();;
 
   private UPMainFrame _parent;
 
@@ -84,6 +102,15 @@ public class ItemsTableWindow extends JFrame {
     " ", "Input LF", "Output LF", "Realized output", "Expected Output"
   };
 
+  private void setColMap() {
+    _mapCols.clear();
+    int from = 0;
+    for (int i = 0; i < columnNames.length; ++i) {
+      if (_showColumn[i]) _mapCols.put(from++, i);
+    }
+  }
+
+
   //private static String[] names = { "Input LF", "Expected Output" };
 
     /** <code>Terminator</code> defines action to be done when closing a frame.
@@ -113,6 +140,23 @@ public class ItemsTableWindow extends JFrame {
     }
   }
 
+  private class ShowColAction extends AbstractAction {
+    private static final long serialVersionUID = 1L;
+    private int colNo;
+
+    public ShowColAction(int col) {
+      super(columnNames[col]);
+      colNo = col;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      _showColumn[colNo] = ((JCheckBox)e.getSource()).isSelected();
+      setColMap();
+      ((ItemsTableModel)ItemsTableWindow.this._itemsDisplay.getModel())
+      .fireTableStructureChanged();
+    }
+  };
+
   /** A read-only model to display the test items in a JTable.
    *  Depending on the _bad field of {@link ItemsTableWindow}, this will
    *  either show all test items, or the failed tests.
@@ -120,19 +164,26 @@ public class ItemsTableWindow extends JFrame {
   private class ItemsTableModel extends AbstractTableModel {
     private static final long serialVersionUID = 1L;
 
-    protected String[] colNames() { return columnNames; }
+    protected String colNames(int i) {
+      return columnNames[_mapCols.get(i)];
+    }
 
     private BatchTest _bt;
 
     /** create a new model with initial content */
-    public ItemsTableModel(BatchTest bt) { setTest(bt); }
+    public ItemsTableModel(BatchTest bt) {
+      setTest(bt);
+      setColMap();
+    }
 
     /** \todo i could try to use DagNode as class and see what happens */
     @Override
     public Class<?> getColumnClass(int colIndex) { return String.class; }
 
     @Override
-    public String getColumnName(int colIndex) { return colNames()[colIndex]; }
+    public String getColumnName(int colIndex) {
+      return columnNames[_mapCols.get(colIndex)];
+    }
 
     /** put a new set of bindings into this model, changing its content */
     public void setTest(BatchTest bt) {
@@ -140,7 +191,7 @@ public class ItemsTableWindow extends JFrame {
       fireTableDataChanged();
     }
 
-    public int getColumnCount() { return colNames().length; }
+    public int getColumnCount() { return _mapCols.size(); }
 
     public int getRowCount() {
       int result = _showGood ? _bt.goodSize() : 0;
@@ -160,14 +211,7 @@ public class ItemsTableWindow extends JFrame {
 
     public Object getValueAt(int rowIndex, int columnIndex) {
       ResultItem item = getItem(rowIndex);
-      switch (columnIndex) {
-      case 0: return item.itemStatus.name().substring(0, 1);
-      case 1: return _bt.getItem(item.testItemIndex).input();
-      case 2: return item.outputLf;
-      case 3: return item.realized;
-      case 4: return BatchTest.showSet(_bt.getItem(item.testItemIndex).output());
-      }
-      assert(false); return null;
+      return _showFunction[_mapCols.get(columnIndex)].apply(item, _bt);
     }
 
     public ResultItem getItem(int rowIndex) {
@@ -374,6 +418,14 @@ public class ItemsTableWindow extends JFrame {
     });
     showBad.setSelected(_showBad);
 
+    // add check boxes to display mapper/output/expected columns
+
+    JCheckBox showCol[] = new JCheckBox[columnNames.length - 2];
+    for (int col = 2; col < columnNames.length; ++col) {
+      showCol[col - 2] = new JCheckBox(new ShowColAction(col));
+      showCol[col - 2].setSelected(_showColumn[col]);
+    }
+
     // add status line
     _statusLine = new JLabel();
     clearStatusLine();
@@ -389,7 +441,12 @@ public class ItemsTableWindow extends JFrame {
     buttonPane.add(Box.createRigidArea(new Dimension(0, 0)));
     showGood.setAlignmentX(Component.RIGHT_ALIGNMENT);
     buttonPane.add(showBad);
-
+    for (int col = 2; col < columnNames.length; ++col) {
+      showGood = showCol[col - 2];
+      buttonPane.add(Box.createRigidArea(new Dimension(0, 0)));
+      showGood.setAlignmentX(Component.RIGHT_ALIGNMENT);
+      buttonPane.add(showGood);
+    }
     contentPane.add(buttonPane, BorderLayout.SOUTH);
 
     _model = new ItemsTableModel(bt);
@@ -401,7 +458,7 @@ public class ItemsTableWindow extends JFrame {
     TableRowSorter<TableModel> sorter =
       new TableRowSorter<TableModel>(_itemsDisplay.getModel());
     sorter.setSortable(1, false);
-    sorter.setSortable(2, false);
+    //sorter.setSortable(2, false);
     _itemsDisplay.setRowSorter(sorter);
 
     _itemsDisplay.setDefaultRenderer(_itemsDisplay.getColumnClass(2),
