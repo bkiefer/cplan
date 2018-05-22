@@ -26,28 +26,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
-  <repositories>
-    <repository>
-      <id>FORSCHUNGSSOFTWARE</id>
-      <name>FORSCHUNGSSOFTWARE</name>
-      <url>http://www.forschungssoftware.de/nexus/content/groups/public/</url>
-    </repository>
-  </repositories>
-
-  <distributionManagement>
-    <snapshotRepository>
-      <id>FORSCHUNGSSOFTWARE</id>
-      <name>FORSCHUNGSSOFTWARE</name>
-      <url>https://www.forschungssoftware.de/nexus/content/repositories/snapshots/</url>
-    </snapshotRepository>
-
-    <repository>
-      <id>FORSCHUNGSSOFTWARE</id>
-      <name>FORSCHUNGSSOFTWARE</name>
-      <url>https://www.forschungssoftware.de/nexus/content/repositories/releases/</url>
-    </repository>
-  </distributionManagement>
-
   <build>
     <plugins>
       <plugin>
