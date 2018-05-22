@@ -95,6 +95,8 @@ public class DagNode {
     ID_FEAT_ID = -1;
     TYPE_FEAT_ID = -1;
     PROP_FEAT_ID = -1;
+    totalNoNodes = totalNoArcs = 0;
+    copyGeneration = currentGeneration = 1;
   }
 
   public static boolean isInitialized() {
