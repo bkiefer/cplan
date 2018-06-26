@@ -23,7 +23,9 @@ import de.dfki.lt.loot.gui.util.FileAssociation;
 import de.dfki.lt.loot.gui.util.FileProcessor;
 import de.dfki.lt.loot.gui.util.FileProcessorAdapter;
 import de.dfki.lt.tr.dialogue.cplan.*;
-import de.dfki.lt.tr.dialogue.cplan.BatchTest.BatchType;
+import de.dfki.lt.tr.dialogue.cplan.batch.BatchTest;
+import de.dfki.lt.tr.dialogue.cplan.batch.ProgressListener;
+import de.dfki.lt.tr.dialogue.cplan.batch.BatchTest.BatchType;
 import de.dfki.lt.tr.dialogue.cplan.util.ListRangeModel;
 import de.dfki.lt.tr.dialogue.cplan.util.Position;
 

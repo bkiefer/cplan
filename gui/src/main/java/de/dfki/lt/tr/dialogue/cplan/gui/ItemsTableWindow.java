@@ -36,11 +36,9 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import de.dfki.lt.loot.gui.MainFrame.RunnableAction;
-import de.dfki.lt.tr.dialogue.cplan.BatchTest;
-import de.dfki.lt.tr.dialogue.cplan.BatchTest.ParsingTestItem;
-import de.dfki.lt.tr.dialogue.cplan.BatchTest.RealizationTestItem;
-import de.dfki.lt.tr.dialogue.cplan.BatchTest.ResultItem;
-import de.dfki.lt.tr.dialogue.cplan.BatchTest.TestItem;
+import de.dfki.lt.tr.dialogue.cplan.batch.*;
+import de.dfki.lt.tr.dialogue.cplan.batch.BatchTest.*;
+
 import java.awt.event.WindowAdapter;
 
 public class ItemsTableWindow extends JFrame {
@@ -316,6 +314,8 @@ public class ItemsTableWindow extends JFrame {
       parent().setOutput(item.outputLf);
       if (testItem instanceof RealizationTestItem) {
         parent().setInput(((RealizationTestItem) testItem).lf);
+      } else if (testItem instanceof PlanningTestItem) {
+        parent().setInput(((PlanningTestItem) testItem).lf);
       } else {
         parent().setInput(((ParsingTestItem) testItem).input);
       }

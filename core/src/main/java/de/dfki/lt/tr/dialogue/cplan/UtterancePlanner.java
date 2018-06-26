@@ -18,6 +18,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.dfki.lt.tr.dialogue.cplan.batch.BatchTest;
+import de.dfki.lt.tr.dialogue.cplan.batch.BatchTest.BatchType;
+import de.dfki.lt.tr.dialogue.cplan.batch.PlanningTestItem;
+import de.dfki.lt.tr.dialogue.cplan.batch.TestItem;
 import de.dfki.lt.tr.dialogue.cplan.functions.FunctionFactory;
 import de.dfki.lt.tr.dialogue.cplan.util.IniFileReader;
 import de.dfki.lt.tr.dialogue.cplan.util.Pair;
@@ -97,6 +101,10 @@ public class UtterancePlanner {
 
   public UtterancePlanner() {
     init();
+  }
+
+  public UtterancePlanner copy() throws IOException {
+    return new UtterancePlanner();
   }
 
   /** package visibility to allow unit tests to access this */
@@ -437,5 +445,12 @@ public class UtterancePlanner {
 
   synchronized public void interruptProcessing() {
     _interrupted = true;
+  }
+
+  public TestItem newTestItem(BatchType type) {
+    if (type != BatchType.PLANNING && type != BatchType.PLANNING_ALL) {
+      logger.warn("Batch test not compatible with planner: {}", type);
+    }
+    return new PlanningTestItem(null, null, null);
   }
 }

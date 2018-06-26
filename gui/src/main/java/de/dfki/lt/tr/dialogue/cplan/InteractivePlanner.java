@@ -8,7 +8,8 @@ import org.apache.log4j.*;
 
 import de.dfki.lt.j2emacs.J2Emacs;
 import de.dfki.lt.loot.gui.Style;
-import de.dfki.lt.tr.dialogue.cplan.BatchTest.BatchType;
+import de.dfki.lt.tr.dialogue.cplan.batch.BatchTest;
+import de.dfki.lt.tr.dialogue.cplan.batch.BatchTest.BatchType;
 import de.dfki.lt.tr.dialogue.cplan.functions.FunctionFactory;
 import de.dfki.lt.tr.dialogue.cplan.gui.LFModelAdapter;
 import de.dfki.lt.tr.dialogue.cplan.gui.UPMainFrame;

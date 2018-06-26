@@ -1,4 +1,4 @@
-package de.dfki.lt.tr.dialogue.cplan;
+package de.dfki.lt.tr.dialogue.cplan.batch;
 
 public interface ProgressListener {
 

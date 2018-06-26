@@ -7,9 +7,8 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import de.dfki.lt.tr.dialogue.cplan.BatchTest.BatchType;
-import de.dfki.lt.tr.dialogue.cplan.BatchTest.RealizationTestItem;
-import de.dfki.lt.tr.dialogue.cplan.BatchTest.ResultItem;
+import de.dfki.lt.tr.dialogue.cplan.batch.*;
+import de.dfki.lt.tr.dialogue.cplan.batch.BatchTest.BatchType;
 import de.dfki.lt.tr.dialogue.cplan.functions.DeterministicRandomFunction;
 import de.dfki.lt.tr.dialogue.cplan.functions.FunctionFactory;
 import de.dfki.lt.tr.dialogue.cplan.util.PairList;
@@ -42,10 +41,14 @@ public class CcgUtterancePlanner extends UtterancePlanner {
 
   public CcgUtterancePlanner() { super(); }
 
-  public CcgUtterancePlanner(CcgUtterancePlanner toClone)
+  private CcgUtterancePlanner(CcgUtterancePlanner toClone)
       throws FileNotFoundException, IOException {
     super();
     readProjectFile(toClone.getProjectFile());
+  }
+
+  public UtterancePlanner copy() throws IOException {
+    return new CcgUtterancePlanner(this);
   }
 
   private int _dUnitTypeId;
@@ -321,6 +324,14 @@ public class CcgUtterancePlanner extends UtterancePlanner {
     return bt;
   }
 
+  public TestItem newTestItem(BatchType type) {
+    switch (type) {
+    case GENERATION:
+    case GENERATION_ALL: return new RealizationTestItem(null, null, null);
+    case PARSING: return new ParsingTestItem(null, null, null);
+    default: return super.newTestItem(type);
+    }
+  }
 
   private static final int MAX_EQUAL_TURNS = 10000;
 
@@ -354,7 +365,7 @@ public class CcgUtterancePlanner extends UtterancePlanner {
       int equalTurns = 0;
       while (drf.newRound() && ++equalTurns < MAX_EQUAL_TURNS) {
         ResultItem res = null;
-        res = bt.realizeOneItem(this, item, i);
+        res = item.execute(this, i, BatchType.GENERATION);
         String result = null;
         if (res.itemStatus == BatchTest.Status.GOOD) {
           result = punctRegex.matcher(res.realized).replaceAll("$1");
