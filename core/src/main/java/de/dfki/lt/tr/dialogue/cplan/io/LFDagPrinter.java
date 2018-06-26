@@ -18,15 +18,15 @@ public class LFDagPrinter extends DagPrinter {
     _ruleMode = mode;
   }
 
-  static final Pattern nonIdChars = Pattern.compile("[^-\\p{L}\\d+_']");
+  static final Pattern isId = Pattern.compile("[a-zA-Z][-_a-zA-Z0-9]*|[0-9]+");
 
   /** Surround a type name with double quotes if it contains double quotes or
    *  spaces and escape double quotes in the string correctly.
    */
-  String getTypeString(String typeName) {
+  static String getTypeString(String typeName) {
     if (typeName.indexOf('"') >= 0) {
       typeName = "\"" + typeName.replaceAll("\"", "\\\\\"") + "\"";
-    } else if (typeName.isEmpty() || nonIdChars.matcher(typeName).find()) {
+    } else if (! isId.matcher(typeName).matches()) {
       typeName =  "\"" + typeName + "\"";
     }
     return typeName;

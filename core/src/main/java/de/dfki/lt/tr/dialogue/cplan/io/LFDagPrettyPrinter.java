@@ -28,21 +28,6 @@ public class LFDagPrettyPrinter extends DagPrinter {
     _ruleMode = mode;
   }
 
-  static final Pattern nonIdChars = Pattern.compile("[^-\\p{L}\\d+_']");
-
-  /** Surround a type name with double quotes if it contains double quotes or
-   *  spaces and escape double quotes in the string correctly.
-   */
-  String getTypeString(String typeName) {
-    if (typeName.indexOf('"') >= 0) {
-      typeName = "\"" + typeName.replaceAll("\"", "\\\\\"") + "\"";
-    } else if (typeName.isEmpty() || nonIdChars.matcher(typeName).find()) {
-      typeName =  "\"" + typeName + "\"";
-    }
-    return typeName;
-  }
-
-
   boolean isComplex(DagNode dag) {
     boolean propfirst = false;
     Iterator<DagEdge> it = dag.getEdgeIterator();
@@ -177,7 +162,7 @@ public class LFDagPrettyPrinter extends DagPrinter {
       }
       else {
         String name = here.getTypeName();
-        sb.append(readable ? getTypeString(name) : name);
+        sb.append(readable ? LFDagPrinter.getTypeString(name) : name);
       }
     }
   }
