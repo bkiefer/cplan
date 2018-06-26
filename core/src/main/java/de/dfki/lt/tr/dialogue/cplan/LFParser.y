@@ -2,7 +2,9 @@
 
 %code imports {
 import java.io.Reader;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -21,7 +23,7 @@ import java.util.LinkedList;
 
 %code {
   private boolean extMode = false;
-  
+
   private boolean _correct = true;
 
   private DagNode _lf;
@@ -84,10 +86,28 @@ import java.util.LinkedList;
     reset();
     ((de.dfki.lt.tr.dialogue.cplan.Lexer)this.yylexer)
       .setInputReader(inputDescription, input);
+    corefs.clear();
   }
 
   public boolean correct() { return _correct; }
 
+  HashMap<String, DagNode> corefs = new HashMap<>();
+
+  DagNode makePath(LinkedList<String> path, DagNode val) {
+    Iterator<String> it = path.descendingIterator();
+    while (it.hasNext()) {
+      val = new DagNode(it.next(), val);
+    }
+    return val;
+  }
+
+  DagNode makeList(List<DagNode> nodes) {
+    return null;
+  }
+
+  DagNode makeDifflist(List<DagNode> nodes) {
+    return null;
+  }
 }
 
 %token < String >  ID         258
@@ -98,6 +118,9 @@ import java.util.LinkedList;
 %token < String >  STRING     263
 
 %type < DagNode > lf lfconj lfterm rawlf keyval
+%type < DagNode > tdllf node nodes featval featvals
+%type < LinkedList<String> > path
+%type < LinkedList<DagNode> > elements
 
 %type < Object > start
 
@@ -107,6 +130,7 @@ import java.util.LinkedList;
 
 start : lf               { $$ = null; _lf = $1; if (extMode) return YYACCEPT; }
       | rawlf            { $$ = null; _lf = $1; if (extMode) return YYACCEPT; }
+      | tdllf            { $$ = null; _lf = $1; if (extMode) return YYACCEPT; }
       | error            { $$ = null; _lf = null; _correct = false; }
       ;
 
@@ -152,14 +176,14 @@ lfterm : '<' ID '>' '(' lfconj ')' { $$ = newLF($2, $5).setNominal(); }
        ;
 
 rawlf : ID '(' ID keyval ')'
-                        {
-                          DagNode prop = newLF(DagNode.PROP_FEAT_ID, $3);
-                          if ($4 != null) {
-                            prop = unify(prop, $4);
-                          }
-                          $$ = unify(getNewLF("raw").setNominal(),
-                                 unify(newLF(DagNode.TYPE_FEAT_ID, $1), prop));
-                        };
+    {
+      DagNode prop = newLF(DagNode.PROP_FEAT_ID, $3);
+      if ($4 != null) {
+        prop = unify(prop, $4);
+      }
+      $$ = unify(getNewLF("raw").setNominal(),
+             unify(newLF(DagNode.TYPE_FEAT_ID, $1), prop));
+    };
 
 keyval : ',' ID '=' STRING keyval {
 	DagNode res = newLF($2, newLF(DagNode.PROP_FEAT_ID, $4)).setNominal();
@@ -170,3 +194,42 @@ keyval : ',' ID '=' STRING keyval {
 	$$ = ($5 == null) ? res : unify(res, $5);
 	}
        | { $$ = null; };
+
+tdllf : '[' nodes ']' { $$ = $2; }
+
+nodes : node '&' nodes { $$ = unify($1, $3); }
+      | node { $$ = $1; }
+      ;
+
+node : ID { $$ = new DagNode($1); }
+  | STRING { $$ = new DagNode($1); }
+  | '[' featvals ']' { $$ = $2; }
+  | VAR {
+    DagNode d = corefs.get($1);
+    if (d == null) {
+      d = new DagNode(DagNode.TOP_TYPE);
+      corefs.put($1, d);
+    }
+    $$ = d;
+  }
+  | '<' elements '>' { $$ = makeList($2); }
+  | "<!" elements "!>" { $$ = makeDifflist($2); }
+  | '<' '>' { $$ = makeList(Collections.emptyList()); }
+  | "<!" "!>" { $$ = makeDifflist(Collections.emptyList()); }
+  ;
+
+featvals : featval ',' featvals { $$ = unify($1, $3); }
+         | featval { $$ = $1; }
+         ;
+
+featval : path nodes { $$ = makePath($1, $2); }
+        ;
+
+path : ID '.' path { $3.addFirst($1); $$ = $3; }
+     | ID { $$ = new LinkedList<String>() {{ add($1); }}; }
+     ;
+
+elements : nodes ',' elements { $3.addFirst($1); $$ = $3; }
+         | nodes { $$ = new LinkedList<DagNode>() {{ add($1); }}; }
+         | "..." { $$ = null; }
+         ;

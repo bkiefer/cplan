@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.2.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Skeleton implementation for Bison LALR(1) parsers in Java
 
-   Copyright (C) 2007-2013 Free Software Foundation, Inc.
+   Copyright (C) 2007-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -40,13 +40,15 @@ package de.dfki.lt.tr.dialogue.cplan;
 /* "LFParser.y":3  */ /* lalr1.java:93  */
 
 import java.io.Reader;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 
 @SuppressWarnings({"fallthrough", "unused"})
 
-/* "LFParser.java":50  */ /* lalr1.java:93  */
+/* "LFParser.java":52  */ /* lalr1.java:93  */
 
 /**
  * A Bison parser, automatically generated from <tt>LFParser.y</tt>.
@@ -56,7 +58,7 @@ import java.util.LinkedList;
 public class LFParser
 {
     /** Version number for the Bison executable that generated this parser.  */
-  public static final String bisonVersion = "3.0.2";
+  public static final String bisonVersion = "3.0.4";
 
   /** Name of the skeleton that generated this parser.  */
   public static final String bisonSkeleton = "lalr1.java";
@@ -342,28 +344,35 @@ public class LFParser
       {
           case 2:
   if (yyn == 2)
-    /* "LFParser.y":108  */ /* lalr1.java:489  */
+    /* "LFParser.y":131  */ /* lalr1.java:489  */
     { yyval = null; _lf = (( DagNode )(yystack.valueAt (1-(1)))); if (extMode) return YYACCEPT; };
   break;
     
 
   case 3:
   if (yyn == 3)
-    /* "LFParser.y":109  */ /* lalr1.java:489  */
+    /* "LFParser.y":132  */ /* lalr1.java:489  */
     { yyval = null; _lf = (( DagNode )(yystack.valueAt (1-(1)))); if (extMode) return YYACCEPT; };
   break;
     
 
   case 4:
   if (yyn == 4)
-    /* "LFParser.y":110  */ /* lalr1.java:489  */
-    { yyval = null; _lf = null; _correct = false; };
+    /* "LFParser.y":133  */ /* lalr1.java:489  */
+    { yyval = null; _lf = (( DagNode )(yystack.valueAt (1-(1)))); if (extMode) return YYACCEPT; };
   break;
     
 
   case 5:
   if (yyn == 5)
-    /* "LFParser.y":115  */ /* lalr1.java:489  */
+    /* "LFParser.y":134  */ /* lalr1.java:489  */
+    { yyval = null; _lf = null; _correct = false; };
+  break;
+    
+
+  case 6:
+  if (yyn == 6)
+    /* "LFParser.y":139  */ /* lalr1.java:489  */
     {
      yyval = unify(getNewLF((( String )(yystack.valueAt (7-(2))))).setNominal(),
                 unify(newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (7-(4))))), (( DagNode )(yystack.valueAt (7-(6))))));
@@ -371,64 +380,64 @@ public class LFParser
   break;
     
 
-  case 6:
-  if (yyn == 6)
-    /* "LFParser.y":119  */ /* lalr1.java:489  */
+  case 7:
+  if (yyn == 7)
+    /* "LFParser.y":143  */ /* lalr1.java:489  */
     {
      yyval = unify(getNewLF((( String )(yystack.valueAt (5-(2))))).setNominal(), (( DagNode )(yystack.valueAt (5-(4)))));
    };
   break;
     
 
-  case 7:
-  if (yyn == 7)
-    /* "LFParser.y":122  */ /* lalr1.java:489  */
-    { yyval = (( DagNode )(yystack.valueAt (3-(2)))).setNominal(); };
-  break;
-    
-
   case 8:
   if (yyn == 8)
-    /* "LFParser.y":125  */ /* lalr1.java:489  */
-    { yyval = unify((( DagNode )(yystack.valueAt (3-(1)))), (( DagNode )(yystack.valueAt (3-(3))))); };
+    /* "LFParser.y":146  */ /* lalr1.java:489  */
+    { yyval = (( DagNode )(yystack.valueAt (3-(2)))).setNominal(); };
   break;
     
 
   case 9:
   if (yyn == 9)
-    /* "LFParser.y":126  */ /* lalr1.java:489  */
-    { yyval = (( DagNode )(yystack.valueAt (1-(1)))); };
+    /* "LFParser.y":149  */ /* lalr1.java:489  */
+    { yyval = unify((( DagNode )(yystack.valueAt (3-(1)))), (( DagNode )(yystack.valueAt (3-(3))))); };
   break;
     
 
   case 10:
   if (yyn == 10)
-    /* "LFParser.y":129  */ /* lalr1.java:489  */
-    { yyval = newLF((( String )(yystack.valueAt (6-(2)))), (( DagNode )(yystack.valueAt (6-(5))))).setNominal(); };
+    /* "LFParser.y":150  */ /* lalr1.java:489  */
+    { yyval = (( DagNode )(yystack.valueAt (1-(1)))); };
   break;
     
 
   case 11:
   if (yyn == 11)
-    /* "LFParser.y":130  */ /* lalr1.java:489  */
+    /* "LFParser.y":153  */ /* lalr1.java:489  */
+    { yyval = newLF((( String )(yystack.valueAt (6-(2)))), (( DagNode )(yystack.valueAt (6-(5))))).setNominal(); };
+  break;
+    
+
+  case 12:
+  if (yyn == 12)
+    /* "LFParser.y":154  */ /* lalr1.java:489  */
     { yyval = newLF((( String )(yystack.valueAt (4-(2)))), newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (4-(4))))))
                                     .setNominal();
                         };
   break;
     
 
-  case 12:
-  if (yyn == 12)
-    /* "LFParser.y":133  */ /* lalr1.java:489  */
+  case 13:
+  if (yyn == 13)
+    /* "LFParser.y":157  */ /* lalr1.java:489  */
     { yyval = newLF((( String )(yystack.valueAt (4-(2)))), newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (4-(4))))))
                                     .setNominal();
                            };
   break;
     
 
-  case 13:
-  if (yyn == 13)
-    /* "LFParser.y":137  */ /* lalr1.java:489  */
+  case 14:
+  if (yyn == 14)
+    /* "LFParser.y":161  */ /* lalr1.java:489  */
     { yyval = newLF((( String )(yystack.valueAt (6-(2)))),
                                      unify(getNewLF((( String )(yystack.valueAt (6-(4))))).setNominal(),
                                            newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (6-(6)))))))
@@ -437,72 +446,62 @@ public class LFParser
   break;
     
 
-  case 14:
-  if (yyn == 14)
-    /* "LFParser.y":143  */ /* lalr1.java:489  */
+  case 15:
+  if (yyn == 15)
+    /* "LFParser.y":167  */ /* lalr1.java:489  */
     { yyval = newLF((( String )(yystack.valueAt (5-(2)))), getNewLF((( String )(yystack.valueAt (5-(4))))).setNominal())
                             .setNominal();
                         };
   break;
     
 
-  case 15:
-  if (yyn == 15)
-    /* "LFParser.y":146  */ /* lalr1.java:489  */
+  case 16:
+  if (yyn == 16)
+    /* "LFParser.y":170  */ /* lalr1.java:489  */
     { yyval = unify(getNewLF((( String )(yystack.valueAt (3-(1))))).setNominal(),
                                      newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (3-(3))))));
                         };
   break;
     
 
-  case 16:
-  if (yyn == 16)
-    /* "LFParser.y":149  */ /* lalr1.java:489  */
-    { yyval = getNewLF((( String )(yystack.valueAt (2-(1))))).setNominal(); };
-  break;
-    
-
   case 17:
   if (yyn == 17)
-    /* "LFParser.y":150  */ /* lalr1.java:489  */
-    { yyval = newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (2-(2))))).setNominal(); };
+    /* "LFParser.y":173  */ /* lalr1.java:489  */
+    { yyval = getNewLF((( String )(yystack.valueAt (2-(1))))).setNominal(); };
   break;
     
 
   case 18:
   if (yyn == 18)
-    /* "LFParser.y":151  */ /* lalr1.java:489  */
-    { yyval = newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (1-(1))))); };
+    /* "LFParser.y":174  */ /* lalr1.java:489  */
+    { yyval = newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (2-(2))))).setNominal(); };
   break;
     
 
   case 19:
   if (yyn == 19)
-    /* "LFParser.y":155  */ /* lalr1.java:489  */
-    {
-                          DagNode prop = newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (5-(3)))));
-                          if ((( DagNode )(yystack.valueAt (5-(4)))) != null) {
-                            prop = unify(prop, (( DagNode )(yystack.valueAt (5-(4)))));
-                          }
-                          yyval = unify(getNewLF("raw").setNominal(),
-                                 unify(newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (5-(1))))), prop));
-                        };
+    /* "LFParser.y":175  */ /* lalr1.java:489  */
+    { yyval = newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (1-(1))))); };
   break;
     
 
   case 20:
   if (yyn == 20)
-    /* "LFParser.y":164  */ /* lalr1.java:489  */
+    /* "LFParser.y":179  */ /* lalr1.java:489  */
     {
-	DagNode res = newLF((( String )(yystack.valueAt (5-(2)))), newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (5-(4)))))).setNominal();
-	yyval = ((( DagNode )(yystack.valueAt (5-(5)))) == null) ? res : unify(res, (( DagNode )(yystack.valueAt (5-(5)))));
-	};
+      DagNode prop = newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (5-(3)))));
+      if ((( DagNode )(yystack.valueAt (5-(4)))) != null) {
+        prop = unify(prop, (( DagNode )(yystack.valueAt (5-(4)))));
+      }
+      yyval = unify(getNewLF("raw").setNominal(),
+             unify(newLF(DagNode.TYPE_FEAT_ID, (( String )(yystack.valueAt (5-(1))))), prop));
+    };
   break;
     
 
   case 21:
   if (yyn == 21)
-    /* "LFParser.y":168  */ /* lalr1.java:489  */
+    /* "LFParser.y":188  */ /* lalr1.java:489  */
     {
 	DagNode res = newLF((( String )(yystack.valueAt (5-(2)))), newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (5-(4)))))).setNominal();
 	yyval = ((( DagNode )(yystack.valueAt (5-(5)))) == null) ? res : unify(res, (( DagNode )(yystack.valueAt (5-(5)))));
@@ -512,13 +511,163 @@ public class LFParser
 
   case 22:
   if (yyn == 22)
-    /* "LFParser.y":172  */ /* lalr1.java:489  */
+    /* "LFParser.y":192  */ /* lalr1.java:489  */
+    {
+	DagNode res = newLF((( String )(yystack.valueAt (5-(2)))), newLF(DagNode.PROP_FEAT_ID, (( String )(yystack.valueAt (5-(4)))))).setNominal();
+	yyval = ((( DagNode )(yystack.valueAt (5-(5)))) == null) ? res : unify(res, (( DagNode )(yystack.valueAt (5-(5)))));
+	};
+  break;
+    
+
+  case 23:
+  if (yyn == 23)
+    /* "LFParser.y":196  */ /* lalr1.java:489  */
+    { yyval = null; };
+  break;
+    
+
+  case 24:
+  if (yyn == 24)
+    /* "LFParser.y":198  */ /* lalr1.java:489  */
+    { yyval = (( DagNode )(yystack.valueAt (3-(2)))); };
+  break;
+    
+
+  case 25:
+  if (yyn == 25)
+    /* "LFParser.y":200  */ /* lalr1.java:489  */
+    { yyval = unify((( DagNode )(yystack.valueAt (3-(1)))), (( DagNode )(yystack.valueAt (3-(3))))); };
+  break;
+    
+
+  case 26:
+  if (yyn == 26)
+    /* "LFParser.y":201  */ /* lalr1.java:489  */
+    { yyval = (( DagNode )(yystack.valueAt (1-(1)))); };
+  break;
+    
+
+  case 27:
+  if (yyn == 27)
+    /* "LFParser.y":204  */ /* lalr1.java:489  */
+    { yyval = new DagNode((( String )(yystack.valueAt (1-(1))))); };
+  break;
+    
+
+  case 28:
+  if (yyn == 28)
+    /* "LFParser.y":205  */ /* lalr1.java:489  */
+    { yyval = new DagNode((( String )(yystack.valueAt (1-(1))))); };
+  break;
+    
+
+  case 29:
+  if (yyn == 29)
+    /* "LFParser.y":206  */ /* lalr1.java:489  */
+    { yyval = (( DagNode )(yystack.valueAt (3-(2)))); };
+  break;
+    
+
+  case 30:
+  if (yyn == 30)
+    /* "LFParser.y":207  */ /* lalr1.java:489  */
+    {
+    DagNode d = corefs.get((( String )(yystack.valueAt (1-(1)))));
+    if (d == null) {
+      d = new DagNode(DagNode.TOP_TYPE);
+      corefs.put((( String )(yystack.valueAt (1-(1)))), d);
+    }
+    yyval = d;
+  };
+  break;
+    
+
+  case 31:
+  if (yyn == 31)
+    /* "LFParser.y":215  */ /* lalr1.java:489  */
+    { yyval = makeList((( LinkedList<DagNode> )(yystack.valueAt (3-(2))))); };
+  break;
+    
+
+  case 32:
+  if (yyn == 32)
+    /* "LFParser.y":216  */ /* lalr1.java:489  */
+    { yyval = makeDifflist((( LinkedList<DagNode> )(yystack.valueAt (3-(2))))); };
+  break;
+    
+
+  case 33:
+  if (yyn == 33)
+    /* "LFParser.y":217  */ /* lalr1.java:489  */
+    { yyval = makeList(Collections.emptyList()); };
+  break;
+    
+
+  case 34:
+  if (yyn == 34)
+    /* "LFParser.y":218  */ /* lalr1.java:489  */
+    { yyval = makeDifflist(Collections.emptyList()); };
+  break;
+    
+
+  case 35:
+  if (yyn == 35)
+    /* "LFParser.y":221  */ /* lalr1.java:489  */
+    { yyval = unify((( DagNode )(yystack.valueAt (3-(1)))), (( DagNode )(yystack.valueAt (3-(3))))); };
+  break;
+    
+
+  case 36:
+  if (yyn == 36)
+    /* "LFParser.y":222  */ /* lalr1.java:489  */
+    { yyval = (( DagNode )(yystack.valueAt (1-(1)))); };
+  break;
+    
+
+  case 37:
+  if (yyn == 37)
+    /* "LFParser.y":225  */ /* lalr1.java:489  */
+    { yyval = makePath((( LinkedList<String> )(yystack.valueAt (2-(1)))), (( DagNode )(yystack.valueAt (2-(2))))); };
+  break;
+    
+
+  case 38:
+  if (yyn == 38)
+    /* "LFParser.y":228  */ /* lalr1.java:489  */
+    { (( LinkedList<String> )(yystack.valueAt (3-(3)))).addFirst((( String )(yystack.valueAt (3-(1))))); yyval = (( LinkedList<String> )(yystack.valueAt (3-(3)))); };
+  break;
+    
+
+  case 39:
+  if (yyn == 39)
+    /* "LFParser.y":229  */ /* lalr1.java:489  */
+    { yyval = new LinkedList<String>() {{ add((( String )(yystack.valueAt (1-(1))))); }}; };
+  break;
+    
+
+  case 40:
+  if (yyn == 40)
+    /* "LFParser.y":232  */ /* lalr1.java:489  */
+    { (( LinkedList<DagNode> )(yystack.valueAt (3-(3)))).addFirst((( DagNode )(yystack.valueAt (3-(1))))); yyval = (( LinkedList<DagNode> )(yystack.valueAt (3-(3)))); };
+  break;
+    
+
+  case 41:
+  if (yyn == 41)
+    /* "LFParser.y":233  */ /* lalr1.java:489  */
+    { yyval = new LinkedList<DagNode>() {{ add((( DagNode )(yystack.valueAt (1-(1))))); }}; };
+  break;
+    
+
+  case 42:
+  if (yyn == 42)
+    /* "LFParser.y":234  */ /* lalr1.java:489  */
     { yyval = null; };
   break;
     
 
 
-/* "LFParser.java":522  */ /* lalr1.java:489  */
+/* "LFParser.java":671  */ /* lalr1.java:489  */
         default: break;
       }
 
@@ -927,7 +1076,7 @@ public class LFParser
     return yyvalue == yytable_ninf_;
   }
 
-  private static final byte yypact_ninf_ = -23;
+  private static final byte yypact_ninf_ = -48;
   private static final byte yytable_ninf_ = -1;
 
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
@@ -937,11 +1086,15 @@ public class LFParser
   {
     return new byte[]
     {
-      13,   -23,    -8,     3,    -2,    11,   -23,   -23,    10,     7,
-      15,    20,    23,    16,    14,   -23,    17,    26,    -2,    27,
-     -23,    19,   -23,    -2,    28,    24,    21,    25,   -23,    -1,
-     -23,    18,   -23,    -2,   -23,    29,   -23,    -2,     1,    30,
-      35,    31,    17,    17,   -23,   -23,   -23,   -23,   -23
+      45,   -48,     8,     3,     6,    39,    11,   -48,   -48,   -48,
+      19,    15,    28,    41,    47,    46,    38,   -48,   -48,   -48,
+       0,    58,     9,    43,    48,   -48,    49,    63,     6,    66,
+     -48,    55,   -48,     6,   -48,   -48,    57,    59,    52,    53,
+      60,    39,   -48,    61,   -48,    39,    68,    65,    67,    69,
+     -48,    56,   -48,    31,   -48,    58,   -48,    58,   -48,   -48,
+     -48,    62,   -48,     6,   -48,    70,   -48,     6,   -48,   -48,
+     -48,     2,    72,    79,    73,    49,    49,   -48,   -48,   -48,
+     -48,   -48
     };
   }
 
@@ -953,11 +1106,15 @@ public class LFParser
   {
     return new byte[]
     {
-       0,     4,     0,     0,     0,     0,     2,     3,     0,     0,
-      18,     0,     0,     0,     9,     1,    22,     0,     0,    16,
-      17,     0,     7,     0,     0,     0,     0,     0,    15,     0,
-       8,     0,    19,     0,     6,    11,    12,     0,     0,     0,
-      14,     0,    22,    22,     5,    13,    10,    21,    20
+       0,     5,     0,     0,     0,     0,     0,     2,     3,     4,
+       0,     0,    19,     0,     0,     0,    10,    27,    30,    28,
+       0,     0,     0,     0,    26,     1,    23,     0,     0,    17,
+      18,     0,     8,     0,    33,    42,    41,     0,    39,     0,
+      36,     0,    34,     0,    24,     0,     0,     0,     0,     0,
+      16,     0,     9,     0,    31,     0,    29,     0,    37,    32,
+      25,     0,    20,     0,     7,    12,    13,     0,    40,    38,
+      35,     0,     0,    15,     0,    23,    23,     6,    14,    11,
+      22,    21
     };
   }
 
@@ -967,7 +1124,8 @@ public class LFParser
   {
     return new byte[]
     {
-     -23,   -23,   -23,   -18,   -23,   -23,   -22
+     -48,   -48,   -48,   -26,   -48,   -48,   -47,   -48,    -5,   -48,
+      29,   -48,    32,   -21
     };
   }
 
@@ -977,7 +1135,8 @@ public class LFParser
   {
     return new byte[]
     {
-      -1,     5,     6,    13,    14,     7,    25
+      -1,     6,     7,    15,    16,     8,    47,     9,    36,    24,
+      39,    40,    41,    37
     };
   }
 
@@ -989,11 +1148,15 @@ public class LFParser
   {
     return new byte[]
     {
-      27,    10,    35,     8,    42,    30,     9,    36,    11,    43,
-      37,    15,    12,    16,     1,    39,     2,    17,    18,    41,
-      47,    48,     3,    20,     4,    19,    21,    23,    22,    26,
-      28,    31,    33,    24,    29,    38,    32,    34,    45,    40,
-       0,     0,    44,    46
+      23,    43,    49,    17,    18,    75,    11,    52,    19,    12,
+      76,    25,    17,    18,    20,    34,    13,    19,    21,    10,
+      14,    22,    26,    20,    35,    27,    28,    21,    80,    81,
+      22,    42,    68,    35,    17,    18,    58,    72,    29,    19,
+      60,    74,    17,    18,    30,    20,     1,    19,     2,    21,
+      31,    33,    22,    20,     3,    35,     4,    21,    32,    65,
+      22,    38,    44,     5,    66,    46,    48,    67,    45,    50,
+      51,    61,    56,    53,    54,    55,    57,    62,    63,    71,
+      73,    64,    78,    59,    77,    79,    70,    69
     };
   }
 
@@ -1002,11 +1165,15 @@ private static final byte yycheck_[] = yycheck_init();
   {
     return new byte[]
     {
-      18,     3,     3,    11,     3,    23,     3,     8,    10,     8,
-      11,     0,    14,     3,     1,    33,     3,    10,    11,    37,
-      42,    43,     9,     3,    11,    10,     3,    13,    12,     3,
-       3,     3,    11,    16,    15,    17,    12,    12,     3,    10,
-      -1,    -1,    12,    12
+       5,    22,    28,     3,     4,     3,     3,    33,     8,     3,
+       8,     0,     3,     4,    14,    15,    10,     8,    18,    11,
+      14,    21,     3,    14,    24,    10,    11,    18,    75,    76,
+      21,    22,    53,    24,     3,     4,    41,    63,    10,     8,
+      45,    67,     3,     4,     3,    14,     1,     8,     3,    18,
+       3,    13,    21,    14,     9,    24,    11,    18,    12,     3,
+      21,     3,    19,    18,     8,    16,     3,    11,    20,     3,
+      15,     3,    19,    16,    15,    23,    16,    12,    11,    17,
+      10,    12,     3,    22,    12,    12,    57,    55
     };
   }
 
@@ -1017,11 +1184,15 @@ private static final byte yycheck_[] = yycheck_init();
   {
     return new byte[]
     {
-       0,     1,     3,     9,    11,    19,    20,    23,    11,     3,
-       3,    10,    14,    21,    22,     0,     3,    10,    11,    10,
-       3,     3,    12,    13,    16,    24,     3,    21,     3,    15,
-      21,     3,    12,    11,    12,     3,     8,    11,    17,    21,
-      10,    21,     3,     8,    12,     3,    12,    24,    24
+       0,     1,     3,     9,    11,    18,    26,    27,    30,    32,
+      11,     3,     3,    10,    14,    28,    29,     3,     4,     8,
+      14,    18,    21,    33,    34,     0,     3,    10,    11,    10,
+       3,     3,    12,    13,    15,    24,    33,    38,     3,    35,
+      36,    37,    22,    38,    19,    20,    16,    31,     3,    28,
+       3,    15,    28,    16,    15,    23,    19,    16,    33,    22,
+      33,     3,    12,    11,    12,     3,     8,    11,    38,    37,
+      35,    17,    28,    10,    28,     3,     8,    12,     3,    12,
+      31,    31
     };
   }
 
@@ -1031,9 +1202,11 @@ private static final byte yycheck_[] = yycheck_init();
   {
     return new byte[]
     {
-       0,    18,    19,    19,    19,    20,    20,    20,    21,    21,
-      22,    22,    22,    22,    22,    22,    22,    22,    22,    23,
-      24,    24,    24
+       0,    25,    26,    26,    26,    26,    27,    27,    27,    28,
+      28,    29,    29,    29,    29,    29,    29,    29,    29,    29,
+      30,    31,    31,    31,    32,    33,    33,    34,    34,    34,
+      34,    34,    34,    34,    34,    35,    35,    36,    37,    37,
+      38,    38,    38
     };
   }
 
@@ -1043,9 +1216,11 @@ private static final byte yycheck_[] = yycheck_init();
   {
     return new byte[]
     {
-       0,     2,     1,     1,     1,     7,     5,     3,     3,     1,
-       6,     4,     4,     6,     5,     3,     2,     2,     1,     5,
-       5,     5,     0
+       0,     2,     1,     1,     1,     1,     7,     5,     3,     3,
+       1,     6,     4,     4,     6,     5,     3,     2,     2,     1,
+       5,     5,     5,     0,     3,     3,     1,     1,     1,     3,
+       1,     3,     3,     2,     2,     3,     1,     2,     3,     1,
+       3,     1,     1
     };
   }
 
@@ -1057,7 +1232,8 @@ private static final byte yycheck_[] = yycheck_init();
     return new short[]
     {
        0,   256,   264,   258,   259,   260,   261,   262,   263,    64,
-      58,    40,    41,    94,    60,    62,    44,    61
+      58,    40,    41,    94,    60,    62,    44,    61,    91,    93,
+      38,   265,   266,    46,   267
     };
   }
 
@@ -1070,8 +1246,9 @@ private static final byte yycheck_[] = yycheck_init();
     {
   "$end", "error", "$undefined", "ID", "VAR", "GVAR", "COMPARISON",
   "ARROW", "STRING", "'@'", "':'", "'('", "')'", "'^'", "'<'", "'>'",
-  "','", "'='", "$accept", "start", "lf", "lfconj", "lfterm", "rawlf",
-  "keyval", null
+  "','", "'='", "'['", "']'", "'&'", "\"<!\"", "\"!>\"", "'.'", "\"...\"",
+  "$accept", "start", "lf", "lfconj", "lfterm", "rawlf", "keyval", "tdllf",
+  "nodes", "node", "featvals", "featval", "path", "elements", null
     };
   }
 
@@ -1081,9 +1258,11 @@ private static final byte yycheck_[] = yycheck_init();
   {
     return new short[]
     {
-       0,   108,   108,   109,   110,   115,   119,   122,   125,   126,
-     129,   130,   133,   136,   142,   146,   149,   150,   151,   154,
-     164,   168,   172
+       0,   131,   131,   132,   133,   134,   139,   143,   146,   149,
+     150,   153,   154,   157,   160,   166,   170,   173,   174,   175,
+     178,   188,   192,   196,   198,   200,   201,   204,   205,   206,
+     207,   215,   216,   217,   218,   221,   222,   225,   228,   229,
+     232,   233,   234
     };
   }
 
@@ -1116,13 +1295,13 @@ private static final byte yycheck_[] = yycheck_init();
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      11,    12,     2,     2,    16,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,    20,     2,
+      11,    12,     2,     2,    16,     2,    23,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,    10,     2,
       14,    17,    15,     2,     9,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,    13,     2,     2,     2,     2,     2,
+       2,    18,     2,    19,    13,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -1139,7 +1318,7 @@ private static final byte yycheck_[] = yycheck_init();
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,     8,     2
+       5,     6,     7,     8,     2,    21,    22,    24
     };
   }
 
@@ -1151,23 +1330,23 @@ private static final byte yycheck_[] = yycheck_init();
       return yyundef_token_;
   }
 
-  private static final int yylast_ = 43;
-  private static final int yynnts_ = 7;
+  private static final int yylast_ = 87;
+  private static final int yynnts_ = 14;
   private static final int yyempty_ = -2;
-  private static final int yyfinal_ = 15;
+  private static final int yyfinal_ = 25;
   private static final int yyterror_ = 1;
   private static final int yyerrcode_ = 256;
-  private static final int yyntokens_ = 18;
+  private static final int yyntokens_ = 25;
 
-  private static final int yyuser_token_number_max_ = 264;
+  private static final int yyuser_token_number_max_ = 267;
   private static final int yyundef_token_ = 2;
 
 /* User implementation code.  */
 /* Unqualified %code blocks.  */
-/* "LFParser.y":22  */ /* lalr1.java:1066  */
+/* "LFParser.y":24  */ /* lalr1.java:1066  */
 
   private boolean extMode = false;
-  
+
   private boolean _correct = true;
 
   private DagNode _lf;
@@ -1230,12 +1409,30 @@ private static final byte yycheck_[] = yycheck_init();
     reset();
     ((de.dfki.lt.tr.dialogue.cplan.Lexer)this.yylexer)
       .setInputReader(inputDescription, input);
+    corefs.clear();
   }
 
   public boolean correct() { return _correct; }
 
+  HashMap<String, DagNode> corefs = new HashMap<>();
 
-/* "LFParser.java":1239  */ /* lalr1.java:1066  */
+  DagNode makePath(LinkedList<String> path, DagNode val) {
+    Iterator<String> it = path.descendingIterator();
+    while (it.hasNext()) {
+      val = new DagNode(it.next(), val);
+    }
+    return val;
+  }
+
+  DagNode makeList(List<DagNode> nodes) {
+    return null;
+  }
+
+  DagNode makeDifflist(List<DagNode> nodes) {
+    return null;
+  }
+
+/* "LFParser.java":1436  */ /* lalr1.java:1066  */
 
 }
 
