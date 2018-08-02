@@ -29,6 +29,12 @@
 (defvar cplan-mode-syntax-table nil
   "Syntax for the content planner rule files")
 
+(defvar cplan-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-<tab>") 'shift-right)
+    (define-key map (kbd "<backtab>") 'shift-left)
+    map))
+
 (or cplan-mode-syntax-table
     (let ((st (make-syntax-table)))
       ;; define comment for these styles: `/* ... */' and `// ...'
@@ -87,7 +93,7 @@ though.  This lets you access the command bindings that this mode overrides."
   (kill-all-local-variables)
   (setq major-mode 'cplan-mode)
   (setq mode-name "Cplan")
-  ;;(use-local-map cplan-mode-map)
+  (use-local-map cplan-mode-map)
   (make-local-variable 'comment-start-skip)
   (setq comment-start-skip "/\\*+ *\\|//+ *")
   (make-local-variable 'comment-start)
@@ -102,6 +108,37 @@ though.  This lets you access the command bindings that this mode overrides."
 ;; move commands : rule forward/backward
 
 ;; indentation
+
+;; Shift the selected region right if distance is postive, left if
+;; negative
+
+(defun shift-region (distance)
+  (let ((mark (mark)))
+    (save-excursion
+      (indent-rigidly (region-beginning) (region-end) distance)
+      (push-mark mark t t)
+      ;; Tell the command loop not to deactivate the mark
+      ;; for transient mark mode
+      (setq deactivate-mark nil))))
+
+(defun shift-right (arg)
+  (interactive
+   (if (and current-prefix-arg (not (consp current-prefix-arg)))
+       (list (prefix-numeric-value current-prefix-arg))
+     (list 2)))
+  (shift-region arg))
+
+(defun shift-left (arg)
+  (interactive
+   (if (and current-prefix-arg (not (consp current-prefix-arg)))
+       (list (prefix-numeric-value current-prefix-arg))
+     (list 2)))
+  (shift-region (- arg)))
+
+;; Bind (shift-right) and (shift-left) function to your favorite keys. I use
+;; the following so that Ctrl-Shift-Right Arrow moves selected text one
+;; column to the right, Ctrl-Shift-Left Arrow moves selected text one
+;; column to the left:
 
 ;; reload project file
 
