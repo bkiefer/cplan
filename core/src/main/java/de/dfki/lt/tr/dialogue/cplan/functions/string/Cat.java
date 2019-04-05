@@ -11,7 +11,7 @@ public class Cat implements Function{
   public Object apply(List<DagNode> args) {
     StringBuilder sb = new StringBuilder();
     for (DagNode arg : args) {
-      sb.append(arg.toString(false));
+      sb.append(arg.asString());
     }
     return sb.toString();
   }

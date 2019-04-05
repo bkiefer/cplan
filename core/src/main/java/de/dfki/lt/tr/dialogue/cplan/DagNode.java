@@ -107,12 +107,16 @@ public class DagNode {
     return _types;
   }
 
+  public static final DagPrinter[] printers = {
+    new LFDagPrinter(), new LFDebugPrinter()
+  };
+
   public static void usePrettyPrinter() {
-    registerPrinter(new LFDagPrinter());
+    registerPrinter(printers[0]);
   }
 
   public static void useDebugPrinter() {
-    registerPrinter(new LFDebugPrinter());
+    registerPrinter(printers[1]);
   }
 
   public static int totalNoNodes = 0, totalNoArcs = 0;
@@ -1425,7 +1429,16 @@ public class DagNode {
     sb.append(']');
   }
 
-
+  /** print fs in standardized default format */
+  public final String asString() {
+    DagPrinter def = _DEFAULT_PRINTER;
+    try {
+      usePrettyPrinter();
+      return toString(false);
+    } finally {
+      _DEFAULT_PRINTER = def;
+    }
+  }
 
   /** print fs in jxchg format */
   @Override

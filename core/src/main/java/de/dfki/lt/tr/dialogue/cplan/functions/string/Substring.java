@@ -9,9 +9,9 @@ import de.dfki.lt.tr.dialogue.cplan.functions.Function;
 public class Substring implements Function {
 
   public Object apply(List<DagNode> args) {
-    String str = args.get(0).toString(false);
-    String from = args.get(1).toString(false);
-    String to = args.get(2).toString(false);
+    String str = args.get(0).asString();
+    String from = args.get(1).asString();
+    String to = args.get(2).asString();
     int fromIndex = Integer.parseInt(from);
     if (fromIndex < 0) fromIndex = str.length() + fromIndex;
     int toIndex = Integer.parseInt(to);

@@ -11,7 +11,7 @@ public abstract class UnaryOp extends MathOp {
   public Object apply(List<DagNode> args) {
     double result;
     try {
-      result = mathApply(Double.parseDouble(args.get(0).toString(false)));
+      result = mathApply(Double.parseDouble(args.get(0).asString()));
     }
     catch (NumberFormatException nex) {
       return "NaN";

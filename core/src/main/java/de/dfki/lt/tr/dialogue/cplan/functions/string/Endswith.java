@@ -9,8 +9,8 @@ import de.dfki.lt.tr.dialogue.cplan.functions.Function;
 public class Endswith implements Function {
 
   public Object apply(List<DagNode> args) {
-    String str = args.get(0).toString(false);
-    String end = args.get(1).toString(false);
+    String str = args.get(0).asString();
+    String end = args.get(1).asString();
 //    System.out.println(str + "          " + end + "    " + str.endsWith(end));
     return str.endsWith(end) ? 1 : 0;
   }

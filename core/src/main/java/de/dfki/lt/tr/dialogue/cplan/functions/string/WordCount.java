@@ -12,7 +12,7 @@ import de.dfki.lt.tr.dialogue.cplan.functions.Function;
 public class WordCount implements Function {
 
   public Object apply(List<DagNode> args) {
-    String[] words = args.get(0).toString(false).split("\\s+");
+    String[] words = args.get(0).asString().split("\\s+");
     return words.length;
   }
 

@@ -9,11 +9,11 @@ import de.dfki.lt.tr.dialogue.cplan.functions.Function;
 public class Length implements Function {
 
   public Object apply(List<DagNode> args) {
-    String arg = args.get(0).toString(false);
+    String arg = args.get(0).asString();
     return arg.length();
   }
 
-  
+
   /** Count the words in this string (split is any sequence of white space) */
   public String name() {
     return "length";

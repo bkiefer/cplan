@@ -30,6 +30,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.1.1</version>
         <executions>
           <execution>
             <id>make-assembly</id> <!-- this is used for inheritance merges -->
@@ -84,6 +85,12 @@
       <groupId>de.dfki.mlt</groupId>
       <artifactId>j2emacs</artifactId>
       <version>0.1-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.24</version>
     </dependency>
 
     <dependency>

@@ -20,7 +20,7 @@ public class OrdinalToString implements Function {
       _numberFormatter = new RuleBasedNumberFormat(
           new ULocale(_planner.getLanguage()), RuleBasedNumberFormat.ORDINAL);
     }
-    String str = args.get(0).toString(false);
+    String str = args.get(0).asString();
     try {
       int i = Integer.parseInt(str);
       String s = _numberFormatter.format(i);

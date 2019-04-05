@@ -11,8 +11,8 @@ public abstract class BinaryOp extends MathOp {
   public Object apply(List<DagNode> args) {
     double result;
     try {
-      result = mathApply(Double.parseDouble(args.get(0).toString(false)),
-                         Double.parseDouble(args.get(1).toString(false)));
+      result = mathApply(Double.parseDouble(args.get(0).asString()),
+                         Double.parseDouble(args.get(1).asString()));
     }
     catch (NumberFormatException nex) {
       return "NaN";
