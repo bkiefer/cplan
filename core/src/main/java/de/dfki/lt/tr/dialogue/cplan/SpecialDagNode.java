@@ -1,5 +1,6 @@
 package de.dfki.lt.tr.dialogue.cplan;
 
+import de.dfki.lt.tr.dialogue.cplan.io.DagPrinter;
 
 public abstract class SpecialDagNode extends DagNode {
 
@@ -21,7 +22,7 @@ public abstract class SpecialDagNode extends DagNode {
   protected abstract DagNode evaluate(DagNode input, Bindings bindings);
 
   /** This is called in DagNode's toStringRec function */
-  public abstract void toStringSpecial(StringBuilder sb);
+  public abstract void toStringRec(DagPrinter p);
 
 }
 

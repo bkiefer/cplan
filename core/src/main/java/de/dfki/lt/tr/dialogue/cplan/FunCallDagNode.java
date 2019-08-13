@@ -1,11 +1,13 @@
 package de.dfki.lt.tr.dialogue.cplan;
 
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import de.dfki.lt.tr.dialogue.cplan.functions.Function;
 import de.dfki.lt.tr.dialogue.cplan.functions.FunctionFactory;
+import de.dfki.lt.tr.dialogue.cplan.io.DagPrinter;
 
 @SuppressWarnings("unchecked")
 public class FunCallDagNode extends SpecialDagNode {
@@ -58,18 +60,29 @@ public class FunCallDagNode extends SpecialDagNode {
 
   @Override
   @SuppressWarnings("rawtypes")
-  public void toStringSpecial(StringBuilder sb) {
-    sb.append(_name).append('(');
+  public void toStringRec(DagPrinter p) {
+    p.append(_name).append('(');
     if (_args != null) {
       Iterator it = _args.iterator();
       if (it.hasNext()) {
-        sb.append((it.next()).toString());
+        Object o = it.next();
+        if (o instanceof DagNode) {
+          p.tsr((DagNode)o);
+        } else {
+          p.append((it.next()).toString());
+        }
       }
       while (it.hasNext()) {
-        sb.append(", ").append((it.next()).toString());
+        p.append(", ");
+        Object o = it.next();
+        if (o instanceof DagNode) {
+          p.tsr((DagNode)o);
+        } else {
+          p.append((it.next()).toString());
+        }
       }
     }
-    sb.append(')');
+    p.append(')');
   }
 
   /** for all args, create proper dag nodes without variables. */
@@ -114,4 +127,26 @@ public class FunCallDagNode extends SpecialDagNode {
     return dag;
   }
 
+  /** assign coref numbers to coreferenced nodes. Only nodes that are referred
+   *  to more than once get a number greater that zero, all other nodes get
+   *  zero.
+   *  @return the number of nodes that were referenced more than once.
+   */
+  public int
+  countCorefsLocal(IdentityHashMap<DagNode, Integer> corefs, int nextCorefNo) {
+    DagNode here = dereference();
+    if (! corefs.containsKey(here)) { // visited for the first time
+      corefs.put(here, 0);
+      for (Object arg : _args) {
+        if (arg instanceof DagNode)
+          nextCorefNo = ((DagNode)arg).countCorefsLocal(corefs, nextCorefNo);
+      }
+    } else {
+      int corefNo = corefs.get(here);
+      if (corefNo == 0) { // visited for the second time at least
+        corefs.put(here, ++nextCorefNo);
+      }
+    }
+    return nextCorefNo;
+  }
 }

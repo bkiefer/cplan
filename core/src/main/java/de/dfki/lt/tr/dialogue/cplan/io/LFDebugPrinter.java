@@ -6,10 +6,12 @@ import de.dfki.lt.tr.dialogue.cplan.SpecialDagNode;
 
 public class LFDebugPrinter extends DagPrinter {
 
+  private StringBuilder sb;
+
   private StringBuilder specialEdgeString(DagEdge edge, StringBuilder sb) {
     DagNode val = edge.getValue().dereference();
     if (val instanceof SpecialDagNode) {
-      ((SpecialDagNode)val).toStringSpecial(sb);
+      ((SpecialDagNode)val).toStringRec(this);
     } else {
       sb.append(val.getTypeName());
     }
@@ -17,8 +19,13 @@ public class LFDebugPrinter extends DagPrinter {
   }
 
   @Override
-  public void toStringRec(DagNode hereNode, boolean readable,
-      StringBuilder sb) {
+  public void toStringRec(DagNode hereNode, StringBuilder s) {
+    sb = s;
+    tsr(hereNode);
+  }
+
+  @Override
+  public void tsr(DagNode hereNode) {
     if (hereNode == null) {
       sb.append("(null)");
       return;
@@ -32,6 +39,12 @@ public class LFDebugPrinter extends DagPrinter {
     }
     if (corefNo > 0) {
       sb.append(" #").append(corefNo).append(' ');
+    }
+
+    // subclasses will print themselves
+    if (here instanceof SpecialDagNode) {
+      ((SpecialDagNode)here).toStringRec(this);
+      return;
     }
 
     sb.append('[');
@@ -50,7 +63,7 @@ public class LFDebugPrinter extends DagPrinter {
           specialEdgeString(edge, sb);
         } else {
           sb.append(readable ? edge.getName() : edge.getFeature());
-          toStringRec(edge.getValue(), readable, sb);
+          edge.getValue().toStringRec(this);
         }
       }
     }
@@ -58,5 +71,15 @@ public class LFDebugPrinter extends DagPrinter {
       sb.append('@').append(here.getTypeName()).append('@');
     }
     sb.append(']');
+  }
+
+  public DagPrinter append(String s) {
+    sb.append(s);
+    return this;
+  }
+
+  public DagPrinter append(char c) {
+    sb.append(c);
+    return this;
   }
 }

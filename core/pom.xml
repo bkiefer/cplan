@@ -47,6 +47,12 @@
       <artifactId>icu4j</artifactId>
       <version>57.1</version>
     </dependency>
+
+    <dependency>
+      <groupId>com.io7m.jpplib</groupId>
+      <artifactId>com.io7m.jpplib.core</artifactId>
+      <version>0.8.0</version>
+    </dependency>
   </dependencies>
 
   <build>

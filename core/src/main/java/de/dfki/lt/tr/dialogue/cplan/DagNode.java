@@ -1429,6 +1429,10 @@ public class DagNode {
     sb.append(']');
   }
 
+  public void toStringRec(DagPrinter p) {
+    p.tsr(this);
+  }
+
   /** print fs in standardized default format */
   public final String asString() {
     DagPrinter def = _DEFAULT_PRINTER;
@@ -1447,24 +1451,20 @@ public class DagNode {
   }
 
   public final String toString(boolean readable) {
-    IdentityHashMap<DagNode, Integer> corefMap =
-      new IdentityHashMap<DagNode, Integer>();
-    int corefs = 0;
-    corefs = countCorefsLocal(corefMap, corefs);
     StringBuilder sb = new StringBuilder();
-    if (this instanceof SpecialDagNode) {
-      ((SpecialDagNode)this).toStringSpecial(sb);
+    if (_DEFAULT_PRINTER != null) {
+      synchronized (_DEFAULT_PRINTER) {
+        _DEFAULT_PRINTER.getCorefs(this);
+        _DEFAULT_PRINTER.setReadable(readable);
+        _DEFAULT_PRINTER.toStringRec(this, sb);
+      }
     }
     else {
-      if (_DEFAULT_PRINTER != null) {
-        synchronized (_DEFAULT_PRINTER) {
-          _DEFAULT_PRINTER.getCorefs(this);
-          _DEFAULT_PRINTER.toStringRec(this, readable, sb);
-        }
-      }
-      else {
-        toStringRec(readable, sb, corefMap);
-      }
+      IdentityHashMap<DagNode, Integer> corefMap =
+          new IdentityHashMap<DagNode, Integer>();
+      int corefs = 0;
+      corefs = countCorefsLocal(corefMap, corefs);
+      toStringRec(readable, sb, corefMap);
     }
     return sb.toString();
   }

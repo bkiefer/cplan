@@ -10,6 +10,8 @@ public class LFDagPrinter extends DagPrinter {
 
   private boolean _ruleMode = false;
 
+  private StringBuilder sb;
+
   private String newNominalName(int corefNo) {
     return "nom" + ((corefNo == 0) ? ++_maxCoref : Math.abs(corefNo));
   }
@@ -33,7 +35,13 @@ public class LFDagPrinter extends DagPrinter {
   }
 
   @Override
-  public void toStringRec(DagNode here, boolean readable, StringBuilder sb) {
+  public void toStringRec(DagNode here, StringBuilder s) {
+    sb = s;
+    tsr(here);
+  }
+
+  @Override
+  public void tsr(DagNode here) {
     if (here == null) return;
 
     here = here.dereference();
@@ -42,7 +50,7 @@ public class LFDagPrinter extends DagPrinter {
 
     // subclasses will print themselves
     if (here instanceof SpecialDagNode) {
-      ((SpecialDagNode)here).toStringSpecial(sb);
+      ((SpecialDagNode)here).toStringRec(this);
       return;
     }
 
@@ -79,11 +87,11 @@ public class LFDagPrinter extends DagPrinter {
         if (id == null) {
           sb.append(newNominalName(-corefNo));
         } else {
-          toStringRec(id, readable, sb);
+          toStringRec(id, sb);
         }
         sb.append(':');
         if (type != null) {
-          toStringRec(type, readable, sb);
+          toStringRec(type, sb);
         }
         // sb.append(')'); // see above
         return;
@@ -98,11 +106,11 @@ public class LFDagPrinter extends DagPrinter {
       if (id == null) {
         sb.append(newNominalName(corefNo));
       } else {
-        toStringRec(id, readable, sb);
+        toStringRec(id, sb);
       }
       sb.append(':');
       if (type != null) {
-        toStringRec(type, readable, sb);
+        toStringRec(type, sb);
       }
       if (root && ! _ruleMode) {
         sb.append('(');
@@ -115,7 +123,7 @@ public class LFDagPrinter extends DagPrinter {
           sb.append(" ^ ");
         else
           printCaret = true;
-        toStringRec(prop, readable, sb);
+        toStringRec(prop, sb);
       }
 
       //sb.append(readable ? here.getTypeName() : here.getType());
@@ -127,7 +135,7 @@ public class LFDagPrinter extends DagPrinter {
         sb.append("<")
         .append(readable ? edge.getName() : edge.getFeature())
         .append(">");
-        toStringRec(edge.getValue(), readable, sb);
+        toStringRec(edge.getValue(), sb);
         if (it.hasNext()) {
           edge = it.next();
         } else {
@@ -144,7 +152,7 @@ public class LFDagPrinter extends DagPrinter {
         assert(! it.hasNext());
         DagNode sub = edge.getValue();
         if (sub != null) {
-          toStringRec(sub, readable, sb);
+          toStringRec(sub, sb);
         }
       }
       else {
@@ -152,5 +160,15 @@ public class LFDagPrinter extends DagPrinter {
         sb.append(readable ? getTypeString(name) : name);
       }
     }
+  }
+
+  public DagPrinter append(String s) {
+    sb.append(s);
+    return this;
+  }
+
+  public DagPrinter append(char c) {
+    sb.append(c);
+    return this;
   }
 }

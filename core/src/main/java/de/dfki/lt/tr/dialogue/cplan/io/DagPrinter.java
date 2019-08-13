@@ -8,8 +8,19 @@ public abstract class DagPrinter {
   private IdentityHashMap<DagNode, Integer> corefs;
   protected int _maxCoref;
 
-  public abstract void toStringRec(DagNode dag, boolean readable,
-      StringBuilder sb) ;
+  protected boolean readable = true;
+
+  public abstract void toStringRec(DagNode dag, StringBuilder sb) ;
+
+  public abstract void tsr(DagNode dag); // internal recursion
+
+  public abstract DagPrinter append(String s);
+
+  public abstract DagPrinter append(char c);
+
+  public void setReadable(boolean val) {
+    readable = val;
+  }
 
   public void getCorefs(DagNode root) {
     corefs = new IdentityHashMap<DagNode, Integer>();

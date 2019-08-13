@@ -1,5 +1,7 @@
 package de.dfki.lt.tr.dialogue.cplan;
 
+import de.dfki.lt.tr.dialogue.cplan.io.DagPrinter;
+
 public class VarDagNode extends SpecialDagNode {
 
   private String _varName;
@@ -91,25 +93,25 @@ public class VarDagNode extends SpecialDagNode {
   */
 
   @Override
-  public void toStringSpecial(StringBuilder sb) {
+  public void toStringRec(DagPrinter p) {
     switch (getType()) {
     case Bindings.ABSOLUTE:
-      sb.append(_varName).append(':');
+      p.append(_varName).append(':');
       break;
     case Bindings.LOCAL:
-      sb.append('#');
-      if (_varName != null && _varName.charAt(0) != '#') sb.append(_varName);
+      p.append('#');
+      if (_varName != null && _varName.charAt(0) != '#') p.append(_varName);
       break;
     case Bindings.GLOBAL:
-      sb.append("##").append(_varName);
+      p.append("##").append(_varName);
       if (_path != null) {
         for(short feat : _path) {
-          sb.append("<").append(DagNode.getFeatureName(feat)).append(">");
+          p.append("<").append(DagNode.getFeatureName(feat)).append(">");
         }
       }
       break;
     case Bindings.RIGHTLOCAL:
-      sb.append("###").append(_varName);
+      p.append("###").append(_varName);
       break;
     }
   }

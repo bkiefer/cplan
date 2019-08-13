@@ -1,24 +1,24 @@
 package de.dfki.lt.tr.dialogue.cplan.io;
 
 import java.util.Iterator;
-import java.util.regex.Pattern;
 
 import de.dfki.lt.tr.dialogue.cplan.DagEdge;
 import de.dfki.lt.tr.dialogue.cplan.DagNode;
 import de.dfki.lt.tr.dialogue.cplan.SpecialDagNode;
+import de.uka.ilkd.pp.Layouter;
+import de.uka.ilkd.pp.NoExceptions;
 
 public class LFDagPrettyPrinter extends DagPrinter {
 
   private boolean _ruleMode = false;
 
-  public int MAX_WIDTH = 80;
+  private int width = 80;
 
-  private static final String nl = System.getProperty("line.separator");
+  private int indentation = 2;
 
-  private class Info {
-    public int pos;
-    public int indent;
-  }
+  private Layouter<NoExceptions> pp;
+
+  private boolean root;
 
   private String newNominalName(int corefNo) {
     return "nom" + ((corefNo == 0) ? ++_maxCoref : Math.abs(corefNo));
@@ -41,23 +41,23 @@ public class LFDagPrettyPrinter extends DagPrinter {
     return false;
   }
 
-  public void toStringRec(DagNode here, boolean readable, StringBuilder sb,
-      Info max_width) {
+  public void tsr(DagNode here) {
     if (here == null) return;
 
     here = here.dereference();
 
-    boolean root = (sb.length() == 0);
-
     // subclasses will print themselves
     if (here instanceof SpecialDagNode) {
-      ((SpecialDagNode)here).toStringSpecial(sb);
+      StringBuilder sb = new StringBuilder();
+      ((SpecialDagNode)here).toStringRec(this);
+      pp.beginI(); pp.print(sb.toString()); pp.end();
       return;
     }
 
     // arrange for _isNominal nodes without id that the nominal name is
     // derived from the coref no instead.
 
+    pp.beginCInd();
     if (here.isNominal()) {
       DagNode prop = null ;
       DagNode id = null;
@@ -83,71 +83,72 @@ public class LFDagPrettyPrinter extends DagPrinter {
       if (corefNo < 0) { // already printed, only id:type
         //String idName =
         //  ((id != null) ? id.getTypeName() : newNominalName(-corefNo));
-        //sb.append(idName).append(':');
-        // sb.append('('); // should not be required
+        //pp.add(idName).append(':');
+        // pp.add('('); // should not be required
         if (id == null) {
-          sb.append(newNominalName(-corefNo));
+          pp.print(newNominalName(-corefNo));
         } else {
-          toStringRec(id, readable, sb, max_width);
+          tsr(id);
         }
-        sb.append(':');
+        pp.print(":");
         if (type != null) {
-          toStringRec(type, readable, sb, max_width);
+          tsr(type);
         }
-        // sb.append(')'); // see above
+        // pp.print(')'); // see above
+        pp.end();
         return;
       }
 
       boolean printCaret = false;
       if (root && ! _ruleMode) {
-        sb.append('@');
+        pp.print("@");
       } else {
-        sb.append('(');
+        pp.print("(");
       }
       if (id == null) {
-        sb.append(newNominalName(corefNo));
+        pp.print(newNominalName(corefNo));
       } else {
-        toStringRec(id, readable, sb, max_width);
+        tsr(id);
       }
-      sb.append(':');
+      pp.print(":");
       if (type != null) {
-        toStringRec(type, readable, sb, max_width);
+        tsr(type);
       }
       if (root && ! _ruleMode) {
-        sb.append('(');
+        pp.print("(");
       } else {
         printCaret = true;
       }
+      root = false;
 
       if (prop != null) {
-        if (printCaret)
-          sb.append(" ^ ");
+        if (printCaret) {
+          pp.brk(); pp.print("^ ");
+        }
         else
           printCaret = true;
-        toStringRec(prop, readable, sb, max_width);
+        tsr(prop);
       }
 
-      //sb.append(readable ? here.getTypeName() : here.getType());
+      //pp.print(readable ? here.getTypeName() : here.getType());
       while(edge != null) {
-        DagNode val = edge.getValue();
-        if (isComplex(val)) {
-          sb.append(nl);; //.append(indent);
-        }
-        if (printCaret)
-          sb.append(" ^ ");
-        else
+        pp.beginCInd(0);
+        if (printCaret) {
+          pp.brk(); pp.print("^ ");
+        } else {
+          pp.brk(0); // comment this if you want the first term after the paren
           printCaret = true;
-        sb.append("<")
-        .append(readable ? edge.getName() : edge.getFeature())
-        .append(">");
-        toStringRec(val, readable, sb, max_width);
+        }
+        pp.print("<" + (readable ? edge.getName() : edge.getFeature()) + ">");
+        edge.getValue().toStringRec(this);
         if (it.hasNext()) {
           edge = it.next();
         } else {
           edge = null;
         }
+        pp.end();
       }
-      sb.append(')');
+      pp.print(")");
     } else {
       // a "feature" feature: exactly one edge: prop
       DagNode.EdgeIterator it = here.getTransitionalEdgeIterator();
@@ -157,19 +158,40 @@ public class LFDagPrettyPrinter extends DagPrinter {
         assert(! it.hasNext());
         DagNode sub = edge.getValue();
         if (sub != null) {
-          toStringRec(sub, readable, sb, max_width);
+          tsr(sub);
         }
       }
       else {
         String name = here.getTypeName();
-        sb.append(readable ? LFDagPrinter.getTypeString(name) : name);
+        pp.print(readable ? LFDagPrinter.getTypeString(name) : name);
       }
     }
+    pp.end();
+  }
+
+  public DagPrinter append(String s) {
+    pp.print(s);
+    return this;
+  }
+
+  public DagPrinter append(char c) {
+    pp.print("" + c);
+    return this;
   }
 
   @Override
-  public void toStringRec(DagNode dag, boolean readable, StringBuilder sb) {
-    Info i = new Info(); i.indent = 0;
-    toStringRec(dag, readable, sb, i);
+  public void toStringRec(DagNode dag, StringBuilder sb) {
+    pp = Layouter.getStringLayouter(sb, width, indentation);
+    root = true;
+    tsr(dag);
+    pp.close();
+  }
+
+  public void setWidth(int w) {
+    width = w;
+  }
+
+  public void setIndentation(int i) {
+    indentation = i;
   }
 }

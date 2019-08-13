@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.dfki.lt.tr.dialogue.cplan.functions.FunctionFactory;
+import de.dfki.lt.tr.dialogue.cplan.io.LFDagPrettyPrinter;
 import de.dfki.lt.tr.dialogue.cplan.io.LFDagPrinter;
 
 public class UttplanParserTest {
@@ -1387,5 +1388,66 @@ public class UttplanParserTest {
     }
   }
 
+  @Test
+  public void testPrettyPrinting() throws IOException {
+    LFDagPrettyPrinter pp = new LFDagPrettyPrinter();
+    DagNode in = DagNode.parseLfString("@s:string(<ordinal>333)");
+    String dString = in.toString();
+    assertEquals("@s:string(<ordinal>333)", dString);
+    in = DagNode.parseLfString(goodPatterns[15][2]);
+    StringBuilder sb = new StringBuilder();
+    pp.getCorefs(in);
+    pp.toStringRec(in, sb);
+    dString = sb.toString();
+    assertEquals("@s:string(<ordinal>333 ^ <numberAsString>\"333e\")", dString);
+    pp.setWidth(10);
+    sb = new StringBuilder();
+    pp.getCorefs(in);
+    pp.toStringRec(in, sb);
+    dString = sb.toString();
+    assertEquals("@s:string(\n  <ordinal>333\n  ^ <numberAsString>\"333e\")", dString);
+    in = DagNode.parseLfString(otherPatterns[15][2]);
+    pp.setWidth(40);
+    sb = new StringBuilder();
+    pp.getCorefs(in);
+    pp.toStringRec(in, sb);
+    dString = sb.toString();
+    assertEquals("@d1:dvp(\n" +
+        "  <Type>(nom1:perception\n" +
+        "    ^ see ^ <Actor>(nom3:person)\n" +
+        "    ^ <Subject>nom3:person)\n" +
+        "  ^ <Actor>nom3:person\n" +
+        "  ^ <Content>nom1:perception)", dString);
+  }
+
+  @Test
+  public void testPrintingPlain() throws IOException {
+    //LFDagPrettyPrinter pp = new LFDagPrettyPrinter();
+    //DagNode.registerPrinter(pp);
+    DagNode.usePrettyPrinter();
+    DagNode in = DagNode.parseLfString(otherPatterns[15][2]);
+    String dString = in.toString();
+    assertEquals("@d1:dvp(<Type>(nom1:perception"
+        + " ^ see ^ <Actor>(nom3:person) ^ <Subject>nom3:person)"
+        + " ^ <Actor>nom3:person ^ <Content>nom1:perception)", dString);
+    in = DagNode.parseLfString(goodPatterns[15][2]);
+    dString = in.toString();
+    assertEquals("@s:string(<ordinal>333 ^ <numberAsString>\"333e\")", dString);
+  }
+
+  @Test
+  public void testPrettyPrintingRule() throws IOException {
+    LFDagPrettyPrinter pp = new LFDagPrettyPrinter();
+    pp.setRuleMode(true);
+    pp.setWidth(20);
+    DagNode.registerPrinter(pp);
+    Rule r = getFirstRuleParsed(
+        ":a ^ <F> (#i:#t ^ #p) ^ (eq(3,3) ~ 1) "
+        + "-> ##fs = #i:#t ^ #p ^ <res> eq(3,3).");
+    String rString = r.toString();
+    assertEquals("((:a ^ <F> ((#i: ^ :#t) ^ #p)) ^ (eq(3, 3) ~ 1)) " +
+        "-> ##fs = (#i:#t\n  ^ #p\n  ^ <res>eq(3, 3)) .",
+        rString);
+  }
 
 }
