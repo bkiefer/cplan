@@ -1,10 +1,9 @@
 package de.dfki.lt.tr.dialogue.cplan;
 
 import java.io.*;
-import java.util.Enumeration;
 import java.util.List;
 
-import org.apache.log4j.*;
+import org.slf4j.Logger;
 
 import de.dfki.lt.j2emacs.J2Emacs;
 import de.dfki.lt.loot.gui.Style;
@@ -38,6 +37,10 @@ implements UPMainFrame.CloseAllListener {
 
   public InteractivePlanner() {
     LFModelAdapter.init();
+  }
+  
+  public Logger getLogger() {
+      return logger;
   }
 
   public File getResourcesDir() {
@@ -163,12 +166,8 @@ implements UPMainFrame.CloseAllListener {
         + new File(getResourcesDir(), "cplan").getAbsolutePath()
         + "\")");
     _j2e.startEmacs();
-    // make an EmacsBufferAppender in j2e-compilation mode
-    Appender ea = _j2e.new EmacsBufferAppender(_compilationBufferName, true);
-    Logger uplogger = Logger.getLogger("UtterancePlanner");
-    uplogger.removeAllAppenders();
-    uplogger.setAdditivity(false);
-    uplogger.addAppender(ea);
+    // use an emacs compatible logger in j2e-compilation mode
+    setLogger(_j2e.getLogger(_compilationBufferName));
   }
 
   private void closeEmacs(boolean quitEmacs) {
@@ -178,6 +177,7 @@ implements UPMainFrame.CloseAllListener {
     }
     _j2e.close();
     _j2e = null;
+    setLogger(null);
   }
 
   public void showPosition(Position p) {
@@ -187,7 +187,7 @@ implements UPMainFrame.CloseAllListener {
       _j2e.visitFilePosition(f, p.line, p.column, "");
     }
     catch (IOException ioex) {
-      Logger.getRootLogger().warn(ioex);
+      logger.warn("{}", ioex);
     }
   }
 
@@ -286,7 +286,6 @@ implements UPMainFrame.CloseAllListener {
         }
         if (type == BatchType.PLANNING_ALL
             || type == BatchType.GENERATION_ALL) {
-          Logger.getRootLogger().setLevel(Level.ERROR);
           batchGenerateAllPossibilities(batchFile, out,
               type == BatchType.GENERATION_ALL);
         } else {
@@ -325,17 +324,6 @@ implements UPMainFrame.CloseAllListener {
 
   @SuppressWarnings("unchecked")
   public static void main(String[] args) throws FileNotFoundException, IOException {
-    Logger uplogger = Logger.getLogger("UtterancePlanner");
-    Enumeration<Appender> apps = uplogger.getAllAppenders();
-    Enumeration<Appender> rapps = Logger.getRootLogger().getAllAppenders();
-    if (! apps.hasMoreElements() && ! rapps.hasMoreElements()) {
-      uplogger.addAppender( new ConsoleAppender(new PatternLayout("%m%n")));
-      uplogger.setAdditivity(false);
-      Logger.getRootLogger().addAppender(
-          new ConsoleAppender(new SimpleLayout(), "System.err"));
-      // Logger.getRootLogger().setLevel(Level.ERROR);
-    }
-
     OptionParser parser = new OptionParser("a:g:p:G:P:icdt:e::");
     OptionSet options = null;
     try {

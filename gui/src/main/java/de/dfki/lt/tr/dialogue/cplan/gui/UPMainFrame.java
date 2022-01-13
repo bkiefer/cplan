@@ -12,8 +12,6 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.BadLocationException;
 
-import org.apache.log4j.Logger;
-
 import de.dfki.lt.loot.gui.DrawingPanel;
 import de.dfki.lt.loot.gui.MainFrame;
 import de.dfki.lt.loot.gui.Style;
@@ -250,8 +248,7 @@ public class UPMainFrame extends MainFrame {
         historySize = Integer.parseInt((String)_planner.getSetting("history_size"));
       }
     } catch (NumberFormatException nex) {
-      Logger.getLogger("UtterancePlanner")
-      .warn("specified history size is not a number");
+      _planner.getLogger().warn("specified history size is not a number");
     }
     _history = new de.dfki.lt.loot.gui.util.InputHistory(historySize);
 
@@ -271,8 +268,7 @@ public class UPMainFrame extends MainFrame {
       _fileProcessor.processFile(ruleFile == null ? null : new File(ruleFile),
           this);
     } catch (IOException e) {
-      Logger.getLogger("UtterancePlanner")
-      .error("Problem reading project file" + e);
+      _planner.getLogger().error("Problem reading project file" + e);
     }
 
     setProcessorStopped();

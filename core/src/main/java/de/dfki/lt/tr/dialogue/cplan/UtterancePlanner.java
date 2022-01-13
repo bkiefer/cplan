@@ -59,13 +59,11 @@ public class UtterancePlanner {
     public List<File> pluginDirectories = new ArrayList<>();
   }
 
-
-
   /** This logger should be used only for messages concerning rule loading and
    *  processing issues. It is meant to be the console/error output of this
    *  content planner.
    */
-  protected Logger logger = LoggerFactory.getLogger("UtterancePlanner");
+  protected static Logger logger;
 
   /** The processing engine of this content planner */
   private ArrayList<Processor> _processors;
@@ -96,7 +94,7 @@ public class UtterancePlanner {
     _errors = new ArrayList<Position>();
 
     _ruleLexer = new Lexer();
-    _ruleLexer.setErrorLogger(logger);
+    setLogger(null);
   }
 
   public UtterancePlanner() {
@@ -107,6 +105,14 @@ public class UtterancePlanner {
     return new UtterancePlanner();
   }
 
+  protected void setLogger(Logger l) {
+      if (l == null)
+          logger = LoggerFactory.getLogger("UtterancePlanner");
+      else 
+          logger = l;
+      _ruleLexer.setErrorLogger(logger);
+  }
+  
   /** package visibility to allow unit tests to access this */
   void addProcessor(List<Rule> basicRules) {
     if (_processors == null) {
