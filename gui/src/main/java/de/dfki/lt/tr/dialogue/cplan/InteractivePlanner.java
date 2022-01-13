@@ -2,6 +2,7 @@ package de.dfki.lt.tr.dialogue.cplan;
 
 import java.io.*;
 import java.util.List;
+import java.util.Scanner;
 
 import org.slf4j.Logger;
 
@@ -160,11 +161,19 @@ implements UPMainFrame.CloseAllListener {
     closeEmacs(true);
   }
 
+  private String getStringFromResource(String name) {
+    InputStream in = getClass().getClassLoader().getResourceAsStream(name);
+    String str = "";
+    try (Scanner sc = new Scanner(in, "UTF-8").useDelimiter("\\A")) {
+      str = sc.next();
+    }
+    return str;
+  }
+  
   public void startEmacsConnection(String emacsPath) {
-    _j2e = new J2Emacs("CPlanner", getResourcesDir(), emacsPath);
-    _j2e.addStartHook("(load \""
-        + new File(getResourcesDir(), "cplan").getAbsolutePath()
-        + "\")");
+    _j2e = new J2Emacs("CPlanner", emacsPath);
+    String elcode = getStringFromResource("cplan.el");
+    _j2e.addStartHook("(progn " + elcode + ")");
     _j2e.startEmacs();
     // use an emacs compatible logger in j2e-compilation mode
     setLogger(_j2e.getLogger(_compilationBufferName));
