@@ -8,7 +8,7 @@
     <groupId>de.dfki.mlt</groupId>
     <artifactId>cplan</artifactId>
     <version>1.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
+    <relativePath>..</relativePath>
   </parent>
 
   <artifactId>cplan-gui</artifactId>
@@ -21,10 +21,6 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
 
   <build>
     <plugins>
@@ -84,20 +80,18 @@
     <dependency>
       <groupId>de.dfki.mlt</groupId>
       <artifactId>j2emacs</artifactId>
-      <version>0.2</version>
+      <version>0.2.1</version>
     </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.32</version>
     </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>1.7.32</version>
-      <type>jar</type>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
 </project>

@@ -1,13 +1,15 @@
 package de.dfki.lt.tr.dialogue.cplan;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Test;
 
+import de.dfki.lt.tr.dialogue.cplan.functions.string.Split;
 import de.dfki.lt.tr.dialogue.cplan.functions.string.Substring;
 
 public class FunctionTest {
@@ -50,5 +52,22 @@ public class FunctionTest {
       assertEquals(pat[1], ss.apply(args));
     }
   }
+  
+  private String getStringVal(DagNode res, String edgeName) {
+    return res.getEdge(DagNode.getFeatureId(edgeName)).getValue().asString();
+  }
+  
+  @Test public void testSplit() {
+    Split sp = new Split();
+    List<DagNode> args = new ArrayList<>();
+    DagNode d = DagNode.parseLfString(
+        "@a:b(<s>\"Split_this_string\" ^ <t>\"_\")");
+    args.add(d.getEdge(DagNode.getFeatureId("s")).getValue());
+    args.add(d.getEdge(DagNode.getFeatureId("t")).getValue());
+    DagNode res = (DagNode)sp.apply(args);
 
+    assertEquals("Split", getStringVal(res, "1"));
+    assertEquals("this", getStringVal(res,"2"));
+    assertEquals("string", getStringVal(res, "3"));
+  }
 }

@@ -315,16 +315,16 @@ implements UPMainFrame.CloseAllListener {
 
   private static void usage(String msg) {
     String[] usage = {
-        "Usage: UPDebugger [-[g]<enerate batch> batchfile]",
-        "                  [-[G]<enerate all sentences> batchfile] ",
-        "                  [-[a]<nalyze batch> inputfile]",
-        "                  [-[p]<lan batch> inputfile]",
-        "                  [-[P]<lan all batch> inputfile]",
-        "                  [-c<ompileonly>] [-d<ebugdags>]",
-        "                  [-i<nteractive shell>] [-t<race>={1,2,3}] [-e<macs>]",
-        "                  <projectfile> [batchoutput]",
+        "Usage: cplanner [-[g]<enerate batch> batchfile]",
+        "                [-[G]<enerate all sentences> batchfile] ",
+        "                [-[a]<nalyze batch> inputfile]",
+        "                [-[p]<lan batch> inputfile]",
+        "                [-[P]<lan all batch> inputfile]",
+        "                [-c<ompileonly>] [-d<ebugdags>]",
+        "                [-i<nteractive shell>] [-t<race>={1,2,3}] [-e<macs>]",
+        "                <projectfile> [batchoutput]",
         "      -t : bit 1: trace match, bit 2 : trace modification",
-        "  The GUI will is started by default"
+        "  The GUI is started by default"
     };
     System.out.println(msg);
     for (String us : usage) System.out.println(us);

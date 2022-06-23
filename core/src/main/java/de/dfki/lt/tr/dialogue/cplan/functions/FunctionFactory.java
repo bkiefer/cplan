@@ -53,6 +53,7 @@ public class FunctionFactory {
     register(new Length(), planner);
     register(new Contains(), planner);
     register(new Endswith(), planner);
+    register(new Split(), planner);
     register(new Substring(), planner);
     register(new NumberToString(), planner);
     register(new OrdinalToString(), planner);

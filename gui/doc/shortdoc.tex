@@ -34,10 +34,11 @@
 \chapter{Installation}
 
 You obviously already have cloned the project from github. To build it, you
-have to install Java 8 and Maven on your machine. Then, in the best case,
-a simple
+have to install Java 8 (or greater) and Maven on your machine. Then, in the
+best case, a simple
 
 \begin{verbatim}
+./install_locallibs.sh
 mvn install
 \end{verbatim}
 
@@ -699,6 +700,9 @@ Mathematical functions expecting \texttt{double} arguments will return
 \item \texttt{endswith} returns 1 if first string ends with the second, 0
   otherwise
 \item \texttt{length} returns the length of the string argument
+\item \texttt{split} splits the first argument (string) using the regular
+  expression of the second argument (string). The result is a node with numbered
+  edges that represent the consecutive parts of the splitted string
 \item \texttt{substring} needs three arguments, a string \texttt{s} and two integers
   \texttt{from} and \texttt{to}, and returns the substring of \texttt{s} from
   \texttt{from} inclusively to \texttt{to} exclusively. If \texttt{from} or
