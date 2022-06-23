@@ -19,7 +19,7 @@
 \setlength{\parindent}{0em}
 
 \newcounter{myexample}
-\newcommand{\example}{\textbf{\stepcounter{myexample}Example
+\newcommand{\example}[1]{\textbf{\stepcounter{myexample}Example
     \arabic{myexample}: {}}}
 %\pgfdeclareimage[interpolate=true,height=7cm]{GUIWindow}{GUIWindow}
 \pgfdeclareimage[interpolate=true,height=7cm]{MainWindow}
@@ -507,6 +507,7 @@ The BNF for one action looks like this:
   \nt{rpathexpr}\\
 \nt{rpathexpr} & \rightarrow &
   \tok{<}\id \tok{>} \nt{rpathexpr} \BAR
+  \tok{<}\nt{var} \tok{>} \nt{rpathexpr} \BAR
   \nt{rsimpleexpr}\\
 \nt{rsimpleexpr} & \rightarrow &
   \nt{atomic} \tok{:} [ \nt{atomic} ] \BAR
@@ -526,10 +527,10 @@ The BNF for one action looks like this:
 
 An action consists of the following elements:
 \begin{itemize}
-\item first the specification of the place it is applied to
-\item an optional feature path
-\item an operator specifying the kind of action that is
-  to be performed (addition, replacement, deletion)
+\item the specification of the place it is applied to, which is any kind of
+  variable, including the current node
+\item an operator specifying the kind of action that is to be performed
+  (addition, replacement, deletion)
 \item the structure that specifies what is added, replaced or deleted.
 \end{itemize}
 
@@ -538,8 +539,12 @@ or a single hash character which represents the node against which the rule is
 matched.
 
 For addition and replacement, full or partial logical forms, also containing
-local variables, can be specified. Deletion can currently only be applied to
-single features or relations.
+variables, can be specified. In the feature paths, some of the features
+ca be specified using previously filled variables (see rule for
+\nt{rpathexpr}). The values of these variables obviously have to be simple IDs,
+as only these are allowed as feature names.
+
+Deletion can currently only be applied to single features or relations.
 \newpage
 
 Minimal examples for the three operations are:

@@ -12,11 +12,11 @@ public class Split implements Function {
     String input = args.get(0).asString();
     String regex = args.get(1).asString();
     String[] tokens = input.split(regex);
-    DagNode res = new DagNode();
+    DagNode res = new DagNode().setNominal();
     int i = 1;
     for (String token : tokens) {
       res.addEdge(DagNode.getFeatureId(Integer.toString(i)),
-          new DagNode(token));
+          new DagNode(DagNode.PROP_FEAT_ID, new DagNode(token)));
       ++i;
     }
     return res;

@@ -90,7 +90,7 @@
 ->
 #c1 = :closing ^ see_you.
 //]
-
+// \newpage
 // \example{9}: Using global variable as node store.
 //
 // After application of these rules \texttt{Target} and \texttt{PointToTarget}
@@ -108,7 +108,7 @@
 
 
 /******************************************************************************
- Adding to relations the wrong way
+Adding to relations the wrong way
  *****************************************************************************/
 
 //[
@@ -149,7 +149,7 @@
 //]
 // \newpage
 /*****************************************************************************
- Global variable ``maps''
+Global variable ``maps''
  *****************************************************************************/
 // \example{11} Global variables can be used with path expressions to get
 // dictionary-like structures
@@ -170,7 +170,7 @@
 //]
 
 /*****************************************************************************
- All you can do with variables
+All you can do with variables
  *****************************************************************************/
 // \example{12} Bind values to global variables and use them in another rule
 //[
@@ -206,6 +206,7 @@
 :dvp ^ <Content>#c: ^ <Wh-Restr>#c: -> # ^ :equals.
 //]
 
+// \newpage
 // \example{15} Check for identity (will only succeed if coreferent)
 //[
 /// @d:coref(<Content>(:bar ^ baz) ^ <Wh-Restr>(:bar ^ baz))
@@ -214,14 +215,26 @@
 :coref ^ <Content>#c: ^ <Wh-Restr> = #c: -> # ^ identical.
 //]
 
+// \example{16} Replace a symbol (the proposition) under a feature
+//[
+/// @d:symb(<motion(BadMotion))
+:symb ^ <motion>(#m ^ BadMotion) -> #m = GoodMotion.
+//]
+
+// \example{17} use a variable representing an ID in a replacement
+//[
+/// @d:kv(<key>"content" ^ <value>(val ^ (<some>"content")))
+:kv ^ <key>#key ^ <value>#val: -> # ^ <#key>#val:, # ! <key>, # ! <value>.
+//]
+
 /*****************************************************************************
- Use of functions for tests and results
+Use of functions for tests and results
  *****************************************************************************/
-// \example{16} Bind values to global variables and use them in another rule
+// \example{18} Use the matching operator to use the result of a function for
+// tests \verb|( eq(#x, 1) ~ 1 )|
 //[
 /// @d:dvp(<SpeechAct>provideQuestion ^ <Context>(<Question> "question " ^ <Count> "1" ))
-:dvp ^ <SpeechAct>provideQuestion
-     ^ <Context>(<Question> #q ^ <Count> #x: ) ^
+:dvp ^ <SpeechAct>provideQuestion ^ <Context>(<Question> #q ^ <Count> #x: ) ^
 ( eq(#x, 1) ~ 1 )
 ->
 ###part1 = random("La prima domanda י: ",
@@ -231,8 +244,8 @@
 # = :canned ^ <string>concatenate(###part1, #q, "?").
 //]
 
-// \example{17} Non-integer numbers must be passed to functions as strings. Boolean functions
-// return zero or one.
+// \example{19} Non-integer numbers must be passed to functions as strings.
+// Boolean functions return zero or one.
 //[
 /// @m:math(<arg1>9 ^ <arg2>2)
 /// @m:math(<arg1>9 ^ <arg2>"30.33")
@@ -246,7 +259,7 @@
 # ^ <bool> lteq("0.3", div(#arg1, #arg2)).
 //]
 
-// \example{18} You can use arbitrary encodings in your grammar files,
+// \example{20} You can use arbitrary encodings in your grammar files,
 // but if it's not UTF-8, you have to specify as `encoding' setting in the
 // grammar file, and, consequently, you can only have one encoding per project.
 //[
@@ -254,16 +267,61 @@
 <enc> iso-8859-15 ^ <val> "הײלגי" -> # ^ <right> true.
 //]
 
-// \example{19} turn a number into a string representing the number
+// \example{21} turn a number into a string representing the number
 // (language dependent).
 //[
 /// @s:string(<number>303)
 :string ^ <number>#number: -> # ^ <numberAsString> spell_number(#number).
 //]
 
-// \example{20} Append an ordinal number suffix to the number.
+// \example{22} Append an ordinal number suffix to the number.
 // (language dependent).
 //[
 /// @s:string(<ordinal>303)
 :string ^ <ordinal>#number: -> # ^ <numberAsString> spell_ordinal(#number).
+//]
+
+/*****************************************************************************
+Miscellaneous
+ *****************************************************************************/
+
+// \example{23} Using \tok{=>} rules to walk through a list
+//[
+///@d:dvp(<c>0 ^ <l>(:li ^ <f>1 ^ <r>(:li ^ <f>2 ^ <r>(:li ^ <f>3 ^ <r>()))))
+///will become: @d:dvp(<c>0123 ^ <l>(:li))
+
+<c>#c: ^ <l>(#l: ^ <f>#f ^ <r>#r:)
+=>
+#l = #r:,
+#c = concatenate(#c, #f).
+//]
+
+// \example{24} Rule groups
+//[
+///@d:dvp(<SpeechAct>greeting ^ <Context>(<Familiarity>yes ^ <ChildGender>f))
+///@d:dvp(<SpeechAct>greeting ^ <Context>(<Familiarity>yes ^ <ChildGender>m))
+///@d:dvp(<SpeechAct>greeting ^ <Context>(<Familiarity>yes))
+:dvp ^ <SpeechAct>greeting ^ <Context>(<Familiarity>yes)
+->
+###greet = random("ciao ", "buongiorno ", "ehi , ciao "),
+###polite = random(", come stai ? ", "! "),
+###init=concatenate(###greet, ###polite),
+###pleasure1 = "sono contento di rivederti ",
+###pleasure2 = "sono felice di rivederti ",
+# ^ :canned ^ <SpeechModus>indicative
+{
+^ <Context>(!<ChildGender> | <ChildGender>unknown)
+->
+# ^ <stringOutput>concatenate(###init, random(###pleasure1, ###pleasure2)).
+
+^ <Context>(<ChildGender>m)
+->
+# ^ <stringOutput>concatenate(###init,
+                     random(###pleasure1, ###pleasure2, "bentornato ")).
+
+^ <Context>(<ChildGender>f)
+->
+# ^ <stringOutput>concatenate(###init,
+                     random(###pleasure1, ###pleasure2, "bentornata ")).
+}
 //]

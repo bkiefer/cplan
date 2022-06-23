@@ -1,4 +1,4 @@
-/* -*- Mode: Java -*- */
+/* -*- Mode: Bison -*- */
 
 %code imports {
 import static de.dfki.lt.tr.dialogue.cplan.BasicRule.appendMatches;
@@ -22,9 +22,9 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
 
 %define package "de.dfki.lt.tr.dialogue.cplan"
 
-%define public
+%define api.parser.public
 
-%define parser_class_name {RuleParser}
+%define api.parser.class {RuleParser}
 
 %define parse.error verbose
 
@@ -78,8 +78,8 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
     public String toString() {
       StringBuilder sb = new StringBuilder();
       return appendActions(_replace, appendMatches(_match, sb)
-                                       .append(_oneShot ? " -> " : " => "))
-               .append(" .").toString();
+                           .append(_oneShot ? " -> " : " => "))
+          .append(" .").toString();
     }
 
   }
@@ -374,7 +374,7 @@ action : lval '=' rexpr
        }
 // THAT DOES NOT SUFFICE! IT MIGHT BE NICE TO SPECIFY REXPRS TO DELETE E.G.
 // THE TYPE AND PROP AND SOME FEATURES IN ONE SWEEP, BUT KEEP THE REST
-       | lval '!' '<' ID  '>'
+       | lval '!' '<' ID '>'
        { $$ = new Deletion($1, new DagNode($4, new DagNode())); }
        ;
 
@@ -393,7 +393,17 @@ rexpr  : rexpr '^' rterm  { $1.add($3); $1.setNominal(); $$ = $1; }
        | rterm            { $$ = $1; }
        ;
 
-rterm : '<' ID '>' rterm  { $$ = new DagNode($2, $4).setNominal(); }
+rterm : '<' ID '>' rterm   { $$ = new DagNode($2, $4).setNominal(); }
+      | '<' VAR '>' rterm  {
+          $$ = new DagNode(new VarEdge($2, Bindings.LOCAL, $4)).setNominal();
+        }
+      | '<' RVAR '>' rterm {
+          $$ = new DagNode(new VarEdge($2, Bindings.RIGHTLOCAL, $4))
+                     .setNominal();
+        }
+      | '<' GVAR path '>' rterm {
+         $$ = new DagNode(new VarEdge($2, $3, $5)).setNominal();
+      }
       | rfeat             { $$ = $1; }
       ;
 

@@ -238,6 +238,11 @@ public class DagNode {
     addEdge(new DagEdge(featureId, dagNode));
   }
 
+  public DagNode(VarEdge edge) {
+    this(TOP_ID);
+    addEdge(edge);
+  }
+
   public DagNode(String type) {
     this(getTypeId(type));
   }
@@ -408,7 +413,7 @@ public class DagNode {
       setCopy(newCopy);
       if (getEdges() != null) {
         for (DagEdge e : getEdges()) {
-          newCopy.addEdge(new DagEdge(e._feature, e._value.cloneFSRec()));
+          newCopy.addEdge(e.copySafely(e._value.cloneFSRec()));
         }
       }
     }
@@ -430,8 +435,7 @@ public class DagNode {
       copyMap.put(here, newCopy);
       if (getEdges() != null) {
         for (DagEdge e : getEdges()) {
-          newCopy.addEdge(
-              new DagEdge(e._feature, e._value.copySafelyRec(copyMap)));
+          newCopy.addEdge(e.copySafely(e._value.copySafelyRec(copyMap)));
         }
       }
     }
@@ -464,7 +468,7 @@ public class DagNode {
         short feat = arc._feature;
         if (!deleteDaughters || keepFeature(feat)) {
           newCopy._outedges.add(
-              new DagEdge(feat, arc._value.copyResultRec(false)));
+              arc.copySafely(arc._value.copyResultRec(false)));
         }
       }
     }
@@ -617,7 +621,7 @@ public class DagNode {
       // collect all ID edges with special nodes and evaluate their content.
       // the original edges are deleted
       while (it.hasNext()) {
-        DagEdge edge = it.next();
+        DagEdge edge = it.next().evaluate(bindings);
         DagNode sub = edge._value;
         if (sub instanceof SpecialDagNode) {
           DagNode eval = ((SpecialDagNode)sub).evaluate(here, bindings);

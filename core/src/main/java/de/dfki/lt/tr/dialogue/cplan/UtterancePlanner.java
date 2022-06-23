@@ -188,7 +188,7 @@ public class UtterancePlanner {
   throws IOException {
     RuleParser ruleParser = new RuleParser(_ruleLexer);
     ruleParser.setErrorVerbose(true);
-    ruleParser.setDebugLevel(0);
+    //ruleParser.setDebugLevel(0); // only for bison version > 3.7
     ruleParser.reset(inputDescription, r);
     ruleParser.parse();
     List<Rule> fileRules = ruleParser.getRules();

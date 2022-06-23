@@ -734,7 +734,13 @@ public class UttplanParserTest {
       "@d:dv(<c>123 ^<l>(:li))"
     },
 
-    // 19 strange error test
+    // 19 feature with var test
+    { "<res>#res: ^ <inp>(<key>#key ^ <val>#val:) -> #res ^ <#key> (#val:), # ! <inp>.",
+      "@d:dv(<res>(:l) ^ <inp>(:l ^ <key>what ^ <val>(:k ^ <a>b)))",
+      "@d:dv(<res>(:l ^ <what>(:k ^ <a>b)))"
+    },
+
+    // 20 strange error test
     // BEWARE: THIS IS A GOOD EXAMPLE WHERE THE PARALLEL APPLICATION OF RULES
     // SHOWS UP: IN THE MATCHING PHASE, BOTH ARE APPLICABLE, SO 2 OVERWRITES 1
     /*
@@ -1337,7 +1343,19 @@ public class UttplanParserTest {
       "@d:coref(<Content>(a:bar ^ baz) ^ <Wh-Restr>a: ^ identical)",
     },
 
+    // Example 16
+    { "", // no rule, to test grammars in file
+      "@d:symb(<motion>(BadMotion))",
+      "@d:symb(<motion>(GoodMotion))"
+    },
+
     // Example 17
+    { "", // no rule, to test grammars in file
+      "@d:kv(<key>\"content\" ^ <value>(val ^ <some>\"content\"))",
+      "@d:kv(<content>(val ^ <some>\"content\"))"
+    },
+
+    // Example 19
     { "", // no rule, to test grammars in file
       "@m:math(<arg1>9 ^ <arg2>2)",
       "@m:math(<arg1>9 ^ <arg2>2 ^ <res>\"4.5\" ^ <bool>1)",
@@ -1345,19 +1363,19 @@ public class UttplanParserTest {
       "@m:math(<arg1>9 ^ <arg2>\"30.33\" ^ <bool>0)"
     },
 
-    // Example 18
+    // Example 20
     { "", // no rule, to test grammars in file
       "@e:enc(<enc> iso-8859-15 ^ <val> \"äÖìâé\" ^ <val2> \"\")",
       "@e:enc(<enc> iso-8859-15 ^ <val> \"äÖìâé\" ^ <val2> \"\" ^ <right> true)"
     },
 
-    // Example 19
+    // Example 21
     { "", // no rule, to test grammars in file
       "@s:string(<number>333)",
       "@s:string(<number>333 ^ <numberAsString>\"driehonderddrieëndertig\")",
     },
 
-    // Example 20
+    // Example 22
     { "", // no rule, to test grammars in file
       "@s:string(<ordinal>\"333\")",
       "@s:string(<ordinal>\"333\" ^ <numberAsString>\"333e\")",
@@ -1394,7 +1412,7 @@ public class UttplanParserTest {
     DagNode in = DagNode.parseLfString("@s:string(<ordinal>333)");
     String dString = in.toString();
     assertEquals("@s:string(<ordinal>333)", dString);
-    in = DagNode.parseLfString(goodPatterns[15][2]);
+    in = DagNode.parseLfString(goodPatterns[17][2]);
     StringBuilder sb = new StringBuilder();
     pp.getCorefs(in);
     pp.toStringRec(in, sb);
@@ -1430,7 +1448,7 @@ public class UttplanParserTest {
     assertEquals("@d1:dvp(<Type>(nom1:perception"
         + " ^ see ^ <Actor>(nom3:person) ^ <Subject>nom3:person)"
         + " ^ <Actor>nom3:person ^ <Content>nom1:perception)", dString);
-    in = DagNode.parseLfString(goodPatterns[15][2]);
+    in = DagNode.parseLfString(goodPatterns[17][2]);
     dString = in.toString();
     assertEquals("@s:string(<ordinal>333 ^ <numberAsString>\"333e\")", dString);
   }

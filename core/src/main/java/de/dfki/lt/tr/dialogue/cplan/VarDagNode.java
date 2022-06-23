@@ -105,9 +105,7 @@ public class VarDagNode extends SpecialDagNode {
     case Bindings.GLOBAL:
       p.append("##").append(_varName);
       if (_path != null) {
-        for(short feat : _path) {
-          p.append("<").append(DagNode.getFeatureName(feat)).append(">");
-        }
+        p.append(_path.toString());
       }
       break;
     case Bindings.RIGHTLOCAL:

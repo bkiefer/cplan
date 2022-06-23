@@ -29,9 +29,17 @@ public class DagEdge {
   public String toString() {
     return '<' + DagNode.getFeatureName(_feature) + '>' + _value;
   }
-
+  
+  public DagEdge evaluate(Bindings bindings) {
+    return this;
+  }
+  
   /** Get the last edge of the given path.
    *  Works correctly only on non-temporary dags.
+   *  
+   *  TODO: THINK ABOUT A WAY TO ALLOW VARIABLES IN THE PATH 
+   *  unfortunately this potentially creates quite a big disjunction, which is
+   *  why it's currently forbidden
    */
   public DagEdge walkOrCreatePath(Path path) {
     DagEdge current = this;
@@ -78,10 +86,13 @@ public class DagEdge {
   public DagEdge copyIntermediate(IdentityHashMap<Object, Object> origToCopy) {
     DagEdge edgeCopy = (DagEdge) origToCopy.get(this);
     if (edgeCopy == null) {
-      edgeCopy = new DagEdge(_feature, _value.copyIntermediate(origToCopy));
+      edgeCopy = copySafely(_value.copyIntermediate(origToCopy));
       origToCopy.put(this, edgeCopy);
     }
     return edgeCopy;
   }
 
+  public DagEdge copySafely(DagNode newValue) {
+    return new DagEdge(_feature, newValue);
+  }
 }
