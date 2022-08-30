@@ -23,18 +23,22 @@ import de.dfki.lt.tr.dialogue.cplan.io.LFDebugPrinter;
 import de.dfki.lt.tr.dialogue.cplan.util.Position;
 
 public class DagNode {
-  /** The lexer to use in logical form parsing */
+
+  /** The lexer to use in logical form parsing *
   private static final Lexer _lfLexer;
-  /** The parser for logical forms. */
+  /** The parser for logical forms. *
   private static final LFParser _lfParser;
 
   static {
-    /** The lexer to use in logical form parsing */
+    /** The lexer to use in logical form parsing *
     _lfLexer = new Lexer();
-    /** The parser for logical forms. */
+    /** The parser for logical forms. *
     _lfParser = new LFParser(_lfLexer);
     _lfParser.setErrorVerbose(true);
   }
+  */
+
+  private static Position lastErrorPosition;
 
   public static Logger logger = LoggerFactory.getLogger("DagNode");
 
@@ -269,10 +273,16 @@ public class DagNode {
     if (input.isEmpty())
       return null;
     StringReader sr = new StringReader(input);
-    _lfParser.reset("Console", sr);
+    Lexer lexer = new Lexer("Console", sr);
+    LFParser lfParser = new LFParser(lexer);
+    //LFParser lfParser = _lfParser;
+    //lfParser.reset("Console", sr);
     try {
-      if (_lfParser.parse() && _lfParser.correct()) {
-        return _lfParser.getResultLF();
+      lastErrorPosition = null;
+      if (lfParser.parse() && lfParser.correct()) {
+        return lfParser.getResultLF();
+      } else {
+        lastErrorPosition = lexer.getLastErrorPosition();
       }
     }
     catch (IOException ioex) {
@@ -289,7 +299,7 @@ public class DagNode {
    *  such error.
    */
   public static Position getLastLFErrorPosition() {
-    return _lfLexer.getLastErrorPosition();
+    return lastErrorPosition; //_lfLexer.getLastErrorPosition();
   }
 
   // *************************************************************************
@@ -1472,6 +1482,4 @@ public class DagNode {
     }
     return sb.toString();
   }
-
-
 }
