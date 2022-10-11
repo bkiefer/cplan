@@ -169,8 +169,11 @@ public class DagNode {
   /** so that we don't have to return null when the edges list is empty */
   private static Iterator<DagEdge> emptyEdges =
     new Iterator<DagEdge>() {
+    @Override
     public boolean hasNext() { return false; }
+    @Override
     public DagEdge next() { throw new NoSuchElementException(); }
+    @Override
     public void remove() {
       throw new UnsupportedOperationException();
     }
@@ -268,13 +271,14 @@ public class DagNode {
   /** Convert the given input string, which contains a (partial) logical form,
    *  into an internal data structure for processing.
    */
-  public static DagNode parseLfString(String input) {
+  public static synchronized DagNode parseLfString(String input) {
     input = input.trim();
     if (input.isEmpty())
       return null;
     StringReader sr = new StringReader(input);
     Lexer lexer = new Lexer("Console", sr);
     LFParser lfParser = new LFParser(lexer);
+    //lfParser.setDebugLevel(99);
     //LFParser lfParser = _lfParser;
     //lfParser.reset("Console", sr);
     try {
@@ -1094,6 +1098,7 @@ public class DagNode {
   public void sortEdges() {
     Collections.sort(_outedges,
         new Comparator<DagEdge>(){
+          @Override
           public int compare(DagEdge arg0, DagEdge arg1) {
             return arg0._feature - arg1._feature;
           }
@@ -1149,8 +1154,10 @@ public class DagNode {
       }
     }
 
+    @Override
     public boolean hasNext() { return _curr != null; }
 
+    @Override
     public DagEdge next() {
       DagEdge now = _curr;
       if (_impl.hasNext()) {
@@ -1163,6 +1170,7 @@ public class DagNode {
       return now;
     }
 
+    @Override
     public void remove() { throw new UnsupportedOperationException(); }
   }
 
