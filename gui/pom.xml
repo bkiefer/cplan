@@ -14,13 +14,9 @@
   <artifactId>cplan-gui</artifactId>
   <packaging>jar</packaging>
 
-  <licenses>
-    <license>
-      <name>LGPL 3 or later</name>
-      <url>http://www.gnu.org/licenses/lgpl.html</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
+  <properties>
+    <logback.version>1.4.5</logback.version>
+  </properties>
 
   <build>
     <plugins>
@@ -87,10 +83,12 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
-
+    
+    <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.4.5</version>
       <scope>runtime</scope>
     </dependency>
   </dependencies>
