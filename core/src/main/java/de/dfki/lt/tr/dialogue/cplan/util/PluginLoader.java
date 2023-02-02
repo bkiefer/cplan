@@ -35,7 +35,7 @@ public class PluginLoader{
    *
    */
   private Function getPlugin(String name) {
-    name = name.replace(File.separatorChar, '.');
+    name = name.replace('/', '.');
     name = name.substring(0, name.length() - 6); // remove ".class"
 
     Class<?> aClass;

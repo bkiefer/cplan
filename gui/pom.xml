@@ -7,7 +7,7 @@
   <parent>
     <groupId>de.dfki.mlt</groupId>
     <artifactId>cplan</artifactId>
-    <version>1.2.3</version>
+    <version>1.2.4</version>
     <relativePath>..</relativePath>
   </parent>
 
@@ -22,7 +22,6 @@
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.1.1</version>
         <executions>
           <execution>
             <id>make-assembly</id> <!-- this is used for inheritance merges -->
@@ -76,14 +75,14 @@
     <dependency>
       <groupId>de.dfki.mlt</groupId>
       <artifactId>j2emacs</artifactId>
-      <version>0.2.1</version>
+      <version>0.2.2</version>
     </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
-    
+
     <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
     <dependency>
       <groupId>ch.qos.logback</groupId>

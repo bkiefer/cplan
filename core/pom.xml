@@ -9,7 +9,7 @@
   <parent>
     <groupId>de.dfki.mlt</groupId>
     <artifactId>cplan</artifactId>
-    <version>1.2.3</version>
+    <version>1.2.4</version>
     <relativePath>..</relativePath>
   </parent>
 
@@ -62,7 +62,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>2.6</version>
         <executions>
           <execution>
             <id>jar-plugin</id>
@@ -82,52 +81,4 @@
       </plugin>
     </plugins>
   </build>
-  <!--
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.7</version>
-        <executions>
-          <execution>
-            <id>generate-test-plugin</id>
-            <phase>process-test-classes</phase>
-            <configuration>
-              <target>
-                <property name="build.compiler" value="extJavac"/>
-                <property name="target.dir" value="./target"/>
-                <property name="classes.dir" value="${target.dir}/classes"/>
-                <property name="test.classes.dir" value="${target.dir}/test-classes"/>
-                <javac debug="yes" deprecation="yes"
-                       srcdir="${test.classes.dir}/plugins"
-                       destdir="${test.classes.dir}/plugins"
-                       includeantruntime="false">
-                  <classpath>
-                    <path refid="maven.test.classpath"/>
-                    <pathelement path="${classes.dir}"/>
-                  </classpath>
-                  <compilerarg value="-Xlint"/>
-                </javac>
-                <mkdir dir="${target.dir}/test-resources/plugins/"/>
-                <jar destfile="${target.dir}/test-resources/plugins/testplug.jar"
-                     compress="true">
-                  <fileset dir="${test.classes.dir}/plugins/"
-                           includes="**/*.class"/>
-                </jar>
-                - clean up so that the .class files don't confuse the test runner -
-                <delete failonerror="true">
-                  <fileset dir="${test.classes.dir}/plugins/"
-                           includes="**/*.class"/>
-                </delete>
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
-  -->
 </project>
