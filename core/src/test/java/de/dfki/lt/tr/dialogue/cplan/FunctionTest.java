@@ -1,6 +1,6 @@
 package de.dfki.lt.tr.dialogue.cplan;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.dfki.lt.tr.dialogue.cplan.functions.string.Split;
+import de.dfki.lt.tr.dialogue.cplan.functions.string.StringToNumber;
 import de.dfki.lt.tr.dialogue.cplan.functions.string.Substring;
 
 public class FunctionTest {
@@ -52,11 +53,11 @@ public class FunctionTest {
       assertEquals(pat[1], ss.apply(args));
     }
   }
-  
+
   private String getStringVal(DagNode res, String edgeName) {
     return res.getEdge(DagNode.getFeatureId(edgeName)).getValue().asString();
   }
-  
+
   @Test public void testSplit() {
     Split sp = new Split();
     List<DagNode> args = new ArrayList<>();
@@ -69,5 +70,27 @@ public class FunctionTest {
     assertEquals("Split", getStringVal(res, "1"));
     assertEquals("this", getStringVal(res,"2"));
     assertEquals("string", getStringVal(res, "3"));
+  }
+
+  @Test public void testNumberConversion() {
+    UtterancePlanner up = new UtterancePlanner();
+    up.setLanguage("de_DE");
+    StringToNumber stn = new StringToNumber();
+    stn.register(up);
+    String [][] patterns = {
+        { "@a:b(<num>sieben)", "7" },
+        { "@a:b(<num>eins)", "1" },
+        { "@a:b(<num>ein)", "1" },
+        { "@a:b(<num>eine)", "1" },
+        // also works for ordinals, could be problematic, but how to handle this?
+        { "@a:b(<num>erste)", "1" },
+    };
+    for (String[] pat : patterns) {
+      DagNode d = DagNode.parseLfString(pat[0]);
+      List<DagNode> args = new ArrayList<>();
+      args.add(d.getEdge(DagNode.getFeatureId("num")).getValue());
+      String res = (String)stn.apply(args);
+      assertEquals(pat[1], res);
+    }
   }
 }
