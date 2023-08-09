@@ -11,17 +11,19 @@ import java.util.LinkedList;
 
 %language "Java"
 
-%define package "de.dfki.lt.tr.dialogue.cplan"
+%define api.package "de.dfki.lt.tr.dialogue.cplan"
 
-%define public
+%define api.parser.public
 
-%name-prefix "LF"
+%define api.prefix {LF}
 
 %define parse.error verbose
 
+%define parse.trace
+
 %code {
   private boolean extMode = false;
-  
+
   private boolean _correct = true;
 
   private DagNode _lf;

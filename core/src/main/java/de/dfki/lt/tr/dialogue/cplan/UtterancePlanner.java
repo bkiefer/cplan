@@ -108,11 +108,11 @@ public class UtterancePlanner {
   protected void setLogger(Logger l) {
       if (l == null)
           logger = LoggerFactory.getLogger("UtterancePlanner");
-      else 
+      else
           logger = l;
       _ruleLexer.setErrorLogger(logger);
   }
-  
+
   /** package visibility to allow unit tests to access this */
   void addProcessor(List<Rule> basicRules) {
     if (_processors == null) {
@@ -188,7 +188,7 @@ public class UtterancePlanner {
   throws IOException {
     RuleParser ruleParser = new RuleParser(_ruleLexer);
     ruleParser.setErrorVerbose(true);
-    //ruleParser.setDebugLevel(0); // only for bison version > 3.7
+    //ruleParser.setDebugLevel(99); // to trace rule file parsing
     ruleParser.reset(inputDescription, r);
     ruleParser.parse();
     List<Rule> fileRules = ruleParser.getRules();

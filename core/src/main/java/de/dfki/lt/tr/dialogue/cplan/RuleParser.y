@@ -20,13 +20,15 @@ import de.dfki.lt.tr.dialogue.cplan.actions.*;
 
 %locations
 
-%define package "de.dfki.lt.tr.dialogue.cplan"
+%define api.package "de.dfki.lt.tr.dialogue.cplan"
 
 %define api.parser.public
 
 %define api.parser.class {RuleParser}
 
 %define parse.error verbose
+
+%define parse.trace
 
 %code {
   /** A class to collect matches and actions to generate real rules when

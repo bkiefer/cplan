@@ -751,6 +751,29 @@ public class UttplanParserTest {
     }
     */
 
+    // 20 bound global vars test
+    { // "//(bound(##minconf) ~ 1) -> ##minconf = \"0.75\".\n" +
+      "raw: ^ !<res> -> ##mc = \"0.1\".\n"
+      + "\n"
+      + "raw: ^ ! <mec> {\n"
+      + "^ (bound(##mc) ~ 1) -> # ^ <mec>##mc:.\n"
+      + "^ (bound(##mc) ~ 0) -> # ^ <mec>\"0.7\".\n"
+      + "}",
+      "@raw:dv(<res>a ^ <foo>(<bar>baz))",
+      "@raw:dv(<res>a ^ <mec>\"0.7\" ^ <foo>(nom1: ^ <bar>baz))"
+    },
+
+    // 21 bound global vars test
+    { // "//(bound(##minconf) ~ 1) -> ##minconf = \"0.75\".\n" +
+      "raw: ^ <res> -> ##mc = \"0.1\".\n"
+      + "\n"
+      + "raw: ^ ! <mec> {\n"
+      + "^ (bound(##mc) ~ 1) -> # ^ <mec>##mc:.\n"
+      + "^ (bound(##mc) ~ 0) -> # ^ <mec>\"0.7\".\n"
+      + "}",
+      "@raw:dv(<res>a ^ <foo>(<bar>baz))",
+      "@raw:dv(<res>a ^ <mec>\"0.1\" ^ <foo>(nom1: ^ <bar>baz))"
+    },
   };
 
   @Before public void setUp() {
@@ -1024,7 +1047,7 @@ public class UttplanParserTest {
   }
 
   @Test public void testRecSpecial() throws IOException {
-    int i = -1;
+    int i = 20;
     // DagNode.useDebugPrinter();
     String[] pattern = (i >=0 ? otherPatterns[i] : null);
     _print = true;
