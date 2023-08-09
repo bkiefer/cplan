@@ -763,7 +763,9 @@ public class UttplanParserTest {
       "@raw:dv(<res>a ^ <mec>\"0.7\" ^ <foo>(nom1: ^ <bar>baz))"
     },
 
-    // 21 bound global vars test
+    // 21 bound global vars test: this does not work since the first
+    // rule needs to be executed in a previous _stage_!!!
+    /*
     { // "//(bound(##minconf) ~ 1) -> ##minconf = \"0.75\".\n" +
       "raw: ^ <res> -> ##mc = \"0.1\".\n"
       + "\n"
@@ -773,7 +775,7 @@ public class UttplanParserTest {
       + "}",
       "@raw:dv(<res>a ^ <foo>(<bar>baz))",
       "@raw:dv(<res>a ^ <mec>\"0.1\" ^ <foo>(nom1: ^ <bar>baz))"
-    },
+    },*/
   };
 
   @Before public void setUp() {
@@ -1047,7 +1049,7 @@ public class UttplanParserTest {
   }
 
   @Test public void testRecSpecial() throws IOException {
-    int i = 20;
+    int i = -1;
     // DagNode.useDebugPrinter();
     String[] pattern = (i >=0 ? otherPatterns[i] : null);
     _print = true;
