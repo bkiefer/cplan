@@ -23,20 +23,23 @@ main window and run interactively to see the effects.
 
 ## Installation and Usage
 
-1. Make sure you have an internet connection
-2. Install maven on your computer
-3. enter
+The following installation instructions are tested on Ubuntu 22.04
 
-   `mvn install`
+Prerequisites for installing cplan are:
+- OpenJDK 11 (at least), maven build tool, and git
+  ```
+  sudo apt install openjdk-11-jdk maven git
+  ```
 
-If you experience problems because of missing dependencies, please clone
-and build the following projects here on gitlab (with maven, as above).
-
-```
-git clone https://github.com/bkiefer/dataviz.git
-git clone https://github.com/bkiefer/openccg.git
-git clone https://github.com/bkiefer/j2emacs.git
-```
+- get cplan, install some dependencies from github, compile them, and finally
+  the framework itself
+  ```
+  git clone https://github.com/bkiefer/cplan.git
+  cd cplan
+  # install dependencies
+  ./install_locallibs.sh
+  mvn install
+  ```
 
 In the top-level directory is a start script (`cplanner` resp. `cplanner.bat`)
 that starts the interactive version of the tool. Putting a link to this script
