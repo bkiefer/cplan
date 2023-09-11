@@ -56,4 +56,11 @@
     <module>gui</module>
   </modules>
 
+  <repositories>
+    <repository>
+      <id>github</id>
+      <url>https://raw.githubusercontent.com/DFKI-MLT/Maven-Repository/main</url>
+    </repository>
+  </repositories>
+
 </project>
