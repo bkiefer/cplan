@@ -1,5 +1,7 @@
 # Rule-based Graph Rewriting Tool
 
+[![mvn build](https://github.com/bkiefer/cplan/actions/workflows/maven.yml/badge.svg)](https://github.com/bkiefer/cplan/actions/workflows/maven.yml)
+
 ## Purpose
 
 *cplan* is a general purpose graph rewriting tool/library which is mainly
