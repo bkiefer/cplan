@@ -31,13 +31,10 @@ Prerequisites for installing cplan are:
   sudo apt install openjdk-11-jdk maven git
   ```
 
-- get cplan, install some dependencies from github, compile them, and finally
-  the framework itself
+- get cplan and compile the framework
   ```
   git clone https://github.com/bkiefer/cplan.git
   cd cplan
-  # install dependencies
-  ./install_locallibs.sh
   mvn install
   ```
 
