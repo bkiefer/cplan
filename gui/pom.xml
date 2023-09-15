@@ -42,6 +42,8 @@
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
+          <!-- exclude from deployment -->
+          <attach>false</attach>
         </configuration>
       </plugin>
     </plugins>
