@@ -30,7 +30,7 @@
     <dependency>
       <groupId>de.dfki.mlt</groupId>
       <artifactId>openccg</artifactId>
-      <version>[dfki-0.9.8,)</version>
+      <version>[0.9.8,)</version>
       <type>jar</type>
     </dependency>
   </dependencies>
