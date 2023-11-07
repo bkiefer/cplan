@@ -8,17 +8,9 @@
   <parent>
     <groupId>de.dfki.mlt</groupId>
     <artifactId>cplan</artifactId>
-    <version>1.2.5</version>
+    <version>1.2.6</version>
     <relativePath>..</relativePath>
   </parent>
-
-  <licenses>
-    <license>
-      <name>LGPL 3 or later</name>
-      <url>http://www.gnu.org/licenses/lgpl.html</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
 
   <dependencies>
     <dependency>
@@ -30,7 +22,7 @@
     <dependency>
       <groupId>de.dfki.mlt</groupId>
       <artifactId>openccg</artifactId>
-      <version>[0.9.8,)</version>
+      <version>[0.9.9,)</version>
       <type>jar</type>
     </dependency>
   </dependencies>

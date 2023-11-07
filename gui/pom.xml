@@ -7,7 +7,7 @@
   <parent>
     <groupId>de.dfki.mlt</groupId>
     <artifactId>cplan</artifactId>
-    <version>1.2.5</version>
+    <version>1.2.6</version>
     <relativePath>..</relativePath>
   </parent>
 
@@ -77,7 +77,7 @@
     <dependency>
       <groupId>de.dfki.mlt</groupId>
       <artifactId>j2emacs</artifactId>
-      <version>[0.2.2,)</version>
+      <version>[0.2.3,)</version>
     </dependency>
 
     <dependency>
@@ -89,7 +89,7 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.4.5</version>
+      <version>1.4.11</version>
       <scope>runtime</scope>
     </dependency>
   </dependencies>

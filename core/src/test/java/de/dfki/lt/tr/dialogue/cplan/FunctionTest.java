@@ -1,13 +1,18 @@
 package de.dfki.lt.tr.dialogue.cplan;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+
+import com.ibm.icu.text.RuleBasedNumberFormat;
+import com.ibm.icu.util.ULocale;
 
 import de.dfki.lt.tr.dialogue.cplan.functions.string.Split;
 import de.dfki.lt.tr.dialogue.cplan.functions.string.StringToNumber;
@@ -82,6 +87,10 @@ public class FunctionTest {
         { "@a:b(<num>eins)", "1" },
         { "@a:b(<num>ein)", "1" },
         { "@a:b(<num>eine)", "1" },
+        { "@a:b(<num>neunzehn)", "19" },
+        { "@a:b(<num>fünfundzwanzig)", "25" },
+        { "@a:b(<num>einhundertfünfunddreißig)", "135" },
+        { "@a:b(<num>einhundertdreiunddreissig)", "133" },
         // also works for ordinals, could be problematic, but how to handle this?
         { "@a:b(<num>erste)", "1" },
     };
@@ -92,5 +101,21 @@ public class FunctionTest {
       String res = (String)stn.apply(args);
       assertEquals(pat[1], res);
     }
+  }
+
+  /** This was code to find the problem with ICU parsed numbers */
+  @Ignore
+  @Test public void testICUConversion() throws ParseException {
+    RuleBasedNumberFormat nf = new RuleBasedNumberFormat(
+        new ULocale("de_DE"), RuleBasedNumberFormat.SPELLOUT);
+    nf.setLenientParseMode(true);
+    int num = 135;
+    String s = nf.format(num);
+    //System.out.println(s);
+    //assertEquals("fünfundzwanzig", s);
+    s = "einhundertfünfunddreißig";
+    Number n = nf.parse(s);
+    int i = n.intValue();
+    assertEquals(num, i);
   }
 }

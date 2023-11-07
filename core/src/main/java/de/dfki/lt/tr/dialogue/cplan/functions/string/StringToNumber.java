@@ -21,8 +21,12 @@ public class StringToNumber implements Function {
     if (_numberFormatter == null) {
       _numberFormatter = new RuleBasedNumberFormat(
           new ULocale(_planner.getLanguage()), RuleBasedNumberFormat.SPELLOUT);
+      _numberFormatter.setLenientParseMode(true);
     }
     String str = args.get(0).asString();
+    if (str.startsWith("hundert") || str.startsWith("tausend")) {
+      str = "ein" + str;
+    }
     try {
       Number i = _numberFormatter.parse(str);
       return i.toString();
