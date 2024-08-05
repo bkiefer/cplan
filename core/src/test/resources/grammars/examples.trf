@@ -23,7 +23,7 @@
 // \example{4}: Add a default in case of property absence
 //[
 /// @aa:ascr(<C>d)
-! top -> # ^ top.
+@aa: ! top -> # ^ top.
 //]
 
 // \example{5}: Set a global variable as marker, and test in the second rule
