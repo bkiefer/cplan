@@ -20,7 +20,13 @@
 :ascr ^ !<Tense> -> # ^ <Tense>pres.
 //]
 
-// \example{4}: Set a global variable as marker, and test in the second rule
+// \example{4}: Add a default in case of property absence
+//[
+/// @aa:ascr(<C>d)
+! top -> # ^ top.
+//]
+
+// \example{5}: Set a global variable as marker, and test in the second rule
 //[
 /// @d:dvp(<SpeechAct>assertion ^ <w>(:foo ^ <Tense>pres))
 :dvp ^ <SpeechAct>#v -> ##speechact = #v.
@@ -29,7 +35,8 @@
 //]
 
 
-// \example{5}: type disjunction, variable \texttt{t} matching the whole node
+// \newpage
+// \example{6}: type disjunction, variable \texttt{t} matching the whole node
 // add two relations, delete \texttt{Target} feature (multiple actions)
 //[
 /// @d:disj(<T>(:entity ^ <Tense>pres))
@@ -40,7 +47,7 @@
 # ! <T>.
 //]
 
-// \example{6}: Less preferable rewrite of the last example, the same variable
+// \example{7}: Less preferable rewrite of the last example, the same variable
 // name has to be used twice! Works only because of disjunction.
 //[
 /// @d:disj2(<T>(:entity ^ <Tense>pres))
@@ -51,7 +58,7 @@
 # ! <T>.
 //]
 
-// \example{7}: Randomizing with complex values
+// \example{8}: Randomizing with complex values
 //[
 /// @d:rand(<SpeechAct>opening ^ <Content>(:top ^ <X> y))
 :rand ^ <SpeechAct>opening ^ <Content> (#c1:top)
@@ -75,7 +82,8 @@
 
 //]
 
-// \example{8}: Alternative randomization, maybe not very convenient
+// \newpage
+// \example{9}: Alternative randomization, maybe not very convenient
 //[
 /// @d:dvp(<SpeechAct>closing ^ <Content> (foo))
 :dvp ^ <SpeechAct>closing -> ##randomclosing = random(1,2).
@@ -90,8 +98,8 @@
 ->
 #c1 = :closing ^ see_you.
 //]
-// \newpage
-// \example{9}: Using global variable as node store.
+
+// \example{10}: Using global variable as node store.
 //
 // After application of these rules \texttt{Target} and \texttt{PointToTarget}
 // point to the same node.
@@ -119,7 +127,7 @@ Adding to relations the wrong way
                  <Cop-Scope>(s2:gaga ^ prop ^ <Questioned>true)))
  */
 //]
-// \example{10}
+// \example{11}
 // This will not add to the existing \texttt{Subject} and \texttt{Cop-Scope},
 // but introduce new ones.
 //[
@@ -147,11 +155,11 @@ Adding to relations the wrong way
 #cop-scope ! <Questioned>,
 #cop-scope ^ <Delimitation>unique ^ <Num> sg.
 //]
-// \newpage
+
 /*****************************************************************************
 Global variable ``maps''
  *****************************************************************************/
-// \example{11} Global variables can be used with path expressions to get
+// \example{12} Global variables can be used with path expressions to get
 // dictionary-like structures
 //[
 /// @d:dvp2(<Cont> (x:y ^ z) ^ <S>x)
@@ -172,7 +180,7 @@ Global variable ``maps''
 /*****************************************************************************
 All you can do with variables
  *****************************************************************************/
-// \example{12} Bind values to global variables and use them in another rule
+// \example{13} Bind values to global variables and use them in another rule
 //[
 /// @d:dvp(<foo>(:a ^ <F>(b:c ^ d)))
 :a ^ <F> (#i:#t ^ #p) -> ##partial = :#t ^ #p, ##whole = #i:.
@@ -181,7 +189,7 @@ All you can do with variables
 //]
 
 //
-//  \example{13} Be careful that you use bound variables correctly! If you use
+//  \example{14} Be careful that you use bound variables correctly! If you use
 //  them as simple (type or proposition) values on the right hand side, you
 //  must have bound them to simple values, or complex values containing the
 //  appropriate edge!
@@ -200,14 +208,13 @@ All you can do with variables
 // Right hand local variables can also be used to establish coreferences in the
 // replacement part. \vspace*{1.0ex}
 
-// \example{14} Check for structural equality (will also succeed if coreferent)
+// \example{15} Check for structural equality (will also succeed if coreferent)
 //[
 /// @d:dvp(<Content>(:bar ^ baz) ^ <Wh-Restr>(:bar ^ baz))
 :dvp ^ <Content>#c: ^ <Wh-Restr>#c: -> # ^ :equals.
 //]
 
-// \newpage
-// \example{15} Check for identity (will only succeed if coreferent)
+// \example{16} Check for identity (will only succeed if coreferent)
 //[
 /// @d:coref(<Content>(:bar ^ baz) ^ <Wh-Restr>(:bar ^ baz))
 /// @d:coref(<Content>(a:bar ^ baz) ^ <Wh-Restr>(a:bar))
@@ -215,13 +222,13 @@ All you can do with variables
 :coref ^ <Content>#c: ^ <Wh-Restr> = #c: -> # ^ identical.
 //]
 
-// \example{16} Replace a symbol (the proposition) under a feature
+// \example{17} Replace a symbol (the proposition) under a feature
 //[
 /// @d:symb(<motion(BadMotion))
 :symb ^ <motion>(#m ^ BadMotion) -> #m = GoodMotion.
 //]
 
-// \example{17} use a variable representing an ID in a replacement
+// \example{18} use a variable representing an ID in a replacement
 //[
 /// @d:kv(<key>"content" ^ <value>(val ^ (<some>"content")))
 :kv ^ <key>#key ^ <value>#val: -> # ^ <#key>#val:, # ! <key>, # ! <value>.
@@ -230,7 +237,7 @@ All you can do with variables
 /*****************************************************************************
 Use of functions for tests and results
  *****************************************************************************/
-// \example{18} Use the matching operator to use the result of a function for
+// \example{19} Use the matching operator to use the result of a function for
 // tests \verb|( eq(#x, 1) ~ 1 )|
 //[
 /// @d:dvp(<SpeechAct>provideQuestion ^ <Context>(<Question> "question " ^ <Count> "1" ))
@@ -244,7 +251,7 @@ Use of functions for tests and results
 # = :canned ^ <string>concatenate(###part1, #q, "?").
 //]
 
-// \example{19} Non-integer numbers must be passed to functions as strings.
+// \example{20} Non-integer numbers must be passed to functions as strings.
 // Boolean functions return zero or one.
 //[
 /// @m:math(<arg1>9 ^ <arg2>2)
@@ -259,7 +266,7 @@ Use of functions for tests and results
 # ^ <bool> lteq("0.3", div(#arg1, #arg2)).
 //]
 
-// \example{20} You can use arbitrary encodings in your grammar files,
+// \example{21} You can use arbitrary encodings in your grammar files,
 // but if it's not UTF-8, you have to specify as `encoding' setting in the
 // grammar file, and, consequently, you can only have one encoding per project.
 //[
@@ -267,14 +274,14 @@ Use of functions for tests and results
 <enc> iso-8859-15 ^ <val> "הײלגי" -> # ^ <right> true.
 //]
 
-// \example{21} turn a number into a string representing the number
+// \example{22} turn a number into a string representing the number
 // (language dependent).
 //[
 /// @s:string(<number>303)
 :string ^ <number>#number: -> # ^ <numberAsString> spell_number(#number).
 //]
 
-// \example{22} Append an ordinal number suffix to the number.
+// \example{23} Append an ordinal number suffix to the number.
 // (language dependent).
 //[
 /// @s:string(<ordinal>303)
@@ -285,7 +292,7 @@ Use of functions for tests and results
 Miscellaneous
  *****************************************************************************/
 
-// \example{23} Using \tok{=>} rules to walk through a list
+// \example{24} Using \tok{=>} rules to walk through a list
 //[
 ///@d:dvp(<c>0 ^ <l>(:li ^ <f>1 ^ <r>(:li ^ <f>2 ^ <r>(:li ^ <f>3 ^ <r>()))))
 ///will become: @d:dvp(<c>0123 ^ <l>(:li))
@@ -296,7 +303,7 @@ Miscellaneous
 #c = concatenate(#c, #f).
 //]
 
-// \example{24} Rule groups
+// \example{25} Rule groups
 //[
 ///@d:dvp(<SpeechAct>greeting ^ <Context>(<Familiarity>yes ^ <ChildGender>f))
 ///@d:dvp(<SpeechAct>greeting ^ <Context>(<Familiarity>yes ^ <ChildGender>m))
