@@ -7,7 +7,7 @@
   <parent>
     <groupId>de.dfki.mlt</groupId>
     <artifactId>cplan</artifactId>
-    <version>1.2.8</version>
+    <version>1.2.9</version>
     <relativePath>..</relativePath>
   </parent>
 
@@ -15,7 +15,7 @@
   <packaging>jar</packaging>
 
   <properties>
-    <logback.version>1.5.17</logback.version>
+    <logback.version>1.5.26</logback.version>
   </properties>
 
   <build>
@@ -71,7 +71,7 @@
     <dependency>
       <groupId>de.dfki.mlt</groupId>
       <artifactId>dataviz</artifactId>
-      <version>[0.1.2,)</version>
+      <version>[0.1.5,)</version>
     </dependency>
 
     <dependency>
